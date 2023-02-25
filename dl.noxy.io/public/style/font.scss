@@ -1,0 +1,37 @@
+@mixin Font($name, $type, $weight, $style) {
+  @font-face {
+    font-family: $name;
+    font-weight: $weight;
+    font-style:  $style;
+    src:         url("/font/" + $name + "-" + $type + ".ttf");
+  }
+}
+
+@include Font("IcoFont", "Regular", 400, normal);
+
+@include Font("Kanit", "Thin", 100, normal);
+@include Font("Kanit", "ThinItalic", 100, italic);
+
+@include Font("Kanit", "ExtraLight", 200, normal);
+@include Font("Kanit", "ExtraLightItalic", 200, italic);
+
+@include Font("Kanit", "Light", 300, normal);
+@include Font("Kanit", "LightItalic", 300, italic);
+
+@include Font("Kanit", "Regular", 400, normal);
+@include Font("Kanit", "Italic", 400, italic);
+
+@include Font("Kanit", "Medium", 500, normal);
+@include Font("Kanit", "MediumItalic", 500, italic);
+
+@include Font("Kanit", "SemiBold", 600, normal);
+@include Font("Kanit", "SemiBoldItalic", 600, italic);
+
+@include Font("Kanit", "Bold", 700, normal);
+@include Font("Kanit", "BoldItalic", 700, italic);
+
+@include Font("Kanit", "ExtraBold", 800, normal);
+@include Font("Kanit", "ExtraBoldItalic", 800, italic);
+
+@include Font("Kanit", "Black", 900, normal);
+@include Font("Kanit", "BlackItalic", 900, italic);

@@ -1,0 +1,12 @@
+/node_modules
+/.next
+/.rollup.cache
+/out
+/build
+/dist
+
+.env
+.idea
+.vs
+
+npm-debug.log*

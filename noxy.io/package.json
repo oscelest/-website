@@ -1,0 +1,31 @@
+{
+  "name":            "noxy.io",
+  "author":          "oscelest",
+  "version":         "0.0.0",
+  "description":     "The main domain of https://noxy.io",
+  "license":         "MIT",
+  "repository":      {
+    "type": "git",
+    "url":  "git@github.com:oscelest/noxy.io"
+  },
+  "bugs":            {
+    "url": "https://github.com/oscelest/noxy.io/issues"
+  },
+  "scripts":         {
+    "update": "npx npm-check-updates -u && npm i",
+    "start":  "next -p 40000",
+    "build":  "next build",
+    "dev":    "next dev"
+  },
+  "dependencies":    {
+    "@types/node":  "^18.14.1",
+    "@types/react": "18.0.28",
+    "next":         "^13.2.1",
+    "typescript":   "^4.9.5",
+    "sass":         "^1.58.3",
+    "uuid":         "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.1"
+  }
+}

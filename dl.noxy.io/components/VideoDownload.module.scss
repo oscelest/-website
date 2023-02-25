@@ -1,0 +1,19 @@
+.Component {
+
+  display:         flex;
+  flex:            0 0 auto;
+  flex-flow:       column;
+  justify-content: center;
+  align-items:     center;
+  grid-row-gap:    10px;
+
+  .Input {
+    width: 600px;
+  }
+
+  .Info {
+    display: flex;
+    flex:    0 0 auto;
+    height:  400px;
+  }
+}

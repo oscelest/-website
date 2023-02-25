@@ -1,0 +1,40 @@
+{
+  "name":            "dl.noxy.io",
+  "author":          "oscelest",
+  "version":         "0.0.0",
+  "description":     "The video download subdomain of https://noxy.io",
+  "license":         "MIT",
+  "repository":      {
+    "type": "git",
+    "url":  "git@github.com:oscelest/noxy.io"
+  },
+  "bugs":            {
+    "url": "https://github.com/oscelest/noxy.io/issues"
+  },
+  "scripts":         {
+    "update": "npx npm-check-updates -u && npm i",
+    "start":  "next -p 40001",
+    "build":  "next build",
+    "dev":    "next dev"
+  },
+  "dependencies":    {
+    "@types/node":             "^18.14.1",
+    "@types/react":            "18.0.28",
+    "@noxy/react-button":      "^1.0.1",
+    "@noxy/react-input-field": "^1.2.5",
+    "fluent-ffmpeg":           "^2.1.2",
+    "fs-extra":                "^11.1.0",
+    "next":                    "^13.2.1",
+    "typescript":              "^4.9.5",
+    "sass":                    "^1.58.3",
+    "superagent":              "^8.0.9",
+    "uuid":                    "^9.0.0"
+  },
+  "devDependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@types/fluent-ffmpeg":     "^2.1.21",
+    "@types/fs-extra":          "^11.0.1",
+    "@types/superagent":        "^4.1.16",
+    "@types/uuid":              "^9.0.1"
+  }
+}

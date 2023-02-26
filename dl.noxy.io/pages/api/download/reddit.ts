@@ -69,7 +69,7 @@ async function mergeFile(file: string, video: string, audio: string): Promise<bo
     .format("mp4")
     .saveToFile(file)
     .on("end", () => resolve(true))
-    .on("error", error => {
+    .on("error", (error: Error) => {
       console.error(error);
       resolve(false);
       fs.unlink(file, console.error);

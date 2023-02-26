@@ -10,3 +10,5 @@
 **/.vs
 
 npm-debug.log*
+/*.sh
+/*.conf

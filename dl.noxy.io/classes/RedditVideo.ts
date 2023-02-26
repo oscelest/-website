@@ -18,10 +18,10 @@ export class RedditVideo extends Video {
     this.duration = data.media.reddit_video.duration;
     this.url_thumbnail = data.thumbnail;
     this.url_dash = data.media.reddit_video.dash_url.replace(/(?<=DASH).*/i, "");
-  
+    
     this.quality_collection = {};
     const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(mpd,"text/xml");
+    const xmlDoc = parser.parseFromString(mpd, "text/xml");
     const video_list = xmlDoc.querySelectorAll(`AdaptationSet[contentType="video"] Representation`);
     for (let video of video_list) {
       const key = video.getAttribute("height");
@@ -29,6 +29,12 @@ export class RedditVideo extends Video {
       if (!key || !value) continue;
       this.quality_collection[key] = value;
     }
+  }
+  
+  public static async getVideoData(url: URL) {
+    const thread_response = await superagent.get(`${url.href.replace(/\/+$/, "")}.json`);
+    const mpd_response = await superagent.get(thread_response.body[0].data.children[0].data.media.reddit_video.dash_url);
+    return new this(thread_response.body[0].data.children[0].data, mpd_response.text);
   }
   
   public async download(quality?: string) {

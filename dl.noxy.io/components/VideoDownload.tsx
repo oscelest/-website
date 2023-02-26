@@ -1,6 +1,5 @@
-import {InputField, InputFieldChangeEvent} from "@noxy/react-input-field";
+import {InputField, InputFieldChangeEvent, InputFieldEventType} from "@noxy/react-input-field";
 import {DetailedHTMLProps, HTMLAttributes, useEffect, useState} from "react";
-import superagent from "superagent";
 import {RedditVideo} from "../classes/RedditVideo";
 import {Video} from "../classes/Video";
 import {useDefer} from "../hooks/useDefer";
@@ -34,45 +33,45 @@ export function VideoDownload(props: VideoDownloadProps) {
     </div>
   );
   function onInputChange(event: InputFieldChangeEvent) {
-    setError(undefined);
-    onChange(event.value);
+    if (event.type === InputFieldEventType.CHANGE) {
+      setError(undefined);
+      onChange(event.value);
+    }
   }
   async function onLoadURL(value: string) {
     if (!value) return setVideo(undefined);
-    try {
-      const url = new URL(value);
-      switch (url.hostname.toLowerCase()) {
-        case "reddit.com":
-        case "www.reddit.com":
-          return await getRedditVideoData(url);
-      }
-    }
-    catch {
-      handleError("URL is not valid.");
-    }
-  }
-  
-  async function getRedditVideoData(url: URL) {
-    setError(undefined);
-    const thread_response = await superagent.get(`${url.href.replace(/\/+$/, "")}.json`);
-    const mpd_response = await superagent.get(thread_response.body[0].data.children[0].data.media.reddit_video.dash_url);
     
     try {
-      setVideo(new RedditVideo(thread_response.body[0].data.children[0].data, mpd_response.text));
-      console.log("setting false");
-      setLoading(false);
+      setError(undefined);
+      setVideo(await getVideoData(new URL(value)));
     }
     catch (error) {
-      if (!(error instanceof Error)) return;
-      handleError(error.message);
+      if (error instanceof TypeError && error.message.slice(0, 15) === "URL constructor") {
+        handleError(error.message.slice(17));
+      }
+      else if (error instanceof Error) {
+        handleError(error.message);
+      }
+      else {
+        console.error(error);
+        handleError("Unexpected error occurred");
+      }
     }
+    setLoading(false);
+  }
+  
+  async function getVideoData(url: URL): Promise<Video> {
+    switch (url.hostname.toLowerCase()) {
+      case "reddit.com":
+      case "www.reddit.com":
+        return RedditVideo.getVideoData(url);
+    }
+    throw new Error("URL is not valid.");
   }
   
   function handleError(message: string) {
-    console.log("hello?");
     setError(message);
     setVideo(undefined);
-    setLoading(false);
   }
   
 }

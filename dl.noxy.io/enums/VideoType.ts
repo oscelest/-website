@@ -1,3 +1,4 @@
 export enum VideoType {
-  REDDIT = "reddit"
+  REDDIT = "reddit",
+  TWITTER = "twitter"
 }

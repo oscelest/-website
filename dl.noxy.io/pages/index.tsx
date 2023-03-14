@@ -1,5 +1,6 @@
+import Head from "next/head";
 import {useRouter} from "next/router";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {VideoDownload} from "../components/VideoDownload";
 import Style from "./index.module.scss";
 
@@ -12,6 +13,9 @@ function IndexPage() {
   
   return (
     <div className={Style.Component}>
+      <Head>
+        <title>Download video | Noxy.io</title>
+      </Head>
       <VideoDownload value={url} onChange={onURLChange}/>
     </div>
   );

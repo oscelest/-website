@@ -3,12 +3,14 @@
 **/.rollup.cache
 **/out
 **/build
+**/temp
 **/dist
+**/migrations
 
 **/.env
 **/.idea
 **/.vs
 
 npm-debug.log*
-/*.sh
-/*.conf
+_script/**
+_config/**

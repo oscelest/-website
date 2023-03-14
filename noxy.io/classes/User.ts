@@ -11,7 +11,7 @@ export class User {
   constructor(init?: UserJSON) {
     this.id = init?.id ?? v4();
     this.email = init?.email ?? "";
-    this.token = init?.email ?? "";
+    this.token = init?.token ?? "";
     this.timeCreated = new Date(init?.timeCreated ?? 0);
   }
   
@@ -32,7 +32,7 @@ export class User {
     const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/LogIn`)
     .send({email, password});
     
-    const user = new User(response.body.content);
+    const user = new User(response.body);
     localStorage.setItem("auth", user.token);
     
     return user;
@@ -42,7 +42,7 @@ export class User {
     const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/SignUp`)
     .send({email, password});
   
-    const user = new User(response.body.content);
+    const user = new User(response.body);
     localStorage.setItem("auth", user.token);
     
     return user;

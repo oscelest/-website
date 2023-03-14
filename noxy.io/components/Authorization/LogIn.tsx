@@ -44,6 +44,7 @@ export const LogIn = (props: LogInProps) => {
     
     try {
       const user = await User.login(email, password);
+      console.log(user);
       setUser(user);
     }
     catch (error) {

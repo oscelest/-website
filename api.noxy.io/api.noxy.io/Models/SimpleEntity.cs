@@ -19,7 +19,7 @@ namespace api.noxy.io.Models
             builder.HasKey(x => x.ID);
             builder.Property(x => x.TimeCreated).IsRequired().ValueGeneratedOnAdd();
             builder.Property(x => x.TimeUpdated).ValueGeneratedOnUpdate();
-            builder.HasIndex(x => x.TimeCreated, "IDX_TimeCreated").IsDescending();
+            builder.HasIndex(x => x.TimeCreated).IsDescending();
         }
 
         public class DTO

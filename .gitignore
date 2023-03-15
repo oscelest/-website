@@ -5,7 +5,8 @@
 **/build
 **/temp
 **/dist
-**/migrations
+**/bin
+**/obj
 
 **/.env
 **/.idea

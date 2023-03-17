@@ -1,5 +1,6 @@
-import {HTMLAttributes} from "react";
+import {HTMLComponentProps} from "@noxy/react-utils";
 import Style from "./Content.module.scss";
+import React from "react";
 
 export function Content(props: ContentProps) {
   const {children, className, ...component_props} = props;
@@ -12,7 +13,7 @@ export function Content(props: ContentProps) {
   );
 }
 
-export interface ContentProps extends HTMLAttributes<HTMLDivElement> {
+export interface ContentProps extends HTMLComponentProps {
 
 }
 

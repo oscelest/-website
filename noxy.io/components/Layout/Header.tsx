@@ -1,6 +1,7 @@
 import {Button} from "@noxy/react-button";
 import {useSubscription} from "@noxy/react-subscription-hook";
-import React, {HTMLAttributes} from "react";
+import {HTMLComponentProps} from "@noxy/react-utils";
+import React from "react";
 import {User} from "../../classes/User";
 import {subscriptionUser} from "../../Globals";
 import Style from "./Header.module.scss";
@@ -35,6 +36,6 @@ export function Header(props: HeaderProps) {
   }
 }
 
-export interface HeaderProps extends HTMLAttributes<HTMLDivElement> {
+export interface HeaderProps extends HTMLComponentProps {
   children?: never;
 }

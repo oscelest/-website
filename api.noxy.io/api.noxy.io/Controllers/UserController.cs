@@ -84,7 +84,7 @@ namespace api.noxy.io.Controllers
 
         private string GenerateToken(UserEntity user)
         {
-            return new JWT(user.ID, _configuration["JWT:Issuer"]!, _configuration["JWT:Audience"]!, _configuration["JWT:Subject"]!).Sign(_configuration["JWT:Secret"]!);
+            return new JWT(user.ID, _configuration["JWT:Issuer"]!, _configuration["JWT:Audience"]!).Sign(_configuration["JWT:Secret"]!);
         }
     }
 

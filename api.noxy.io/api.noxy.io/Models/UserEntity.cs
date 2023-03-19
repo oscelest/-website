@@ -41,7 +41,7 @@ namespace api.noxy.io.Models
         new public class DTO : SimpleEntity.DTO
         {
             public string Email { get; set; }
-            public string? Token { get; set; } = string.Empty;
+            public string? Token { get; set; }
 
             public DTO(UserEntity entity) : base(entity)
             {

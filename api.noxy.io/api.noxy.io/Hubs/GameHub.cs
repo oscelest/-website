@@ -42,7 +42,7 @@ namespace api.noxy.io.Hubs
             if (guild == null)
             {
                 guild = await _guildRepository.Create(name, user);
-                await Clients.Caller.SendAsync("CreateGuild", guild!);
+                await Clients.Caller.SendAsync("CreateGuild", guild.ToDTO());
             }
             else
             {

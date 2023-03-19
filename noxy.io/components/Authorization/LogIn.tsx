@@ -11,14 +11,14 @@ import Style from "./LogIn.module.scss";
 export const LogIn = (props: LogInProps) => {
   const {className, children, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
-  
+
   const [error, setError] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [email_error, setEmailError] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [password_error, setPasswordError] = useState<string>("");
   const [, setUser] = useSubscription(subscriptionUser);
-  
+
   return (
     <div {...component_props} className={classes}>
       {error && <span className={Style.Error}>{error}</span>}
@@ -27,23 +27,22 @@ export const LogIn = (props: LogInProps) => {
       <Button onClick={onLogInClick}>Log In</Button>
     </div>
   );
-  
+
   function onEmailChange(event: InputFieldChangeEvent) {
     setEmail(event.value);
   }
-  
+
   function onPasswordChange(event: InputFieldChangeEvent) {
     setPassword(event.value);
   }
-  
+
   async function onLogInClick() {
     setError("");
     setEmailError("");
     setPasswordError("");
-    
+
     try {
       const user = await User.login(email, password);
-      console.log(user);
       setUser(user);
     }
     catch (error) {

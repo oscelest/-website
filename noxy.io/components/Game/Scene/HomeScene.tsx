@@ -9,35 +9,41 @@ import Style from "./HomeScene.module.scss";
 export const HomeScene = (props: HomeSceneProps) => {
   const {className, children, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
-  
+
   const [socket] = useSubscription(subscriptionSocket);
   const [, createDialog] = useDialog();
-  
+
   useEffect(
     () => {
       if (!socket) return;
       socket.on("Load", onLoad);
-      
+
       socket.send("Load").catch(err => console.error(err));
     },
     [socket]
   );
-  
+
   return (
     <div {...component_props} className={classes}>
-    
+
     </div>
   );
-  
+
   function onLoad(guild: object | null) {
     if (guild === null) {
-      createDialog({dismissible: false, closeable: false, children: (<CreateGuildDialog/>)})
+      createDialog({
+        dismissible: false,
+        closeable: false,
+        children: (
+          <CreateGuildDialog/>
+        )
+      });
     }
     else {
       console.log(guild);
     }
   }
-  
+
 };
 
 export interface HomeSceneProps extends HTMLComponentProps {

@@ -23,14 +23,7 @@ namespace api.noxy.io.Hubs
 
         public async Task Load()
         {
-            JWT token = new((ClaimsIdentity)Context.User!.Identity!);
-            
-            UserEntity? user = await _userRepository.FindByID(token.UserID);
-            if (user == null)
-            {
-                throw new HubException("Unauthorized");
-            }
-
+            UserEntity user = await GetUser((ClaimsIdentity)Context.User!.Identity!);
             GuildEntity? guild = await _guildRepository.FindByUser(user);
             if (guild == null)
             {
@@ -40,6 +33,27 @@ namespace api.noxy.io.Hubs
             {
                 await Clients.Caller.SendAsync("Load", guild.ToDTO());
             }
+        }
+
+        public async Task CreateGuild(string name)
+        {
+            UserEntity user = await GetUser((ClaimsIdentity)Context.User!.Identity!);
+            GuildEntity? guild = await _guildRepository.FindByUser(user);
+            if (guild == null)
+            {
+                guild = await _guildRepository.Create(name, user);
+                await Clients.Caller.SendAsync("CreateGuild", guild!);
+            }
+            else
+            {
+                throw new HubException("Forbidden");
+            }
+
+        }
+
+        private async Task<UserEntity> GetUser(ClaimsIdentity identity)
+        {
+            return await _userRepository.FindByID(new JWT(identity).UserID) ?? throw new HubException("Unauthorized");
         }
     }
 }

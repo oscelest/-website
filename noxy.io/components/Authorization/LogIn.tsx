@@ -1,7 +1,7 @@
 import {Button} from "@noxy/react-button";
 import {InputField, InputFieldChangeEvent, InputFieldType} from "@noxy/react-input-field";
 import {useSubscription} from "@noxy/react-subscription-hook";
-import {HTMLComponentProps} from "@noxy/react-utils";
+import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
 import React, {useState} from "react";
 import {ResponseError} from "superagent";
 import {User} from "../../classes/User";
@@ -10,6 +10,8 @@ import Style from "./LogIn.module.scss";
 
 export const LogIn = (props: LogInProps) => {
   const {className, children, ...component_props} = props;
+  const classes = sanitizeClassName(Style.Component, className);
+  
   const [error, setError] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [email_error, setEmailError] = useState<string>("");
@@ -17,11 +19,8 @@ export const LogIn = (props: LogInProps) => {
   const [password_error, setPasswordError] = useState<string>("");
   const [, setUser] = useSubscription(subscriptionUser);
   
-  const classes = [Style.Component];
-  if (className) classes.push(className);
-  
   return (
-    <div {...component_props} className={classes.join(" ")}>
+    <div {...component_props} className={classes}>
       {error && <span className={Style.Error}>{error}</span>}
       <InputField type={InputFieldType.EMAIL} label={"Email"} value={email} error={email_error} autoComplete={"email"} onChange={onEmailChange}/>
       <InputField type={InputFieldType.PASSWORD} label={"Password"} value={password} error={password_error} autoComplete={"password"} onChange={onPasswordChange}/>

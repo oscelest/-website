@@ -11,8 +11,6 @@ export const HomeScene = (props: HomeSceneProps) => {
   const classes = sanitizeClassName(Style.Component, className);
   
   const [socket] = useSubscription(subscriptionSocket);
-  console.log(useDialog);
-  console.log(useDialog());
   const [, createDialog] = useDialog();
   
   useEffect(
@@ -33,7 +31,7 @@ export const HomeScene = (props: HomeSceneProps) => {
   
   function onLoad(guild: object | null) {
     if (guild === null) {
-      createDialog({children: (<CreateGuildDialog/>)})
+      createDialog({dismissible: false, closeable: false, children: (<CreateGuildDialog/>)})
     }
     else {
       console.log(guild);

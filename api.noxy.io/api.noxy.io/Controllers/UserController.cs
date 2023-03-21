@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace api.noxy.io.Controllers
 {
@@ -15,13 +16,13 @@ namespace api.noxy.io.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly IUserRepository _userRepository;
+        private readonly IJWT _jwt;
+        private readonly IUserRepository _user;
 
-        public UserController(IConfiguration Configuration, IUserRepository UserRepository)
+        public UserController(IJWT jwt, IUserRepository user, IConfiguration config)
         {
-            _configuration = Configuration;
-            _userRepository = UserRepository;
+            _jwt = jwt;
+            _user = user;
         }
 
         [HttpPost("SignUp")]
@@ -29,8 +30,8 @@ namespace api.noxy.io.Controllers
         {
             try
             {
-                UserEntity user = await _userRepository.Create(input.Email, input.Password);
-                return Ok(new UserEntity.DTO(user, GenerateToken(user)));
+                UserEntity user = await _user.Create(input.Email, input.Password);
+                return Ok(user.ToDTO(_jwt.Generate(user)));
             }
             catch (DbUpdateException ex)
             {
@@ -39,10 +40,11 @@ namespace api.noxy.io.Controllers
                     if (mysqlex.Number == 1062) return Conflict();
                 }
             }
-            catch { 
+            catch
+            {
                 // We should log the exception here.
             }
-            
+
             return Problem();
         }
 
@@ -51,10 +53,10 @@ namespace api.noxy.io.Controllers
         {
             try
             {
-                UserEntity? user = await _userRepository.FindByEmail(input.Email);
+                UserEntity? user = await _user.FindByEmail(input.Email);
                 if (user == null) return Unauthorized();
                 byte[] hash = UserEntity.GenerateHash(input.Password, user.Salt);
-                return hash.SequenceEqual(user.Hash) ? Ok(new UserEntity.DTO(user, GenerateToken(user))) : Unauthorized();
+                return hash.SequenceEqual(user.Hash) ? Ok(user.ToDTO(_jwt.Generate(user))) : Unauthorized();
             }
             catch
             {
@@ -68,23 +70,18 @@ namespace api.noxy.io.Controllers
         {
             try
             {
-                var authorization = await HttpContext.GetTokenAsync("access_token");
-                var token = JWT.ReadToken(authorization);
+                string? authorization = await HttpContext.GetTokenAsync("access_token");
+                JwtSecurityToken? token = JWT.ReadToken(authorization);
                 if (token == null) return Unauthorized();
 
-                UserEntity? user = await _userRepository.FindByID(token.UserID);
+                UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
                 if (user == null) return Unauthorized();
-                return Ok(new UserEntity.DTO(user, GenerateToken(user)));
+                return Ok(user.ToDTO(_jwt.Generate(user)));
             }
             catch
             {
                 return Problem();
             }
-        }
-
-        private string GenerateToken(UserEntity user)
-        {
-            return new JWT(user.ID, _configuration["JWT:Issuer"]!, _configuration["JWT:Audience"]!).Sign(_configuration["JWT:Secret"]!);
         }
     }
 
@@ -100,6 +97,4 @@ namespace api.noxy.io.Controllers
         [MaxLength(256)]
         public string Password { get; set; } = string.Empty;
     }
-
-
 }

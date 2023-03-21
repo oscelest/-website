@@ -9,7 +9,7 @@ namespace api.noxy.io.Models
 
         public DateTime TimeCreated { get; set; }
 
-        public DateTime TimeUpdated { get; set; }
+        public DateTime? TimeUpdated { get; set; }
 
         public DTO ToDTO() => new(this);
 
@@ -17,8 +17,8 @@ namespace api.noxy.io.Models
         {
             builder.ToTable(nameof(SimpleEntity));
             builder.HasKey(x => x.ID);
-            builder.Property(x => x.TimeCreated).IsRequired().ValueGeneratedOnAdd();
-            builder.Property(x => x.TimeUpdated).ValueGeneratedOnUpdate();
+            builder.Property(x => x.TimeCreated).IsRequired();
+            builder.Property(x => x.TimeUpdated);
             builder.HasIndex(x => x.TimeCreated).IsDescending();
         }
 
@@ -26,7 +26,7 @@ namespace api.noxy.io.Models
         {
             public Guid ID { get; set; }
             public DateTime TimeCreated { get; set; }
-            public DateTime TimeUpdated { get; set; }
+            public DateTime? TimeUpdated { get; set; }
 
             public DTO(SimpleEntity entity)
             {

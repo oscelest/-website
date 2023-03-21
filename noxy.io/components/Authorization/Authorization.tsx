@@ -14,8 +14,6 @@ export const Authorization = (props: AuthorizationProps) => {
   const classes = [Style.Component];
   if (className) classes.push(className);
   
-  
-  
   return (
     <div {...component_props} className={classes.join(" ")}>
       <LogIn/>

@@ -1,6 +1,4 @@
-﻿using api.noxy.io.Models.Game.Effect;
-using api.noxy.io.Models.Game.Skill;
-using api.noxy.io.Models.Game.Trigger;
+﻿using api.noxy.io.Models.Game.Skill;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

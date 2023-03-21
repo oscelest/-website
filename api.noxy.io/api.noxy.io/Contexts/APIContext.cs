@@ -8,6 +8,7 @@ using api.noxy.io.Models.Game.Skill;
 using api.noxy.io.Models.Game.Trigger;
 using api.noxy.io.Models.Game.Unit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace api.noxy.io.Context
 {
@@ -74,6 +75,42 @@ namespace api.noxy.io.Context
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySQL();
+        }
+
+        public override int SaveChanges()
+        {
+            PerformEntityMaintenance();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            PerformEntityMaintenance();
+            return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void PerformEntityMaintenance()
+        {
+            IEnumerable<EntityEntry> entries = ChangeTracker.Entries();
+            foreach (EntityEntry entry in entries)
+            {
+                if (entry.Entity is SimpleEntity entity)
+                {
+                    UpdateSimpleEntityTimestamp(entity, entry.State);
+                }
+            }
+        }
+
+        private static void UpdateSimpleEntityTimestamp(SimpleEntity entity, EntityState state)
+        {
+            if (state == EntityState.Added)
+            {
+                entity.TimeCreated = DateTime.UtcNow;
+            }
+            else if (state == EntityState.Modified)
+            {
+                entity.TimeUpdated = DateTime.UtcNow;
+            }
         }
     }
 }

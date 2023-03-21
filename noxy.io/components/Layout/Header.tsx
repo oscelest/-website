@@ -2,7 +2,7 @@ import {Button} from "@noxy/react-button";
 import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps} from "@noxy/react-utils";
 import React from "react";
-import {User} from "../../classes/User";
+import {User} from "../../entity/User";
 import {subscriptionUser} from "../../Globals";
 import Style from "./Header.module.scss";
 

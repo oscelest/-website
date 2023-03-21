@@ -1,6 +1,6 @@
 import {HubConnection} from "@microsoft/signalr";
 import {createSubscription} from "@noxy/react-subscription-hook";
-import {User} from "./classes/User";
+import {User} from "./entity/User";
 
 export const subscriptionUser = createSubscription<User | undefined>(undefined);
 export const subscriptionSocket = createSubscription<HubConnection | undefined>(undefined);

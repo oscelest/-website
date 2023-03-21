@@ -1,10 +1,9 @@
 import {Button} from "@noxy/react-button";
 import {DialogContext} from "@noxy/react-dialog";
 import {InputField, InputFieldChangeEvent} from "@noxy/react-input-field";
-import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
-import React, {useContext, useEffect, useState} from "react";
-import {subscriptionSocket} from "../../../Globals";
+import React, {useContext, useState} from "react";
+import {Guild} from "../../../entity/Guild";
 import Style from "./CreateGuildDialog.module.scss";
 
 export const CreateGuildDialog = (props: CreateGuildDialogProps) => {
@@ -12,16 +11,7 @@ export const CreateGuildDialog = (props: CreateGuildDialogProps) => {
   const classes = sanitizeClassName(Style.Component, className);
   
   const context = useContext(DialogContext);
-  const [socket] = useSubscription(subscriptionSocket);
   const [value, setValue] = useState<string>("");
-  
-  useEffect(
-    () => {
-      socket?.on("CreateGuild", onGuildCreate);
-      return () => socket?.off("CreateGuild", onGuildCreate);
-    },
-    []
-  );
   
   return (
     <div {...component_props} className={classes}>
@@ -33,19 +23,13 @@ export const CreateGuildDialog = (props: CreateGuildDialogProps) => {
     </div>
   );
   
-  function onClick() {
-    socket?.send("CreateGuild", value);
+  async function onClick() {
+    context.close(await Guild.register(value));
   }
   
   function onInputChange(event: InputFieldChangeEvent) {
     setValue(event.value);
   }
-  
-  function onGuildCreate(guild: object) {
-    console.log(guild);
-    context.close();
-  }
-  
 };
 
 interface CreateGuildDialogProps extends HTMLComponentProps {

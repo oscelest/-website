@@ -1,6 +1,7 @@
 ﻿using api.noxy.io.Models.Game.Unit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel;
 
 namespace api.noxy.io.Models.Game
 {
@@ -22,6 +23,7 @@ namespace api.noxy.io.Models.Game
             builder.HasMany(x => x.UnitList).WithOne();
         }
 
+        [DisplayName("GuildEntityDTO")]
         new public class DTO : SimpleEntity.DTO
         {
             public string Name { get; set; }

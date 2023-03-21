@@ -4,7 +4,7 @@ import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps} from "@noxy/react-utils";
 import React, {useState} from "react";
 import {ResponseError} from "superagent";
-import {User} from "../../classes/User";
+import {User} from "../../entity/User";
 import {BadRequestResponse, subscriptionUser} from "../../Globals";
 import Style from "./SignUp.module.scss";
 
@@ -25,9 +25,11 @@ export const SignUp = (props: SignUpProps) => {
   return (
     <div {...component_props} className={classes.join(" ")}>
       {error && <span className={Style.Error}>{error}</span>}
-      <InputField type={InputFieldType.EMAIL} label={"Email"} value={email} error={email_error} autoComplete={"email"} onChange={onEmailChange}/>
-      <InputField type={InputFieldType.PASSWORD} label={"Password"} value={password} error={password_error} autoComplete={"new-password"} onChange={onPasswordChange}/>
-      <InputField type={InputFieldType.PASSWORD} label={"Confirm password"} value={confirm} error={confirm_error} autoComplete={"new-password"} onChange={onConfirmChange}/>
+      <form>
+        <InputField type={InputFieldType.EMAIL} label={"Email"} value={email} error={email_error} autoComplete={"email"} onChange={onEmailChange}/>
+        <InputField type={InputFieldType.PASSWORD} label={"Password"} value={password} error={password_error} autoComplete={"new-password"} onChange={onPasswordChange}/>
+        <InputField type={InputFieldType.PASSWORD} label={"Confirm password"} value={confirm} error={confirm_error} autoComplete={"new-password"} onChange={onConfirmChange}/>
+      </form>
       <Button onClick={onSignUpClick}>Sign Up</Button>
     </div>
   );

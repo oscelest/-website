@@ -1,6 +1,7 @@
 using api.noxy.io.Context;
 using api.noxy.io.Hubs;
 using api.noxy.io.Interface;
+using api.noxy.io.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR(options => options.EnableDetailedErrors = true);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<APIContext>(options => options.UseMySQL(builder.Configuration["ConnectionStrings:MySQL"]!));
+builder.Services.AddTransient<IJWT, JWT>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IGuildRepository, GuildRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -51,7 +53,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
     setup.SwaggerDoc("v1", new OpenApiInfo { Title = "api.noxy.io", Version = "v1" });
-  
+    setup.CustomSchemaIds(x => x.FullName?[((x.Namespace?.Length ?? 0) + 1)..].Replace("+", "") ?? x.Name);
+
     OpenApiReference reference = new() { Type = ReferenceType.SecurityScheme, Id = "Bearer" };
     OpenApiSecurityRequirement requirement = new() { { new OpenApiSecurityScheme { Reference = reference }, Array.Empty<string>() } };
     setup.AddSecurityRequirement(requirement);
@@ -68,7 +71,7 @@ builder.Services.AddSwaggerGen(setup =>
 
 WebApplication app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+using (IServiceScope scope = app.Services.CreateScope())
 {
     APIContext dbContext = scope.ServiceProvider.GetRequiredService<APIContext>();
     dbContext.Database.EnsureDeleted();

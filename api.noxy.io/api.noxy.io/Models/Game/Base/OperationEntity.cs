@@ -3,7 +3,7 @@ using api.noxy.io.Models.Game.Modifier;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace api.noxy.io.Models.Game.Operation
+namespace api.noxy.io.Models.Game.Base
 {
     public class OperationEntity : SimpleEntity
     {

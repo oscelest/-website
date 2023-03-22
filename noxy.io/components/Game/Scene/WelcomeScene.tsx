@@ -1,17 +1,25 @@
 import {Button} from "@noxy/react-button";
-import {DialogContext} from "@noxy/react-dialog";
 import {InputField, InputFieldChangeEvent} from "@noxy/react-input-field";
+import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import {Guild} from "../../../entity/Guild";
-import Style from "./CreateGuildDialog.module.scss";
+import {SceneType} from "../../../enums/SceneType";
+import {subscriptionGuild, subscriptionScene} from "../../../Globals";
+import Style from "./WelcomeScene.module.scss";
 
-export const CreateGuildDialog = (props: CreateGuildDialogProps) => {
+export const WelcomeScene = (props: HomeSceneProps) => {
   const {className, children, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
   
-  const context = useContext(DialogContext);
   const [value, setValue] = useState<string>("");
+
+  const [, setScene] = useSubscription(subscriptionScene);
+  const [guild, setGuild] = useSubscription(subscriptionGuild);
+  if (guild) {
+    setScene(SceneType.HOME);
+    return null;
+  }
   
   return (
     <div {...component_props} className={classes}>
@@ -24,7 +32,8 @@ export const CreateGuildDialog = (props: CreateGuildDialogProps) => {
   );
   
   async function onClick() {
-    context.close(await Guild.register(value));
+    setGuild(await Guild.register(value))
+    setScene(SceneType.HOME);
   }
   
   function onInputChange(event: InputFieldChangeEvent) {
@@ -32,6 +41,6 @@ export const CreateGuildDialog = (props: CreateGuildDialogProps) => {
   }
 };
 
-interface CreateGuildDialogProps extends HTMLComponentProps {
-
+export interface HomeSceneProps extends HTMLComponentProps {
+  children?: never;
 }

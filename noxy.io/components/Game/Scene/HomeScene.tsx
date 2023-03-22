@@ -1,55 +1,31 @@
-import {DialogEvent, useDialog} from "@noxy/react-dialog";
+import {Button} from "@noxy/react-button";
 import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
-import React, {useEffect} from "react";
-import {Guild} from "../../../entity/Guild";
-import {subscriptionSocket, subscriptionUser} from "../../../Globals";
-import {CreateGuildDialog} from "../Dialog/CreateGuildDialog";
+import React from "react";
+import {SceneType} from "../../../enums/SceneType";
+import {subscriptionScene} from "../../../Globals";
+import {ManagementScreen} from "../Screen/ManagementScreen";
 import Style from "./HomeScene.module.scss";
 
 export const HomeScene = (props: HomeSceneProps) => {
   const {className, children, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
   
-  const [socket] = useSubscription(subscriptionSocket);
-  const [user] = useSubscription(subscriptionUser);
-  const [, createDialog] = useDialog();
-  
-  useEffect(
-    () => {
-      if (!socket) return;
-    },
-    [socket]
-  );
-  
-  useEffect(() => {
-    if (!user) return;
-    
-    Guild.self()
-    .then((guild) => {
-      console.log(guild);
-      if (guild === null) {
-        createDialog({
-          dismissible: false,
-          closeable: false,
-          onClose: (a: DialogEvent<Guild>) => {
-            if (!a.value) return;
-            console.log(a.value)
-          },
-          children: (
-            <CreateGuildDialog/>
-          )
-        });
-      }
-    });
-    
-  }, [user]);
+  const [, setScene] = useSubscription(subscriptionScene);
   
   return (
     <div {...component_props} className={classes}>
-    
+      <div className={Style.Header}></div>
+      <ManagementScreen>
+        <div>
+          <Button onSubmit={setScene} value={SceneType.RECRUITMENT}>Recruitment</Button>
+          <Button onSubmit={setScene} value={SceneType.CRAFTING}>Crafting</Button>
+          <Button onSubmit={setScene} value={SceneType.SHOP}>Shop</Button>
+        </div>
+      </ManagementScreen>
     </div>
   );
+  
 };
 
 export interface HomeSceneProps extends HTMLComponentProps {

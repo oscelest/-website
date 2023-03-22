@@ -3,7 +3,7 @@ using api.noxy.io.Models.Game.Trigger;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace api.noxy.io.Models.Game.Effect
+namespace api.noxy.io.Models.Game.Base
 {
     public class EffectEntity : SimpleEntity
     {

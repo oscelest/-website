@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace api.noxy.io.Models
 {
@@ -15,7 +14,6 @@ namespace api.noxy.io.Models
 
         public static void AddTableToBuilder(EntityTypeBuilder<SimpleEntity> builder)
         {
-            builder.ToTable(nameof(SimpleEntity));
             builder.HasKey(x => x.ID);
             builder.Property(x => x.TimeCreated).IsRequired();
             builder.Property(x => x.TimeUpdated);

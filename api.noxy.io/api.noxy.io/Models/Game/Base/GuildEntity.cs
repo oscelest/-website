@@ -1,9 +1,8 @@
-﻿using api.noxy.io.Models.Game.Unit;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel;
 
-namespace api.noxy.io.Models.Game
+namespace api.noxy.io.Models.Game.Base
 {
     public class GuildEntity : SimpleEntity
     {
@@ -11,6 +10,8 @@ namespace api.noxy.io.Models.Game
         public UserEntity User { get; set; } = new();
         public int Currency { get; set; } = 100;
         public List<UnitEntity> UnitList { get; set; } = new();
+        public List<FeatEntity> FeatList { get; set; } = new();
+        public DateTime TimeRecruitment { get; set; } = DateTime.MinValue;
 
         new public DTO ToDTO() => new(this);
 
@@ -21,6 +22,7 @@ namespace api.noxy.io.Models.Game
             builder.HasIndex(x => x.Name).IsUnique();
             builder.HasOne(x => x.User);
             builder.HasMany(x => x.UnitList).WithOne();
+            builder.HasMany(x => x.FeatList).WithMany().UsingEntity(x => x.ToTable($"_{nameof(GuildEntity)}-{nameof(FeatEntity)}"));
         }
 
         [DisplayName("GuildEntityDTO")]

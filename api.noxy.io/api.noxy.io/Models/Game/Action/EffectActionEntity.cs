@@ -1,4 +1,4 @@
-﻿using api.noxy.io.Models.Game.Effect;
+﻿using api.noxy.io.Models.Game.Base;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace api.noxy.io.Models.Game.Action

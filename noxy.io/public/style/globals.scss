@@ -15,11 +15,13 @@ html {
     overflow:  auto;
 
     #__next {
-      display:     flex;
-      flex:        1 1 auto;
-      flex-flow:   column;
-      font-family: Kanit, sans-serif;
-      overflow:    auto;
+      display:         flex;
+      flex:            1 1 auto;
+      flex-flow:       column;
+      align-items:     center;
+      justify-content: center;
+      font-family:     Kanit, sans-serif;
+      overflow:        auto;
     }
   }
 }

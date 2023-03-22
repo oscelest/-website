@@ -1,4 +1,4 @@
-﻿using api.noxy.io.Models.Game.Operation;
+﻿using api.noxy.io.Models.Game.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,41 +1,28 @@
-import {HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
+import {HubConnectionBuilder} from "@microsoft/signalr";
 import {useDialog} from "@noxy/react-dialog";
-import {useSubscription} from "@noxy/react-subscription-hook";
+import {trackSubscription, useSubscription} from "@noxy/react-subscription-hook";
 import {AppProps} from "next/app";
-import React, {useEffect, useState} from "react";
-import {Content} from "../components/Layout/Content";
-import {Header} from "../components/Layout/Header";
+import React from "react";
 import {subscriptionSocket, subscriptionUser} from "../Globals";
 import "../public/style/font.scss";
 import "../public/style/globals.scss";
 
 function Application({Component, pageProps}: AppProps) {
-  const [hub, setHub] = useState<HubConnection>();
-  
-  const [user] = useSubscription(subscriptionUser);
-  const [, setSocket] = useSubscription(subscriptionSocket);
   const [dialog] = useDialog();
+  const [socket, setSocket] = useSubscription(subscriptionSocket);
   
-  useEffect(() => setHub(user ? new HubConnectionBuilder().withUrl("http://localhost:5161/ws/game", {accessTokenFactory: () => user.token}).build() : undefined), [user]);
-  useEffect(
-    () => {
-      if (!hub) return;
-      
-      hub.start()
-      .then(async () => setSocket(hub))
-      .catch((error) => console.log(error));
-    },
-    [hub]
-  );
-  
-  console.log(dialog)
+  trackSubscription(subscriptionUser, async user => {
+    if (!user) {
+      return socket?.stop();
+    }
+    const hub = new HubConnectionBuilder().withUrl("http://localhost:5161/ws/game", {accessTokenFactory: () => user.token}).build();
+    await hub.start();
+    setSocket(hub);
+  });
   
   return (
     <>
-      <Header/>
-      <Content>
-        <Component {...pageProps}></Component>
-      </Content>
+      <Component {...pageProps}></Component>
       {dialog}
     </>
   );

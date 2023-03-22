@@ -1,9 +1,8 @@
 ﻿using api.noxy.io.Models.Game.Modifier;
-using api.noxy.io.Models.Game.Operation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace api.noxy.io.Models.Game.Skill
+namespace api.noxy.io.Models.Game.Base
 {
     public class SkillEntity : SimpleEntity
     {

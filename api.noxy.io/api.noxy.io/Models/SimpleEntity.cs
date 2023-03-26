@@ -1,24 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace api.noxy.io.Models
 {
+    [Index(nameof(TimeCreated), AllDescending = true)]
     public abstract class SimpleEntity
     {
+        [Key()]
         public Guid ID { get; set; }
 
+        [Required]
         public DateTime TimeCreated { get; set; }
 
         public DateTime? TimeUpdated { get; set; }
 
         public DTO ToDTO() => new(this);
-
-        public static void AddTableToBuilder(EntityTypeBuilder<SimpleEntity> builder)
-        {
-            builder.HasKey(x => x.ID);
-            builder.Property(x => x.TimeCreated).IsRequired();
-            builder.Property(x => x.TimeUpdated);
-            builder.HasIndex(x => x.TimeCreated).IsDescending();
-        }
 
         public class DTO
         {

@@ -1,18 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace api.noxy.io.Models
 {
+    [Table("User")]
+    [Index(nameof(Email), IsUnique = true)]
     public class UserEntity : SimpleEntity
     {
-        private static readonly int keysize = 64;
-        private static readonly int iterations = 100000;
-        private static readonly HashAlgorithmName algorithm = HashAlgorithmName.SHA512;
-
+        [Required]
         public string Email { get; set; } = string.Empty;
+        
+        [Required]
         public byte[] Salt { get; set; } = Array.Empty<byte>();
+        
+        [Required]
         public byte[] Hash { get; set; } = Array.Empty<byte>();
 
         public static byte[] GenerateSalt()
@@ -22,21 +26,11 @@ namespace api.noxy.io.Models
 
         public static byte[] GenerateHash(string password, byte[] salt)
         {
-            return Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), salt, iterations, algorithm, keysize);
+            return Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), salt, 100000, HashAlgorithmName.SHA512, 64);
         }
 
         new public DTO ToDTO() => new(this);
-
         public DTO ToDTO(string token) => new(this, token);
-
-        public static void AddTableToBuilder(EntityTypeBuilder<UserEntity> builder)
-        {
-            builder.ToTable(nameof(UserEntity));
-            builder.Property(x => x.Email).IsRequired();
-            builder.Property(x => x.Salt).IsRequired();
-            builder.Property(x => x.Hash).IsRequired();
-            builder.HasIndex(x => x.Email).IsUnique();
-        }
 
         new public class DTO : SimpleEntity.DTO
         {

@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<APIContext>(options => options.UseMySQL(builder.Configuration["ConnectionStrings:MySQL"]!));
 builder.Services.AddTransient<IJWT, JWT>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IGuildRepository, GuildRepository>();
+builder.Services.AddTransient<IGameRepository, GameRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.SaveToken = true;
@@ -75,7 +75,6 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     APIContext dbContext = scope.ServiceProvider.GetRequiredService<APIContext>();
     //dbContext.Database.EnsureDeleted();
-    dbContext.Database.Migrate();
     //dbContext.Database.EnsureCreated();
 }
 
@@ -83,7 +82,10 @@ using (IServiceScope scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
+    });
 }
 
 app.UseCors(cors);

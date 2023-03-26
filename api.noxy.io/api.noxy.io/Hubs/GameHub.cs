@@ -9,9 +9,9 @@ namespace api.noxy.io.Hubs
     public class GameHub : Hub
     {
         private readonly IUserRepository _userRepository;
-        private readonly IGuildRepository _guildRepository;
+        private readonly IGameRepository _guildRepository;
 
-        public GameHub(IUserRepository userRepository, IGuildRepository guildRepository)
+        public GameHub(IUserRepository userRepository, IGameRepository guildRepository)
         {
             _userRepository = userRepository;
             _guildRepository = guildRepository;

@@ -11,21 +11,21 @@ namespace api.noxy.io.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class GuildController : ControllerBase
+    public class MissionController : ControllerBase
     {
         private readonly IJWT _jwt;
         private readonly IUserRepository _user;
-        private readonly IGameRepository _guild;
+        private readonly IGameRepository _game;
 
-        public GuildController(IJWT jwt, IUserRepository user, IGameRepository guild)
+        public MissionController(IJWT jwt, IUserRepository user, IGameRepository game)
         {
             _jwt = jwt;
             _user = user;
-            _guild = guild;
+            _game = game;
         }
 
-        [HttpGet("Self")]
-        public async Task<ActionResult<GuildEntity.DTO?>> Self()
+        [HttpPost("Start")]
+        public async Task<ActionResult<GuildEntity.DTO?>> Start()
         {
             JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
             if (token == null) return Unauthorized();
@@ -33,7 +33,7 @@ namespace api.noxy.io.Controllers
             UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
             if (user == null) return Unauthorized();
 
-            GuildEntity? guild = await _guild.FindByUser(user);
+            GuildEntity? guild = await _game.FindByUser(user);
             return Ok(guild?.ToDTO());
         }
 
@@ -46,16 +46,16 @@ namespace api.noxy.io.Controllers
             UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
             if (user == null) return Unauthorized();
 
-            GuildEntity? guild = await _guild.FindByUser(user);
+            GuildEntity? guild = await _game.FindByUser(user);
             if (guild != null) return Conflict();
 
-            guild = await _guild.Create(input.Name, user);
+            guild = await _game.Create(input.Name, user);
 
             return Ok(guild.ToDTO());
         }
 
-        [HttpPost("RefreshUnitList")]
-        public async Task<ActionResult<GuildEntity.DTO>> RefreshUnitList()
+        [HttpPost("RefreshRecruitment")]
+        public async Task<ActionResult<GuildEntity.DTO>> RefreshRecruitment()
         {
             JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
             if (token == null) return Unauthorized();
@@ -63,19 +63,7 @@ namespace api.noxy.io.Controllers
             UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
             if (user == null) return Unauthorized();
 
-            return Ok((await _guild.RefreshUnitList(user)).ToDTO());
-        }
-
-        [HttpPost("RefreshMissionList")]
-        public async Task<ActionResult<GuildEntity.DTO>> RefreshMissionList()
-        {
-            JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
-            if (token == null) return Unauthorized();
-
-            UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
-            if (user == null) return Unauthorized();
-
-            return Ok((await _guild.RefreshMissionList(user)).ToDTO());
+            return Ok((await _game.RefreshUnitList(user)).ToDTO());
         }
 
 

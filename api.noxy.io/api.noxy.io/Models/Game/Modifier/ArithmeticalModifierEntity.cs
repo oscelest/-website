@@ -5,11 +5,11 @@ namespace api.noxy.io.Models.Game.Modifier
 {
     public class ArithmeticalModifierEntity : ModifierEntity
     {
-        public ArithmeticalType Type { get; set; }
+        public ArithmeticalTag Type { get; set; }
 
         public ArithmeticalModifierEntity() : this(ModifierCategoryType.Damage) { }
-        public ArithmeticalModifierEntity(ModifierCategoryType category) : this(category, ArithmeticalType.Additive) { }
-        public ArithmeticalModifierEntity(ModifierCategoryType category, ArithmeticalType type) : base(ModifierEntityType.Arithmetical, category)
+        public ArithmeticalModifierEntity(ModifierCategoryType category) : this(category, ArithmeticalTag.Additive) { }
+        public ArithmeticalModifierEntity(ModifierCategoryType category, ArithmeticalTag type) : base(ModifierEntityType.Arithmetical, category)
         {
             Type = type;
         }
@@ -23,7 +23,7 @@ namespace api.noxy.io.Models.Game.Modifier
 
         new public class DTO : ModifierEntity.DTO
         {
-            public ArithmeticalType Type { get; set; }
+            public ArithmeticalTag Type { get; set; }
        
             public DTO(ArithmeticalModifierEntity entity) : base(entity)
             {
@@ -32,7 +32,7 @@ namespace api.noxy.io.Models.Game.Modifier
         }
     }
 
-    public enum ArithmeticalType
+    public enum ArithmeticalTag
     {
         Additive,
         Multiplicative,

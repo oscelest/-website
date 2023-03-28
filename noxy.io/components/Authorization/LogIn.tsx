@@ -5,7 +5,7 @@ import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
 import React, {useState} from "react";
 import {ResponseError} from "superagent";
 import {User} from "../../entity/User";
-import {BadRequestResponse, subscriptionUser} from "../../Globals";
+import {BadRequestResponse, subscriptionAuth} from "../../Globals";
 import Style from "./LogIn.module.scss";
 
 export const LogIn = (props: LogInProps) => {
@@ -17,12 +17,12 @@ export const LogIn = (props: LogInProps) => {
   const [email_error, setEmailError] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [password_error, setPasswordError] = useState<string>("");
-  const [, setUser] = useSubscription(subscriptionUser);
+  const [, setAuth] = useSubscription(subscriptionAuth);
   
   return (
     <div {...component_props} className={classes}>
       {error && <span className={Style.Error}>{error}</span>}
-      <form>
+      <form className={Style.Form}>
         <InputField type={InputFieldType.EMAIL} label={"Email"} value={email} error={email_error} autoComplete={"email"} onChange={onEmailChange}/>
         <InputField type={InputFieldType.PASSWORD} label={"Password"} value={password} error={password_error} autoComplete={"password"} onChange={onPasswordChange}/>
       </form>
@@ -44,8 +44,8 @@ export const LogIn = (props: LogInProps) => {
     setPasswordError("");
     
     try {
-      const user = await User.login(email, password);
-      setUser(user);
+      const [user, jwt] = await User.login(email, password);
+      setAuth({jwt, user});
     }
     catch (error) {
       if (error instanceof Error) {

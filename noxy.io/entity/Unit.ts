@@ -1,52 +1,58 @@
-import Superagent from "superagent";
+import {RoleLevel, RoleLevelJSON} from "./RoleLevel";
 import {SimpleEntity, SimpleEntityJSON} from "./SimpleEntity";
 
-export class User extends SimpleEntity {
+export class Unit extends SimpleEntity {
   
-  public email: string;
-  public token: string;
+  public name: string;
+  public experience: number;
+  public recruited: boolean;
+  public role_level_list: RoleLevel[];
   
-  constructor(init?: UserJSON) {
+  constructor(init?: UnitJSON) {
     super(init);
-    this.email = init?.email ?? "";
-    this.token = init?.token ?? "";
+    this.name = init?.name ?? "";
+    this.experience = init?.experience ?? 0;
+    this.recruited = init?.recruited ?? false;
+    this.role_level_list = init?.roleLevelList.map(x => new RoleLevel(x)) ?? [];
   }
   
-  public override toJSON(): UserJSON {
+  public override toJSON(): UnitJSON {
     return {
       ...super.toJSON(),
-      email: this.email,
-      token: this.token
+      name: this.name,
+      experience: this.experience,
+      recruited: this.recruited,
+      roleLevelList: this.role_level_list.map(x => x.toJSON())
     };
   }
   
-  public static async login(email: string, password: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/LogIn`).send({email, password});
-    return this.handleResponse(response.body);
+  public getLevel() {
+    return Math.floor(this.experience / 100) + 1;
   }
   
-  public static async refresh(auth: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/Refresh`).auth(auth, {type: "bearer"});
-    return this.handleResponse(response.body);
+  public getCost() {
+    return 100;
   }
   
-  public static async signup(email: string, password: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/SignUp`).send({email, password});
-    return this.handleResponse(response.body);
+  public getRoleLevelListSet() {
+    return this.role_level_list.reduce(
+      (result, value) => {
+        const index = value.role.role_type.getIndex();
+      
+        if (!result[index]) result[index] = [];
+        result[index].push(value);
+      
+        return result;
+      },
+      [] as RoleLevel[][]
+    );
   }
   
-  private static handleResponse(response: {user: UserJSON, token: string}): [User, string] {
-    const {user, token} = response;
-    localStorage.setItem("auth", token);
-    return [new User(user), token];
-  }
-  
-  public static logout() {
-    localStorage.removeItem("auth");
-  }
 }
 
-export interface UserJSON extends SimpleEntityJSON {
-  email: string;
-  token?: string;
+export interface UnitJSON extends SimpleEntityJSON {
+  name: string;
+  experience: number;
+  recruited: boolean;
+  roleLevelList: RoleLevelJSON[];
 }

@@ -1,52 +1,58 @@
-import Superagent from "superagent";
+import {RoleType, RoleTypeJSON} from "./RoleType";
 import {SimpleEntity, SimpleEntityJSON} from "./SimpleEntity";
 
-export class RoleLevel extends SimpleEntity {
+export class Role extends SimpleEntity {
   
-  public experience: number;
-  public role: Role;
+  public name: string;
+  public role_type: RoleType;
   
-  constructor(init?: UserJSON) {
+  constructor(init?: RoleJSON) {
     super(init);
-    this.email = init?.email ?? "";
-    this.token = init?.token ?? "";
+    this.name = init?.name ?? "";
+    this.role_type = new RoleType(init?.roleType);
   }
   
-  public override toJSON(): UserJSON {
+  public override toJSON(): RoleJSON {
     return {
       ...super.toJSON(),
-      email: this.email,
-      token: this.token
+      name: this.name,
+      roleType: this.role_type.toJSON()
     };
   }
   
-  public static async login(email: string, password: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/LogIn`).send({email, password});
-    return this.handleResponse(response.body);
+  public getIcon() {
+    switch (this.name) {
+      case "Dark Knight":
+        return "dark_knight.png";
+      case "Knight":
+        return "knight.png";
+      case "Lancer":
+        return "lancer.png";
+      case "Marksman":
+        return "marksman.png";
+      case "Paladin":
+        return "paladin.png";
+      case "Miner":
+      case "Furrier":
+      case "Blacksmith":
+      case "Tailor":
+      case "Alchemist":
+      case "Woodcutter":
+        return "profession.png";
+      case "Ranger":
+        return "ranger.png";
+      case "Scoundrel":
+        return "scoundrel.png";
+      case "Spellblade":
+        return "spellblade.png";
+      default:
+        return "";
+    }
   }
   
-  public static async refresh(auth: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/Refresh`).auth(auth, {type: "bearer"});
-    return this.handleResponse(response.body);
-  }
-  
-  public static async signup(email: string, password: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/SignUp`).send({email, password});
-    return this.handleResponse(response.body);
-  }
-  
-  private static handleResponse(response: {user: UserJSON, token: string}): [User, string] {
-    const {user, token} = response;
-    localStorage.setItem("auth", token);
-    return [new User(user), token];
-  }
-  
-  public static logout() {
-    localStorage.removeItem("auth");
-  }
 }
 
-export interface UserJSON extends SimpleEntityJSON {
-  email: string;
-  token?: string;
+export interface RoleJSON extends SimpleEntityJSON {
+  name: string;
+  roleType: RoleTypeJSON;
 }

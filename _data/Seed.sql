@@ -40,7 +40,7 @@ INSERT INTO `Role` (`ID`, `Name`, `RoleTypeID`, `TimeCreated`) VALUES ('7d39e218
 INSERT INTO `Role` (`ID`, `Name`, `RoleTypeID`, `TimeCreated`) VALUES ('950dc1c9-15c8-41b1-8d29-53366a5bb9f3', 'Scoundrel', '6f4c1af6-5fa4-4b93-a0b7-38908a58eea6', UTC_TIMESTAMP());
 INSERT INTO `Role` (`ID`, `Name`, `RoleTypeID`, `TimeCreated`) VALUES ('8835f33d-d949-4d26-8fff-fa4601797c67', 'Dark Knight', '6f4c1af6-5fa4-4b93-a0b7-38908a58eea6', UTC_TIMESTAMP());
 INSERT INTO `Role` (`ID`, `Name`, `RoleTypeID`, `TimeCreated`) VALUES ('e6364aa8-088f-4bc2-bb0f-2a7a8c929306', 'Knight', '6f4c1af6-5fa4-4b93-a0b7-38908a58eea6', UTC_TIMESTAMP());
-INSERT INTO `Role` (`ID`, `Name`, `RoleTypeID`, `TimeCreated`) VALUES ('e878bde4-fc00-4af5-9e3b-580f3fec32d4', 'Samurai', '6f4c1af6-5fa4-4b93-a0b7-38908a58eea6', UTC_TIMESTAMP());
+INSERT INTO `Role` (`ID`, `Name`, `RoleTypeID`, `TimeCreated`) VALUES ('e878bde4-fc00-4af5-9e3b-580f3fec32d4', 'Lancer', '6f4c1af6-5fa4-4b93-a0b7-38908a58eea6', UTC_TIMESTAMP());
 INSERT INTO `Role` (`ID`, `Name`, `RoleTypeID`, `TimeCreated`) VALUES ('7ba42cc4-0861-47ba-90ce-ea7024486a2c', 'Ranger', '6f4c1af6-5fa4-4b93-a0b7-38908a58eea6', UTC_TIMESTAMP());
 INSERT INTO `Role` (`ID`, `Name`, `RoleTypeID`, `TimeCreated`) VALUES ('b41294bf-0e32-41ea-b5ea-86c4a2b5a39f', 'Marksman', '6f4c1af6-5fa4-4b93-a0b7-38908a58eea6', UTC_TIMESTAMP());
 
@@ -58,20 +58,20 @@ INSERT INTO `Feat` (`ID`, `Name`, `TimeCreated`) VALUES ('b5bfb9f9-f48f-4081-bb6
 INSERT INTO `Feat` (`ID`, `Name`, `TimeCreated`) VALUES ('11ead1e6-fbff-4d65-a45f-86214195ea07', '1000 quests completed', UTC_TIMESTAMP());
 
 -- Insert GuildUnitModifier
-INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `Computation`, `FeatID`, `Tag`, `TimeCreated`) 
+INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `TimeCreated`) 
 VALUES ('937b150b-75f5-4dc2-98ca-d6e899e61cb7', -5000, 'Additive', 'bc6208be-93c8-4a59-abf6-39aaabc10d11', 'RefreshTime', UTC_TIMESTAMP());
-INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `Computation`, `FeatID`, `Tag`, `TimeCreated`) 
+INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `TimeCreated`) 
 VALUES ('65f93928-2362-4a9b-ae59-dc90f1a5806f', -5000, 'Additive', 'cf21a7af-c543-49fa-bb90-f72f7702a93f', 'RefreshTime', UTC_TIMESTAMP());
-INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `Computation`, `FeatID`, `Tag`, `TimeCreated`) 
+INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `TimeCreated`) 
 VALUES ('7945d7eb-51ae-46df-9c72-f0995b0aa632', -5000, 'Additive', 'b5bfb9f9-f48f-4081-bb66-e4648fd231c8', 'RefreshTime', UTC_TIMESTAMP());
-INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `Computation`, `FeatID`, `Tag`, `TimeCreated`) 
+INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `TimeCreated`) 
 VALUES ('55ae9476-a181-471d-963e-06841ddaf83f', -5000, 'Additive', '11ead1e6-fbff-4d65-a45f-86214195ea07', 'RefreshTime', UTC_TIMESTAMP());
 
 -- Insert GuildRoleModifier
-INSERT INTO `GuildRoleModifier` (`ID`, `Value`, `Computation`, `FeatID`, `Tag`, `RoleTypeID`, `TimeCreated`) 
+INSERT INTO `GuildRoleModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `RoleTypeID`, `TimeCreated`) 
 VALUES ('b88cd5cf-40f6-4bcc-a406-8a850793c868', 1, 'Additive', 'bc6208be-93c8-4a59-abf6-39aaabc10d11', 'Count', '6f4c1af6-5fa4-4b93-a0b7-38908a58eea6', UTC_TIMESTAMP());
 
-INSERT INTO `GuildRoleModifier` (`ID`, `Value`, `Computation`, `FeatID`, `Tag`, `RoleTypeID`, `TimeCreated`) 
+INSERT INTO `GuildRoleModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `RoleTypeID`, `TimeCreated`) 
 VALUES ('7e1a1b9f-a69e-4238-9e46-b6605302eb5a', 1, 'Additive', 'bc6208be-93c8-4a59-abf6-39aaabc10d11', 'Count', '7a2b3b75-05c9-446c-a168-230eb4672b00', UTC_TIMESTAMP());
 
 -- Insert Guild-Feat

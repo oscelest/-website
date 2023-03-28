@@ -1,7 +1,6 @@
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
 import React from "react";
-import {Inventory} from "../Home/Inventory";
-import {Roster} from "../Home/Roster";
+import {ManagementScreen} from "../Screen/ManagementScreen";
 import Style from "./HomeScene.module.scss";
 
 export const ShopScene = (props: ShopSceneProps) => {
@@ -10,11 +9,10 @@ export const ShopScene = (props: ShopSceneProps) => {
   
   return (
     <div {...component_props} className={classes}>
-      <Roster/>
-      <div className={Style.Home}>
-      
-      </div>
-      <Inventory/>
+      <ManagementScreen>
+        <span>Shop page</span>
+
+      </ManagementScreen>
     </div>
   );
 };

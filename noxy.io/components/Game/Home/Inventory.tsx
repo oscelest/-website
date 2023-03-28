@@ -8,7 +8,7 @@ export const Inventory = (props: InventoryProps) => {
   
   return (
     <div {...component_props} className={classes}>
-    
+      <div>Inventory</div>
     </div>
   );
 };

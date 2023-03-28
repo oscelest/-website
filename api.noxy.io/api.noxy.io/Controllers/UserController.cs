@@ -26,12 +26,12 @@ namespace api.noxy.io.Controllers
         }
 
         [HttpPost("SignUp")]
-        public async Task<ActionResult<UserEntity.DTO>> SignUp(UserAuthRequest input)
+        public async Task<ActionResult<UserAuthResponse>> SignUp(UserAuthRequest input)
         {
             try
             {
                 UserEntity user = await _user.Create(input.Email, input.Password);
-                return Ok(user.ToDTO(_jwt.Generate(user)));
+                return Ok(new UserAuthResponse(user.ToDTO(), _jwt.Generate(user)));
             }
             catch (DbUpdateException ex)
             {
@@ -49,14 +49,14 @@ namespace api.noxy.io.Controllers
         }
 
         [HttpPost("LogIn")]
-        public async Task<ActionResult<UserEntity.DTO>> LogIn(UserAuthRequest input)
+        public async Task<ActionResult<UserAuthResponse>> LogIn(UserAuthRequest input)
         {
             try
             {
                 UserEntity? user = await _user.FindByEmail(input.Email);
                 if (user == null) return Unauthorized();
                 byte[] hash = UserEntity.GenerateHash(input.Password, user.Salt);
-                return hash.SequenceEqual(user.Hash) ? Ok(user.ToDTO(_jwt.Generate(user))) : Unauthorized();
+                return hash.SequenceEqual(user.Hash) ? Ok(new UserAuthResponse(user.ToDTO(), _jwt.Generate(user))) : Unauthorized();
             }
             catch
             {
@@ -66,7 +66,7 @@ namespace api.noxy.io.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Refresh")]
-        public async Task<ActionResult<UserEntity.DTO>> Refresh()
+        public async Task<ActionResult<UserAuthResponse>> Refresh()
         {
             try
             {
@@ -76,7 +76,7 @@ namespace api.noxy.io.Controllers
 
                 UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
                 if (user == null) return Unauthorized();
-                return Ok(user.ToDTO(_jwt.Generate(user)));
+                return Ok(new UserAuthResponse(user.ToDTO(), _jwt.Generate(user)));
             }
             catch
             {
@@ -85,16 +85,31 @@ namespace api.noxy.io.Controllers
         }
     }
 
+
     public class UserAuthRequest
     {
         [Required(AllowEmptyStrings = false)]
         [StringLength(254, MinimumLength = 6)]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
-        public string Email { get; set; } = string.Empty;
+        public required string Email { get; set; }
 
         [Required]
         [MinLength(12)]
         [MaxLength(256)]
-        public string Password { get; set; } = string.Empty;
+        public required string Password { get; set; }
+    }
+
+
+    public class UserAuthResponse
+    {
+        public UserEntity.DTO User { get; set; }
+
+        public string Token { get; set; }
+
+        public UserAuthResponse(UserEntity.DTO user, string token)
+        {
+            User = user;
+            Token = token;
+        }
     }
 }

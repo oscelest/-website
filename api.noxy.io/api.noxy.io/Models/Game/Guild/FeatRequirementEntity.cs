@@ -2,7 +2,6 @@
 
 namespace api.noxy.io.Models.Game.Guild
 {
-    [Table("FeatRequirement")]
     public abstract class FeatRequirementEntity : SimpleEntity
     {
         // Inverse

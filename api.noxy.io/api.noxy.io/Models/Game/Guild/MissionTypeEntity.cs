@@ -4,16 +4,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.Game.Guild
 {
-    [Table("RoleType")]
+    [Table("MissionType")]
     [Index(nameof(Name), IsUnique = true)]
-    public class RoleTypeEntity : SimpleEntity
+    public class MissionTypeEntity : SimpleEntity
     {
         [Required]
         [MinLength(3), MaxLength(64)]
         public string Name { get; set; } = string.Empty;
 
         // Inverse
-        public List<RoleEntity> RoleList { get; set; } = new();
+        public List<MissionEntity> MissionList { get; set; } = new();
 
         #region -- DTO --
 
@@ -21,10 +21,9 @@ namespace api.noxy.io.Models.Game.Guild
 
         new public class DTO : SimpleEntity.DTO
         {
-            [Required]
             public string Name { get; set; }
 
-            public DTO(RoleTypeEntity entity) : base(entity)
+            public DTO(MissionTypeEntity entity) : base(entity)
             {
                 Name = entity.Name;
             }

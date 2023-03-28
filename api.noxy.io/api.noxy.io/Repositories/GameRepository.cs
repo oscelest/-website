@@ -11,6 +11,7 @@ namespace api.noxy.io.Interface
     {
         public Task<GuildEntity?> FindByUser(UserEntity userEntity);
         public Task<GuildEntity> Create(string name, UserEntity user);
+        public Task<GuildEntity> RecruitUnit(UserEntity userEntity, Guid userID);
         public Task<GuildEntity> RefreshUnitList(UserEntity user);
         public Task<GuildEntity> RefreshMissionList(UserEntity user);
     }
@@ -33,18 +34,47 @@ namespace api.noxy.io.Interface
 
         public async Task<GuildEntity> Create(string name, UserEntity user)
         {
-            GuildEntity entity = new() { 
-                Name = name, 
-                User = user, 
+            var feat_list = await _db.Feat.Where(x => x.FeatRequirementList.Count() == 0).ToListAsync();
+
+            GuildEntity entity = new()
+            {
+                Name = name,
+                User = user,
+                FeatList = feat_list,
             };
+
             await _db.Guild.AddAsync(entity);
             await _db.SaveChangesAsync();
+
             return entity;
+        }
+
+        public async Task<GuildEntity> RecruitUnit(UserEntity user, Guid unitID)
+        {
+            GuildEntity guild = await _db.Guild
+                .Include(x => x.UnitList!)
+                .ThenInclude(x => x.RoleLevelList)
+                .FirstOrDefaultAsync(e => e.User.ID == user.ID)
+                ?? throw new Exception();
+
+            UnitEntity? unit = guild.UnitList.Find(x => x.ID == unitID);
+            if (unit == null)
+            {
+                throw new Exception();
+            }
+            if (unit.Recruited == true)
+            {
+                throw new Exception();
+            }
+
+            unit.Recruited = true;
+            await _db.SaveChangesAsync();
+
+            return guild;
         }
 
         public async Task<GuildEntity> RefreshUnitList(UserEntity user)
         {
-
             GuildEntity guild = await _db.Guild
                 .Include(x => x.UnitList!)
                 .Include(x => x.FeatList!).ThenInclude(x => x.GuildModifierList)

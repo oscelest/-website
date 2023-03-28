@@ -19,12 +19,17 @@ namespace api.noxy.io.Context
         public DbSet<GuildUnitModifierEntity> GuildUnitModifier => Set<GuildUnitModifierEntity>();
         public DbSet<GuildMissionModifierEntity> GuildMissionModifier => Set<GuildMissionModifierEntity>();
 
+        public DbSet<StatisticEntity> Statistic => Set<StatisticEntity>();
+
         public DbSet<RoleEntity> Role => Set<RoleEntity>();
         public DbSet<RoleTypeEntity> RoleType => Set<RoleTypeEntity>();
         public DbSet<RoleLevelEntity> RoleLevel => Set<RoleLevelEntity>();
             
         public DbSet<UnitEntity> Unit => Set<UnitEntity>();
+
         public DbSet<MissionEntity> Mission => Set<MissionEntity>();
+        public DbSet<MissionTypeEntity> MissionType => Set<MissionTypeEntity>();
+        public DbSet<MissionStatisticEntity> MissionStatistic => Set<MissionStatisticEntity>();
 
 
         //public DbSet<SkillEntity> Skill { get; set; }
@@ -59,10 +64,11 @@ namespace api.noxy.io.Context
 
             builder.Entity<GuildModifierEntity>().UseTpcMappingStrategy();
             builder.Entity<FeatRequirementEntity>().UseTpcMappingStrategy();
-                //.ToTable("GuildModifier")
-                //.HasDiscriminator(x => x.EntityType)
-                //.HasValue<GuildRoleModifierEntity>(GuildModifierEntityType.Role)
-                //.HasValue<GuildUnitModifierEntity>(GuildModifierEntityType.Unit);
+            builder.Entity<StatisticEntity>().UseTpcMappingStrategy();
+            //.ToTable("GuildModifier")
+            //.HasDiscriminator(x => x.EntityType)
+            //.HasValue<GuildRoleModifierEntity>(GuildModifierEntityType.Role)
+            //.HasValue<GuildUnitModifierEntity>(GuildModifierEntityType.Unit);
 
             //builder.Entity<SkillEntity>(SkillEntity.AddTableToBuilder);
             //builder.Entity<EffectEntity>(EffectEntity.AddTableToBuilder);

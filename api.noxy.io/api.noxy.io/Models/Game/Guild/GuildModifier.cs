@@ -15,7 +15,7 @@ namespace api.noxy.io.Models.Game.Guild
         [Column(TypeName = "varchar(32)")]
         public ArithmeticalTagType ArithmeticalTag { get; set; }
 
-        // Mappings
+        // Inverse
         public FeatEntity Feat { get; set; } = new();
 
         #region -- DTO --
@@ -24,7 +24,6 @@ namespace api.noxy.io.Models.Game.Guild
 
         new public class DTO : SimpleEntity.DTO
         {
-            //public GuildModifierEntityType EntityType { get; set; }
             public float Value { get; set; }
             public ArithmeticalTagType ArithmeticalTag { get; set; }
 

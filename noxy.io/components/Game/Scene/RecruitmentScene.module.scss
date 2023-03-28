@@ -1,4 +1,17 @@
 .Component {
-  display: flex;
-  flex: 1 1 auto;
+  display:      flex;
+  flex:         1 1 auto;
+  overflow:     auto;
+  grid-row-gap: 10px;
+
+  .UnitList {
+    display:         flex;
+    flex:            0 0  auto;
+    flex-flow:       row wrap;
+    align-items:     flex-start;
+    justify-content: flex-start;
+    grid-column-gap: 10px;
+    grid-row-gap:    10px;
+    overflow:        auto;
+  }
 }

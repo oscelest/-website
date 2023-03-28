@@ -1,0 +1,21 @@
+.Component {
+  display:         flex;
+  flex:            1 1 auto;
+  overflow:        auto;
+  grid-column-gap: 20px;
+
+  .Content {
+    display:      flex;
+    flex:         1 1 auto;
+    flex-flow:    column;
+    grid-row-gap: 10px;
+
+    .Navigation {
+      display:         flex;
+      flex:            0 0 auto;
+      height:          50px;
+      align-items:     center;
+      grid-column-gap: 10px;
+    }
+  }
+}

@@ -23,6 +23,7 @@ namespace api.noxy.io.Models.Game.Guild
         public List<RoleLevelEntity> RoleLevelList { get; set; } = new();
 
         // Inverse
+        public GuildEntity Guild { get; set; } = new();
         public List<MissionEntity> MissionList { get; set; } = new();
 
         #region -- DTO --

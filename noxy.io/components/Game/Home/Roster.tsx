@@ -8,10 +8,9 @@ export const Roster = (props: RosterProps) => {
   
   return (
     <div {...component_props} className={classes}>
-    
+      <div>Roster</div>
     </div>
   );
-  
 };
 
 export interface RosterProps extends HTMLComponentProps {

@@ -15,13 +15,13 @@ namespace api.noxy.io.Controllers
     {
         private readonly IJWT _jwt;
         private readonly IUserRepository _user;
-        private readonly IGameRepository _guild;
+        private readonly IGameRepository _game;
 
         public GuildController(IJWT jwt, IUserRepository user, IGameRepository guild)
         {
             _jwt = jwt;
             _user = user;
-            _guild = guild;
+            _game = guild;
         }
 
         [HttpGet("Self")]
@@ -33,7 +33,7 @@ namespace api.noxy.io.Controllers
             UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
             if (user == null) return Unauthorized();
 
-            GuildEntity? guild = await _guild.FindByUser(user);
+            GuildEntity? guild = await _game.FindByUser(user);
             return Ok(guild?.ToDTO());
         }
 
@@ -46,16 +46,16 @@ namespace api.noxy.io.Controllers
             UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
             if (user == null) return Unauthorized();
 
-            GuildEntity? guild = await _guild.FindByUser(user);
+            GuildEntity? guild = await _game.FindByUser(user);
             if (guild != null) return Conflict();
 
-            guild = await _guild.Create(input.Name, user);
+            guild = await _game.Create(input.Name, user);
 
             return Ok(guild.ToDTO());
         }
 
-        [HttpPost("RefreshUnitList")]
-        public async Task<ActionResult<GuildEntity.DTO>> RefreshUnitList()
+        [HttpPost("RecruitUnit")]
+        public async Task<ActionResult<IEnumerable<UnitEntity.DTO>>> RecruitUnit(GuildRecruitRequest request)
         {
             JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
             if (token == null) return Unauthorized();
@@ -63,11 +63,23 @@ namespace api.noxy.io.Controllers
             UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
             if (user == null) return Unauthorized();
 
-            return Ok((await _guild.RefreshUnitList(user)).ToDTO());
+            return Ok((await _game.RecruitUnit(user, request.UnitID)).UnitList.Select(x => x.ToDTO()));
+        }
+
+        [HttpPost("RefreshUnitList")]
+        public async Task<ActionResult<IEnumerable<UnitEntity.DTO>>> RefreshUnitList()
+        {
+            JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
+            if (token == null) return Unauthorized();
+
+            UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
+            if (user == null) return Unauthorized();
+
+            return Ok((await _game.RefreshUnitList(user)).UnitList.Select(x => x.ToDTO()));
         }
 
         [HttpPost("RefreshMissionList")]
-        public async Task<ActionResult<GuildEntity.DTO>> RefreshMissionList()
+        public async Task<ActionResult<IEnumerable<MissionEntity.DTO>>> RefreshMissionList()
         {
             JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
             if (token == null) return Unauthorized();
@@ -75,9 +87,14 @@ namespace api.noxy.io.Controllers
             UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
             if (user == null) return Unauthorized();
 
-            return Ok((await _guild.RefreshMissionList(user)).ToDTO());
+            return Ok((await _game.RefreshMissionList(user)).MissionList.Select(x => x.ToDTO()));
         }
 
+        public class GuildRecruitRequest
+        {
+            [Required(AllowEmptyStrings = false)]
+            public Guid UnitID { get; set; } = Guid.Empty;
+        }
 
         public class GuildRegisterRequest
         {

@@ -1,15 +1,15 @@
 import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps} from "@noxy/react-utils";
 import React from "react";
-import {subscriptionUser} from "../../Globals";
+import {subscriptionAuth} from "../../Globals";
 import Style from "./Authorization.module.scss";
 import {LogIn} from "./LogIn";
 import {SignUp} from "./SignUp";
 
 export const Authorization = (props: AuthorizationProps) => {
   const {className, children, ...component_props} = props;
-  const [user] = useSubscription(subscriptionUser);
-  if (user) return children as JSX.Element;
+  const [auth] = useSubscription(subscriptionAuth);
+  if (auth.user) return children as JSX.Element;
   
   const classes = [Style.Component];
   if (className) classes.push(className);

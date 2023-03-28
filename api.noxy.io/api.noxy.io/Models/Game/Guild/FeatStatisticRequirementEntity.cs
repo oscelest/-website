@@ -3,7 +3,7 @@
 namespace api.noxy.io.Models.Game.Guild
 {
     [Table("FeatStatisticRequirement")]
-    public abstract class FeatStatisticRequirementEntity : SimpleEntity
+    public class FeatStatisticRequirementEntity : FeatRequirementEntity
     {
         public float Value { get; set; }
         public required StatisticEntity Statistic { get; set; }

@@ -2,4 +2,10 @@
   display:      flex;
   flex-flow:    column;
   grid-row-gap: 10px;
+
+  .Form {
+    display:      flex;
+    flex-flow:    column;
+    grid-row-gap: 10px;
+  }
 }

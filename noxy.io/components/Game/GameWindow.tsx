@@ -4,7 +4,7 @@ import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
 import React from "react";
 import {Guild} from "../../entity/Guild";
 import {SceneType} from "../../enums/SceneType";
-import {subscriptionGuild, subscriptionScene, subscriptionUser} from "../../Globals";
+import {subscriptionAuth, subscriptionGuild, subscriptionScene} from "../../Globals";
 import {Authorization} from "../Authorization/Authorization";
 import Style from "./GameWindow.module.scss";
 import {CraftingScene} from "./Scene/CraftingScene";
@@ -18,10 +18,11 @@ export const GameWindow = (props: ScreenProps) => {
   const classes = sanitizeClassName(Style.Component, className);
   
   const [scene, setScene] = useSubscription(subscriptionScene);
+  const [auth] = useSubscription(subscriptionAuth);
   const [, setGuild] = useSubscription(subscriptionGuild);
   
-  trackSubscription(subscriptionUser, async user => {
-    if (!user) return;
+  trackSubscription(subscriptionAuth, async auth => {
+    if (!auth.user) return;
     
     const guild = await Guild.self();
     if (guild === null) {
@@ -35,11 +36,13 @@ export const GameWindow = (props: ScreenProps) => {
   
   return (
     <div {...component_props} className={classes}>
-      <Authorization>
-        <Loader loading={scene === SceneType.NONE}>
-          {renderScene(scene)}
-        </Loader>
-      </Authorization>
+      <Loader loading={auth.refreshing}>
+        <Authorization>
+          <Loader loading={scene === SceneType.NONE}>
+            {renderScene(scene)}
+          </Loader>
+        </Authorization>
+      </Loader>
     </div>
   );
   

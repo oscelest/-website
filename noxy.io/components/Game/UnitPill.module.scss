@@ -1,4 +1,89 @@
 .Component {
-  display: flex;
-  flex: 1 1 auto;
+  display:       flex;
+  flex-flow:     column;
+  flex:          0 0 auto;
+  border:        1px solid black;
+  border-radius: 2px;
+  padding:       5px;
+  width:         378px;
+  grid-row-gap:  10px;
+
+  .Header {
+    display:         flex;
+    flex:            1 1 auto;
+    justify-content: space-between;
+
+    .Title {
+      display:   flex;
+      flex:      0 0 auto;
+      flex-flow: column;
+
+      .Name {
+
+      }
+
+      .Experience {
+
+      }
+    }
+
+    .Recruit {
+      display:      flex;
+      flex:         0 0 auto;
+      flex-flow:    column;
+      grid-row-gap: 5px;
+
+      .RecruitCost {
+        display:         flex;
+        flex:            0 0 auto;
+        align-items:     center;
+        align-self:      flex-end;
+        grid-column-gap: 3px;
+      }
+
+      .RecruitButton {
+        color:            white;
+        background-color: #009432;
+        border-color:     #285a26;
+        border-radius:    4px;
+      }
+    }
+  }
+
+  .RoleList {
+    display:         flex;
+    flex:            1 1 auto;
+    flex-flow:       row wrap;
+    justify-content: space-between;
+    grid-row-gap:    5px;
+
+
+    .RoleAffinityList, .RoleProfessionList {
+      display:         flex;
+      flex:            0 0 auto;
+      grid-column-gap: 5px;
+
+      .Role {
+        display:   flex;
+        flex:      0 0 auto;
+        flex-flow: column;
+
+        .RoleIcon {
+          border:                  1px solid black;
+          border-top-left-radius:  2px;
+          border-top-right-radius: 2px;
+        }
+
+        .RoleExperience {
+          display:                    flex;
+          flex:                       1 1 auto;
+          justify-content:            center;
+          border:                     1px solid black;
+          border-top:                 none;
+          border-bottom-left-radius:  2px;
+          border-bottom-right-radius: 2px;
+        }
+      }
+    }
+  }
 }

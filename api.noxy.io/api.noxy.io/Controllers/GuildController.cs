@@ -1,5 +1,5 @@
 ﻿using api.noxy.io.Interface;
-using api.noxy.io.Models;
+using api.noxy.io.Models.Auth;
 using api.noxy.io.Models.Game.Guild;
 using api.noxy.io.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -24,79 +24,22 @@ namespace api.noxy.io.Controllers
             _game = guild;
         }
 
-        [HttpGet("Self")]
-        public async Task<ActionResult<GuildEntity.DTO?>> Self()
+        [HttpGet("Load")]
+        public async Task<ActionResult<GuildEntity.DTO?>> Load()
         {
-            JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
-            if (token == null) return Unauthorized();
-
-            UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
-            if (user == null) return Unauthorized();
-
-            GuildEntity? guild = await _game.FindByUser(user);
-            return Ok(guild?.ToDTO());
-        }
-
-        [HttpPost("Register")]
-        public async Task<ActionResult<GuildEntity.DTO>> Register(GuildRegisterRequest input)
-        {
-            JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
-            if (token == null) return Unauthorized();
-
-            UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
-            if (user == null) return Unauthorized();
-
-            GuildEntity? guild = await _game.FindByUser(user);
-            if (guild != null) return Conflict();
-
-            guild = await _game.Create(input.Name, user);
-
+            GuildEntity guild = await _game.LoadGuild(_jwt.GetUserID(User));
             return Ok(guild.ToDTO());
         }
 
-        [HttpPost("RecruitUnit")]
-        public async Task<ActionResult<IEnumerable<UnitEntity.DTO>>> RecruitUnit(GuildRecruitRequest request)
+        [HttpPost("Register")]
+        public async Task<ActionResult<GuildEntity.DTO>> Register(RegisterRequest input)
         {
-            JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
-            if (token == null) return Unauthorized();
-
-            UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
-            if (user == null) return Unauthorized();
-
-            return Ok((await _game.RecruitUnit(user, request.UnitID)).UnitList.Select(x => x.ToDTO()));
+            UserEntity user = await _user.FindOne(_jwt.GetUserID(User));
+            GuildEntity guild = await _game.CreateGuild(user, input.Name);
+            return Ok(guild.ToDTO());
         }
 
-        [HttpPost("RefreshUnitList")]
-        public async Task<ActionResult<IEnumerable<UnitEntity.DTO>>> RefreshUnitList()
-        {
-            JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
-            if (token == null) return Unauthorized();
-
-            UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
-            if (user == null) return Unauthorized();
-
-            return Ok((await _game.RefreshUnitList(user)).UnitList.Select(x => x.ToDTO()));
-        }
-
-        [HttpPost("RefreshMissionList")]
-        public async Task<ActionResult<IEnumerable<MissionEntity.DTO>>> RefreshMissionList()
-        {
-            JwtSecurityToken? token = JWT.ReadToken(await HttpContext.GetTokenAsync("access_token"));
-            if (token == null) return Unauthorized();
-
-            UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
-            if (user == null) return Unauthorized();
-
-            return Ok((await _game.RefreshMissionList(user)).MissionList.Select(x => x.ToDTO()));
-        }
-
-        public class GuildRecruitRequest
-        {
-            [Required(AllowEmptyStrings = false)]
-            public Guid UnitID { get; set; } = Guid.Empty;
-        }
-
-        public class GuildRegisterRequest
+        public class RegisterRequest
         {
             [Required(AllowEmptyStrings = false)]
             [StringLength(64, MinimumLength = 3)]

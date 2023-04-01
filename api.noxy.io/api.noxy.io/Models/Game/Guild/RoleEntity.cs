@@ -6,24 +6,26 @@ namespace api.noxy.io.Models.Game.Guild
 {
     [Table("Role")]
     [Index(nameof(Name), IsUnique = true)]
-    public class RoleEntity : SimpleEntity
+    public class RoleEntity : SingleEntity
     {
         [Required]
         [MinLength(3), MaxLength(64)]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
-        // Mappings
-        public RoleTypeEntity RoleType { get; set; } = new();
-        public List<FeatEntity> FeatList { get; set; } = new();
+        [Required]
+        public required RoleTypeEntity RoleType { get; set; }
 
-        // Inverse
-        public List<RoleLevelEntity> RoleLevelList { get; set; } = new();
+        #region -- Mapping --
+
+        public List<RequirementEntity> RequirementList { get; set; } = new();
+
+        #endregion -- Mapping --
 
         #region -- DTO --
 
         new public DTO ToDTO() => new(this);
 
-        new public class DTO : SimpleEntity.DTO
+        new public class DTO : SingleEntity.DTO
         {
             public string Name { get; set; }
             public RoleTypeEntity.DTO RoleType { get; set; }

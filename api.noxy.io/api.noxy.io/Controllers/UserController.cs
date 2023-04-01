@@ -1,5 +1,5 @@
 ﻿using api.noxy.io.Interface;
-using api.noxy.io.Models;
+using api.noxy.io.Models.Auth;
 using api.noxy.io.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,12 +26,12 @@ namespace api.noxy.io.Controllers
         }
 
         [HttpPost("SignUp")]
-        public async Task<ActionResult<UserAuthResponse>> SignUp(UserAuthRequest input)
+        public async Task<ActionResult<AuthResponse>> SignUp(AuthRequest input)
         {
             try
             {
                 UserEntity user = await _user.Create(input.Email, input.Password);
-                return Ok(new UserAuthResponse(user.ToDTO(), _jwt.Generate(user)));
+                return Ok(new AuthResponse(user.ToDTO(), _jwt.Generate(user)));
             }
             catch (DbUpdateException ex)
             {
@@ -49,14 +49,14 @@ namespace api.noxy.io.Controllers
         }
 
         [HttpPost("LogIn")]
-        public async Task<ActionResult<UserAuthResponse>> LogIn(UserAuthRequest input)
+        public async Task<ActionResult<AuthResponse>> LogIn(AuthRequest input)
         {
             try
             {
-                UserEntity? user = await _user.FindByEmail(input.Email);
+                UserEntity? user = await _user.FindOne(input.Email);
                 if (user == null) return Unauthorized();
                 byte[] hash = UserEntity.GenerateHash(input.Password, user.Salt);
-                return hash.SequenceEqual(user.Hash) ? Ok(new UserAuthResponse(user.ToDTO(), _jwt.Generate(user))) : Unauthorized();
+                return hash.SequenceEqual(user.Hash) ? Ok(new AuthResponse(user.ToDTO(), _jwt.Generate(user))) : Unauthorized();
             }
             catch
             {
@@ -66,7 +66,7 @@ namespace api.noxy.io.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Refresh")]
-        public async Task<ActionResult<UserAuthResponse>> Refresh()
+        public async Task<ActionResult<AuthResponse>> Refresh()
         {
             try
             {
@@ -74,9 +74,9 @@ namespace api.noxy.io.Controllers
                 JwtSecurityToken? token = JWT.ReadToken(authorization);
                 if (token == null) return Unauthorized();
 
-                UserEntity? user = await _user.FindByID(_jwt.GetUserID(token));
+                UserEntity? user = await _user.FindOne(_jwt.GetUserID(token));
                 if (user == null) return Unauthorized();
-                return Ok(new UserAuthResponse(user.ToDTO(), _jwt.Generate(user)));
+                return Ok(new AuthResponse(user.ToDTO(), _jwt.Generate(user)));
             }
             catch
             {
@@ -86,7 +86,7 @@ namespace api.noxy.io.Controllers
     }
 
 
-    public class UserAuthRequest
+    public class AuthRequest
     {
         [Required(AllowEmptyStrings = false)]
         [StringLength(254, MinimumLength = 6)]
@@ -100,13 +100,13 @@ namespace api.noxy.io.Controllers
     }
 
 
-    public class UserAuthResponse
+    public class AuthResponse
     {
         public UserEntity.DTO User { get; set; }
 
         public string Token { get; set; }
 
-        public UserAuthResponse(UserEntity.DTO user, string token)
+        public AuthResponse(UserEntity.DTO user, string token)
         {
             User = user;
             Token = token;

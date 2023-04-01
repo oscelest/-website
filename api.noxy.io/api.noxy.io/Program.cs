@@ -81,6 +81,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -88,6 +89,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseStatusCodePages();
 app.UseCors(cors);
 app.UseAuthentication();
 app.UseAuthorization();

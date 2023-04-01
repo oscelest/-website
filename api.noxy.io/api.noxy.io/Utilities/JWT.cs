@@ -1,4 +1,4 @@
-﻿using api.noxy.io.Models;
+﻿using api.noxy.io.Models.Auth;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -8,6 +8,7 @@ namespace api.noxy.io.Utility
 {
     public interface IJWT
     {
+        public Guid GetUserID(ClaimsPrincipal claim);
         public Guid GetUserID(JwtSecurityToken token);
         public Guid GetUserID(ClaimsIdentity identity);
         public string Generate(UserEntity user, DateTime? activation = null, DateTime? expiration = null);
@@ -18,11 +19,23 @@ namespace api.noxy.io.Utility
         private static readonly JwtSecurityTokenHandler Handler = new();
         private static readonly string NameID = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
 
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _config;
 
-        public JWT(IConfiguration Configuration)
+        public JWT(IConfiguration config)
         {
-            _configuration = Configuration;
+            _config = config;
+        }
+
+        public Guid GetUserID(ClaimsPrincipal claim)
+        {
+            if (claim?.Identity is ClaimsIdentity identity)
+            {
+                if (Guid.TryParse(identity.Claims.FirstOrDefault(x => x.Type == NameID)?.Value, out Guid id))
+                {
+                    return id;
+                }
+            }
+            throw new SecurityTokenException();
         }
 
         public Guid GetUserID(JwtSecurityToken token)
@@ -41,9 +54,9 @@ namespace api.noxy.io.Utility
 
         public string Generate(UserEntity user, DateTime? activation = null, DateTime? expiration = null)
         {
-            string issuer = _configuration["JWT:Issuer"]!;
-            string audience = _configuration["JWT:Audience"]!;
-            string secret = _configuration["JWT:Secret"]!;
+            string issuer = _config["JWT:Issuer"]!;
+            string audience = _config["JWT:Audience"]!;
+            string secret = _config["JWT:Secret"]!;
 
             SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(secret));
             SigningCredentials signIn = new(key, SecurityAlgorithms.HmacSha256);

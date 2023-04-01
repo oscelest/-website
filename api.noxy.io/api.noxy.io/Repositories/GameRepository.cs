@@ -1,19 +1,26 @@
 ﻿using api.noxy.io.Context;
-using api.noxy.io.Models;
+using api.noxy.io.Exceptions;
 using api.noxy.io.Models.Game.Guild;
 using api.noxy.io.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Collections.Generic;
+using api.noxy.io.Models.Auth;
+using System.Linq;
 
 namespace api.noxy.io.Interface
 {
     public interface IGameRepository
     {
-        public Task<GuildEntity?> FindByUser(UserEntity userEntity);
-        public Task<GuildEntity> Create(string name, UserEntity user);
-        public Task<GuildEntity> RecruitUnit(UserEntity userEntity, Guid userID);
-        public Task<GuildEntity> RefreshUnitList(UserEntity user);
-        public Task<GuildEntity> RefreshMissionList(UserEntity user);
+        public Task<GuildEntity> LoadGuild(Guid userID);
+        public Task<GuildEntity> CreateGuild(UserEntity user, string name);
+        public Task<List<UnitEntity>> LoadUnitList(Guid userID);
+        public Task<List<MissionEntity>> LoadMissionList(Guid userID);
+        public Task<UnitEntity> InitiateUnit(Guid userID, Guid unitID);
+        public Task<MissionEntity> InitiateMission(Guid userID, Guid missionID, Guid unitID);
+        public Task<List<UnitEntity>> RefreshAvailableUnitList(Guid userID);
+        public Task<List<MissionEntity>> RefreshAvailableMissionList(Guid userID);
     }
 
     public class GameRepository : IGameRepository
@@ -27,70 +34,139 @@ namespace api.noxy.io.Interface
             _config = config;
         }
 
-        public async Task<GuildEntity?> FindByUser(UserEntity user)
+        private async Task<GuildEntity> GetGuild(Guid userID)
         {
-            return await _db.Guild.FirstOrDefaultAsync(e => e.User.ID == user.ID);
+            return await _db.Guild.FirstOrDefaultAsync(x => x.User.ID == userID)
+                ?? throw new EntityNotFoundException(userID);
         }
 
-        public async Task<GuildEntity> Create(string name, UserEntity user)
+        private async Task<UnitEntity> GetUnit(Guid unitID)
         {
-            var feat_list = await _db.Feat.Where(x => x.FeatRequirementList.Count() == 0).ToListAsync();
+            return await _db.Unit
+                .Include(x => x.RoleLevelList).ThenInclude(x => x.Role).ThenInclude(x => x.RoleType)
+                .FirstOrDefaultAsync(x => x.ID == unitID)
+                ?? throw new EntityNotFoundException(unitID);
+        }
 
-            GuildEntity entity = new()
+        private async Task<UnitEntity> GetUnit(Guid unitID, Guid guildID)
+        {
+            return await _db.Unit
+                .Include(x => x.RoleLevelList).ThenInclude(x => x.Role).ThenInclude(x => x.RoleType)
+                .FirstOrDefaultAsync(x => x.ID == unitID && x.Guild.ID == guildID)
+                ?? throw new EntityNotFoundException(unitID);
+        }
+
+        private async Task<MissionEntity> GetMission(Guid missionID, Guid guildID)
+        {
+            return await _db.Mission
+                .FirstOrDefaultAsync(x => x.ID == missionID && x.Guild.ID == guildID)
+                ?? throw new EntityNotFoundException(missionID);
+        }
+
+        public async Task<GuildEntity> LoadGuild(Guid userID)
+        {
+            return await GetGuild(userID);
+        }
+
+        public async Task<List<UnitEntity>> LoadUnitList(Guid userID)
+        {
+            GuildEntity guild = await GetGuild(userID);
+            return await _db.Unit.Where(x => x.Guild.ID == guild.ID).ToListAsync();
+        }
+
+        public async Task<List<MissionEntity>> LoadMissionList(Guid userID)
+        {
+            GuildEntity guild = await GetGuild(userID);
+            return await _db.Mission.Where(x => x.Guild.ID == guild.ID).ToListAsync();
+        }
+
+        public async Task<GuildEntity> CreateGuild(UserEntity user, string name)
+        {
+            EntityEntry<GuildEntity> guildEntry = await _db.Guild.AddAsync(new()
             {
                 Name = name,
+                Currency = 100,
                 User = user,
-                FeatList = feat_list,
-            };
+                TimeUnitRefresh = DateTime.MinValue,
+                TimeMissionRefresh = DateTime.MinValue,
+                UnitList = new(),
+                MissionList = new(),
+                GuildFeatList = new(),
+            });
 
-            await _db.Guild.AddAsync(entity);
+            List<FeatEntity> featList = await _db.Feat.Where(x => x.RequirementList.Count() == 0).ToListAsync();
+            foreach (FeatEntity feat in featList)
+            {
+                await _db.GuildFeat.AddAsync(
+                    new GuildFeatEntity
+                    {
+                        Feat = feat,
+                        Guild = guildEntry.Entity,
+                    }
+                );
+            }
+
             await _db.SaveChangesAsync();
 
-            return entity;
+            return guildEntry.Entity;
         }
 
-        public async Task<GuildEntity> RecruitUnit(UserEntity user, Guid unitID)
+        public async Task<UnitEntity> InitiateUnit(Guid userID, Guid unitID)
         {
-            GuildEntity guild = await _db.Guild
-                .Include(x => x.UnitList!)
-                .ThenInclude(x => x.RoleLevelList)
-                .FirstOrDefaultAsync(e => e.User.ID == user.ID)
-                ?? throw new Exception();
+            GuildEntity guild = await GetGuild(userID);
+            UnitEntity unit = await GetUnit(unitID, guild.ID);
 
-            UnitEntity? unit = guild.UnitList.Find(x => x.ID == unitID);
-            if (unit == null)
+            if (unit.Recruited)
             {
-                throw new Exception();
+                throw new EntityStateException(userID, unit);
             }
-            if (unit.Recruited == true)
+
+            guild.Currency -= unit.GetCost();
+            if (guild.Currency < 0)
             {
-                throw new Exception();
+                throw new NotEnoughCurrencyException(guild.Currency);
             }
 
             unit.Recruited = true;
             await _db.SaveChangesAsync();
 
-            return guild;
+            return unit;
         }
 
-        public async Task<GuildEntity> RefreshUnitList(UserEntity user)
+        public async Task<MissionEntity> InitiateMission(Guid userID, Guid missionID, Guid unitID)
+        {
+            GuildEntity guild = await GetGuild(userID);
+            MissionEntity mission = await GetMission(missionID, guild.ID);
+
+            if (mission.Unit != null || mission.TimeStarted != null)
+            {
+                throw new EntityStateException(userID, mission);
+            }
+
+            mission.Unit = await GetUnit(unitID, guild.ID);
+            mission.TimeStarted = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+
+            return mission;
+        }
+
+        public async Task<List<UnitEntity>> RefreshAvailableUnitList(Guid userID)
         {
             GuildEntity guild = await _db.Guild
-                .Include(x => x.UnitList!)
-                .Include(x => x.FeatList!).ThenInclude(x => x.GuildModifierList)
-                .FirstOrDefaultAsync(e => e.User.ID == user.ID)
-                ?? throw new Exception();
+                .Include(x => x.UnitList)
+                .Include(x => x.GuildFeatList).ThenInclude(x => x.Feat).ThenInclude(x => x.GuildModifierList)
+                .FirstOrDefaultAsync(x => x.User.ID == userID)
+                ?? throw new EntityNotFoundException(userID);
 
             int refreshBase = int.TryParse(_config["Game:UnitListRefresh"], out int refreshConfig) ? refreshConfig : 0;
             float refreshTotal = guild.GetModifierValue<GuildUnitModifierEntity>(refreshBase, x => x.Tag == GuildUnitModifierTagType.RefreshTime);
             if (guild.TimeUnitRefresh.AddSeconds(refreshTotal) >= DateTime.UtcNow)
             {
-                return guild;
+                return guild.UnitList;
             }
 
-            _db.Unit.RemoveRange(guild.UnitList.Where(x => !x.Recruited));
-            guild.UnitList!.RemoveAll(x => !x.Recruited);
             guild.TimeUnitRefresh = DateTime.UtcNow;
+            guild.UnitList = guild.UnitList.Where(x => x.Recruited).ToList();
 
             int countBase = int.TryParse(_config["Game:UnitListCount"], out int countConfig) ? countConfig : 0;
             int countTotal = (int)guild.GetModifierValue<GuildUnitModifierEntity>(countBase, x => x.Tag == GuildUnitModifierTagType.Count);
@@ -110,41 +186,49 @@ namespace api.noxy.io.Interface
             foreach (RoleTypeEntity type in await _db.RoleType.ToListAsync())
             {
                 role_dict.Add(type.ID, role_list.Where(x => x.RoleType.ID == type.ID));
-                role_type_dict.Add(type.ID, (int)guild.GetModifierValue<GuildRoleModifierEntity>(x => x.RoleType?.ID == type.ID && x.Tag == GuildRoleModifierTagType.Count));
+                role_type_dict.Add(type.ID, (int)guild.GetModifierValue<GuildRoleModifierEntity>(x => x.RoleType.ID == type.ID && x.Tag == GuildRoleModifierTagType.Count));
             }
 
             for (int i = 0; i < countTotal; i++)
             {
-                UnitEntity unit = new()
+                EntityEntry<UnitEntity> unitEntry = await _db.Unit.AddAsync(new()
                 {
                     Name = $"Recruitable Unit #{i + 1}",
                     Experience = RNG.IntBetweenFactors(experienceTotal),
-                };
+                    Recruited = false,
+                    Guild = guild,
+                    RoleLevelList = new List<RoleLevelEntity>(),
+                });
 
                 foreach (KeyValuePair<Guid, int> pair in role_type_dict)
                 {
-                    unit.RoleLevelList.AddRange(RNG.GetRandomElementList(role_dict[pair.Key], pair.Value).Select(role => new RoleLevelEntity()
+                    foreach (RoleEntity role in RNG.GetRandomElementList(role_dict[pair.Key], pair.Value))
                     {
-                        Experience = 0,
-                        Role = role
-                    }));
+                        EntityEntry<RoleLevelEntity> roleLevelEntry = await _db.RoleLevel.AddAsync(new()
+                        {
+                            Experience = 0,
+                            Unit = unitEntry.Entity,
+                            Role = role,
+                        });
+                        unitEntry.Entity.RoleLevelList.Add(roleLevelEntry.Entity);
+                    }
                 }
 
-                guild.UnitList.Add(unit);
+                guild.UnitList.Add(unitEntry.Entity);
             }
 
             await _db.SaveChangesAsync();
 
-            return guild;
+            return guild.UnitList;
         }
 
-        public async Task<GuildEntity> RefreshMissionList(UserEntity user)
+        public async Task<List<MissionEntity>> RefreshAvailableMissionList(Guid userID)
         {
             GuildEntity guild = await _db.Guild
-                .Include(x => x.MissionList!)
-                .Include(x => x.FeatList!).ThenInclude(x => x.GuildModifierList)
-                .FirstOrDefaultAsync(e => e.User.ID == user.ID)
-                ?? throw new Exception();
+                .Include(x => x.UnitList)
+                .Include(x => x.GuildFeatList).ThenInclude(x => x.Feat).ThenInclude(x => x.GuildModifierList)
+                .FirstOrDefaultAsync(x => x.User.ID == userID)
+                ?? throw new EntityNotFoundException(userID);
 
             int countBase = int.TryParse(_config["Game:MissionListCount"], out int countConfig) ? countConfig : 0;
             int refreshBase = int.TryParse(_config["Game:MissionListRefresh"], out int refreshConfig) ? refreshConfig : 0;
@@ -153,28 +237,28 @@ namespace api.noxy.io.Interface
             float refreshTotal = guild.GetModifierValue<GuildMissionModifierEntity>(refreshBase, x => x.Tag == GuildMissionModifierTagType.RefreshTime);
             if (countTotal <= 0 || guild.TimeMissionRefresh.AddSeconds(refreshTotal) >= DateTime.UtcNow)
             {
-                return guild;
+                return guild.MissionList;
             }
 
-            _db.Mission.RemoveRange(guild.MissionList.Where(x => x.Unit == null));
-            guild.MissionList.RemoveAll(x => x.Unit == null);
             guild.TimeMissionRefresh = DateTime.UtcNow;
+            guild.MissionList = guild.MissionList.Where(x => x.Unit != null && x.TimeStarted != null).ToList();
 
             // TODO: Should load your available roles
             List<RoleEntity> role_list = await _db.Role.ToListAsync();
-
             for (int i = 0; i < countTotal; i++)
             {
-                guild.MissionList.Add(new()
+                EntityEntry<MissionEntity> missionEntry = await _db.Mission.AddAsync(new()
                 {
                     BaseDuration = 100,
-                    RoleList = RNG.GetRandomElementList(role_list, 1).ToList(),
+                    Guild = guild,
                 });
+
+                guild.MissionList.Add(missionEntry.Entity);
             }
 
             await _db.SaveChangesAsync();
 
-            return guild;
+            return guild.MissionList;
         }
     }
 }

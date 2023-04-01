@@ -5,37 +5,41 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace api.noxy.io.Models.Game.Guild
 {
     [Table("Unit")]
-    public class UnitEntity : SimpleEntity
+    public class UnitEntity : SingleEntity
     {
         [Required]
         [MinLength(3), MaxLength(64)]
-        public string Name { get; set; } = string.Empty;
-
+        public required string Name { get; set; } 
         [Required]
         [DefaultValue(0)]
-        public int Experience { get; set; } = 0;
+        public required int Experience { get; set; } 
 
         [Required]
         [DefaultValue(false)]
-        public bool Recruited { get; set; } = false;
+        public required bool Recruited { get; set; }
 
-        // Mappings
-        public List<RoleLevelEntity> RoleLevelList { get; set; } = new();
+        [Required]
+        public required GuildEntity Guild { get; set; }
 
-        // Inverse
-        public GuildEntity Guild { get; set; } = new();
-        public List<MissionEntity> MissionList { get; set; } = new();
+        [Required]
+        public required List<RoleLevelEntity> RoleLevelList { get; set; } = new();
+
+        public int GetCost()
+        {
+            // TODO: Implement cost calcualtion based on role level list values
+            return 0;
+        }
 
         #region -- DTO --
 
         new public DTO ToDTO() => new(this);
 
-        new public class DTO : SimpleEntity.DTO
+        new public class DTO : SingleEntity.DTO
         {
             public string Name { get; set; }
             public int Experience { get; set; }
             public bool Recruited { get; set; }
-            public IEnumerable<RoleLevelEntity.DTO> RoleLevelList { get; set; }
+            public IEnumerable<RoleLevelEntity.DTO> RoleLevelList { get; set; } 
 
             public DTO(UnitEntity entity) : base(entity)
             {

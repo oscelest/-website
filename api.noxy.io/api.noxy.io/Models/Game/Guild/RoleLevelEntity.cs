@@ -1,22 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.Game.Guild
 {
     [Table("RoleLevel")]
-    public class RoleLevelEntity : SimpleEntity
+    public class RoleLevelEntity : SingleEntity
     {
+        [Required]
         public int Experience { get; set; } = 0;
 
-        // Mappings
-        public UnitEntity Unit { get; set; } = new();
-        public RoleEntity Role { get; set; } = new();
+        [Required]
+        public required UnitEntity Unit { get; set; }
+
+        [Required]
+        public required RoleEntity Role { get; set; } 
 
         #region -- DTO --
 
         new public DTO ToDTO() => new(this);
 
-        new public class DTO : SimpleEntity.DTO
+        new public class DTO : SingleEntity.DTO
         {
             public int Experience { get; set; }
             public RoleEntity.DTO Role { get; set; }

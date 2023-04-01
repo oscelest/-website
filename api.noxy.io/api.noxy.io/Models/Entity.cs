@@ -4,15 +4,15 @@ using System.ComponentModel.DataAnnotations;
 namespace api.noxy.io.Models
 {
     [Index(nameof(TimeCreated), AllDescending = true)]
-    public abstract class SimpleEntity
+    public abstract class Entity
     {
         [Key()]
-        public Guid ID { get; set; }
+        public Guid ID { get; set; } = Guid.NewGuid();
 
         [Required]
-        public DateTime TimeCreated { get; set; }
+        public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
 
-        public DateTime? TimeUpdated { get; set; }
+        #region -- DTO --
 
         public DTO ToDTO() => new(this);
 
@@ -20,14 +20,15 @@ namespace api.noxy.io.Models
         {
             public Guid ID { get; set; }
             public DateTime TimeCreated { get; set; }
-            public DateTime? TimeUpdated { get; set; }
 
-            public DTO(SimpleEntity entity)
+            public DTO(Entity entity)
             {
                 ID = entity.ID;
                 TimeCreated = entity.TimeCreated;
-                TimeUpdated = entity.TimeUpdated;
             }
         }
+
+        #endregion -- DTO --
+
     }
 }

@@ -1,35 +1,33 @@
 ﻿using api.noxy.io.Utilities;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.Game.Guild
 {
-    public abstract class GuildModifierEntity : SimpleEntity
+    public abstract class GuildModifierEntity : SingleEntity
     {
         [Required]
-        public float Value { get; set; }
+        public required float Value { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(32)")]
-        public ArithmeticalTagType ArithmeticalTag { get; set; }
+        public required ArithmeticalTagType ArithmeticalTag { get; set; }
 
-        // Inverse
-        public FeatEntity Feat { get; set; } = new();
+        [Required]
+        public required FeatEntity Feat { get; set; }
 
         #region -- DTO --
 
         new public DTO ToDTO() => new(this);
 
-        new public class DTO : SimpleEntity.DTO
+        new public class DTO : SingleEntity.DTO
         {
             public float Value { get; set; }
             public ArithmeticalTagType ArithmeticalTag { get; set; }
 
             public DTO(GuildModifierEntity entity) : base(entity)
             {
-                //EntityType = entity.EntityType;
                 Value = entity.Value;
                 ArithmeticalTag = entity.ArithmeticalTag;
             }

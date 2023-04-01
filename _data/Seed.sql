@@ -6,7 +6,7 @@ DELETE FROM `GuildUnitModifier`;
 DELETE FROM `GuildRoleModifier`;
 DELETE FROM `Guild`;
 DELETE FROM `User`;
-DELETE FROM `$Guild-Feat`;
+DELETE FROM `GuildFeat`;
 
 -- Insert User
 INSERT INTO user (`ID`, `Email`, `Salt`, `Hash`, `TimeCreated`)
@@ -56,6 +56,7 @@ INSERT INTO `Feat` (`ID`, `Name`, `TimeCreated`) VALUES ('bc6208be-93c8-4a59-abf
 INSERT INTO `Feat` (`ID`, `Name`, `TimeCreated`) VALUES ('cf21a7af-c543-49fa-bb90-f72f7702a93f', '10 quests completed', UTC_TIMESTAMP());
 INSERT INTO `Feat` (`ID`, `Name`, `TimeCreated`) VALUES ('b5bfb9f9-f48f-4081-bb66-e4648fd231c8', '100 quests completed', UTC_TIMESTAMP());
 INSERT INTO `Feat` (`ID`, `Name`, `TimeCreated`) VALUES ('11ead1e6-fbff-4d65-a45f-86214195ea07', '1000 quests completed', UTC_TIMESTAMP());
+INSERT INTO `Feat` (`ID`, `Name`, `TimeCreated`) VALUES ('a1eeb61d-21a7-4589-a843-970fee8c0718', 'First mission completed', UTC_TIMESTAMP());
 
 -- Insert GuildUnitModifier
 INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `TimeCreated`) 
@@ -66,6 +67,8 @@ INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Ta
 VALUES ('7945d7eb-51ae-46df-9c72-f0995b0aa632', -5000, 'Additive', 'b5bfb9f9-f48f-4081-bb66-e4648fd231c8', 'RefreshTime', UTC_TIMESTAMP());
 INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `TimeCreated`) 
 VALUES ('55ae9476-a181-471d-963e-06841ddaf83f', -5000, 'Additive', '11ead1e6-fbff-4d65-a45f-86214195ea07', 'RefreshTime', UTC_TIMESTAMP());
+INSERT INTO `GuildUnitModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `TimeCreated`) 
+VALUES ('8626af1c-77d6-4c40-aad0-b9a618446978', '1000', 'Additive', 'a1eeb61d-21a7-4589-a843-970fee8c0718', 'Experience', UTC_TIMESTAMP());
 
 -- Insert GuildRoleModifier
 INSERT INTO `GuildRoleModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Tag`, `RoleTypeID`, `TimeCreated`) 
@@ -75,5 +78,6 @@ INSERT INTO `GuildRoleModifier` (`ID`, `Value`, `ArithmeticalTag`, `FeatID`, `Ta
 VALUES ('7e1a1b9f-a69e-4238-9e46-b6605302eb5a', 1, 'Additive', 'bc6208be-93c8-4a59-abf6-39aaabc10d11', 'Count', '7a2b3b75-05c9-446c-a168-230eb4672b00', UTC_TIMESTAMP());
 
 -- Insert Guild-Feat
-INSERT INTO `$Guild-Feat` (GuildListID, FeatListID) VALUES ('33c8fcaa-302c-4d4e-9953-c0bb5839f3f5', 'bc6208be-93c8-4a59-abf6-39aaabc10d11');
-INSERT INTO `$Guild-Feat` (GuildListID, FeatListID) VALUES ('33c8fcaa-302c-4d4e-9953-c0bb5839f3f5', 'cf21a7af-c543-49fa-bb90-f72f7702a93f');
+INSERT INTO `GuildFeat` (ID, GuildID, FeatID, TimeCreated) VALUES ('464f4032-bc99-4276-9c5e-19ce8eaa1f45', '33c8fcaa-302c-4d4e-9953-c0bb5839f3f5', 'bc6208be-93c8-4a59-abf6-39aaabc10d11', UTC_TIMESTAMP());
+INSERT INTO `GuildFeat` (ID, GuildID, FeatID, TimeCreated) VALUES ('fc249197-088a-4d81-a3dd-67b653994285', '33c8fcaa-302c-4d4e-9953-c0bb5839f3f5', 'cf21a7af-c543-49fa-bb90-f72f7702a93f', UTC_TIMESTAMP());
+INSERT INTO `GuildFeat` (ID, GuildID, FeatID, TimeCreated) VALUES ('fc98d629-3e6a-4ee9-a04d-b83eb96aed43', '33c8fcaa-302c-4d4e-9953-c0bb5839f3f5', 'a1eeb61d-21a7-4589-a843-970fee8c0718', UTC_TIMESTAMP());

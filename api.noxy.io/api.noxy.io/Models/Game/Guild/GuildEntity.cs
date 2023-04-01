@@ -1,4 +1,5 @@
-﻿using api.noxy.io.Utilities;
+﻿using api.noxy.io.Models.Auth;
+using api.noxy.io.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,29 +9,32 @@ namespace api.noxy.io.Models.Game.Guild
 {
     [Table("Guild")]
     [Index(nameof(Name), IsUnique = true)]
-    public class GuildEntity : SimpleEntity
+    public class GuildEntity : SingleEntity
     {
         [Required]
         [MinLength(3), MaxLength(64)]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
         [Required]
         [DefaultValue(0)]
-        public int Currency { get; set; } = 0;
+        public required int Currency { get; set; }
 
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime TimeUnitRefresh { get; set; } = DateTime.MinValue;
+        public required DateTime TimeUnitRefresh { get; set; }
 
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime TimeMissionRefresh { get; set; } = DateTime.MinValue;
+        public required DateTime TimeMissionRefresh { get; set; }
 
-        // Mappings
-        public UserEntity User { get; set; } = new();
+        [Required]
+        public required UserEntity User { get; set; }
+
+        #region -- Mapping --
+
         public List<UnitEntity> UnitList { get; set; } = new();
         public List<MissionEntity> MissionList { get; set; } = new();
-        public List<FeatEntity> FeatList { get; set; } = new();
+        public List<GuildFeatEntity> GuildFeatList { get; set; } = new();
+
+        #endregion -- Mapping --
 
         public float GetModifierValue<T>(Func<T, bool> fn) where T : GuildModifierEntity => GetModifierValue(0, fn);
         public float GetModifierValue<T>(float flat, Func<T, bool> fn) where T : GuildModifierEntity
@@ -39,9 +43,9 @@ namespace api.noxy.io.Models.Game.Guild
             float multiplicative = 1f;
             float exponential = 1f;
 
-            foreach (FeatEntity feat in FeatList)
+            foreach (GuildFeatEntity junction in GuildFeatList)
             {
-                foreach (GuildModifierEntity gMod in feat.GuildModifierList)
+                foreach (GuildModifierEntity gMod in junction.Feat.GuildModifierList)
                 {
                     if (gMod is T rMod && fn(rMod))
                     {
@@ -68,19 +72,19 @@ namespace api.noxy.io.Models.Game.Guild
 
         new public DTO ToDTO() => new(this);
 
-        new public class DTO : SimpleEntity.DTO
+        new public class DTO : SingleEntity.DTO
         {
             public string Name { get; set; }
-            public UserEntity.DTO User { get; set; }
-            public IEnumerable<UnitEntity.DTO>? UnitList { get; set; }
-            public IEnumerable<MissionEntity.DTO>? MissionList { get; set; }
+            public int Currency { get; set; }
+            public DateTime TimeUnitRefresh { get; set; }
+            public DateTime TimeMissionRefresh { get; set; }
 
             public DTO(GuildEntity entity) : base(entity)
             {
                 Name = entity.Name;
-                User = entity.User.ToDTO();
-                UnitList = entity.UnitList?.Select(x => x.ToDTO());
-                MissionList = entity.MissionList?.Select(x => x.ToDTO());
+                Currency = entity.Currency;
+                TimeUnitRefresh = entity.TimeUnitRefresh;
+                TimeMissionRefresh = entity.TimeMissionRefresh;
             }
         }
 

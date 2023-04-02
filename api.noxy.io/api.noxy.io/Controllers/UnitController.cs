@@ -2,7 +2,6 @@
 using api.noxy.io.Models.Game.Guild;
 using api.noxy.io.Utility;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace api.noxy.io.Controllers
 {

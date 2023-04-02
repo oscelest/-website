@@ -12,9 +12,13 @@ namespace api.noxy.io.Models.Game.Guild
         [Required]
         public required GuildEntity Guild { get; set; }
 
-        public UnitEntity? Unit { get; set; } = default;
-
         public DateTime? TimeStarted { get; set; } = default;
+
+        #region -- Mapping --
+
+        public List<UnitEntity> UnitList { get; set; } = new();
+
+        #endregion -- Mapping --
 
         #region -- DTO --
 
@@ -23,13 +27,13 @@ namespace api.noxy.io.Models.Game.Guild
         new public class DTO : SingleEntity.DTO
         {
             public int BaseDuration { get; set; }
-            public UnitEntity.DTO? Unit { get; set; }
+            public IEnumerable<UnitEntity.DTO> UnitList { get; set; }
             public DateTime? TimeStarted { get; set; }
 
             public DTO(MissionEntity entity) : base(entity)
             {
                 BaseDuration = entity.BaseDuration;
-                Unit = entity.Unit?.ToDTO();
+                UnitList = entity.UnitList.Select(x => x.ToDTO());
                 TimeStarted = entity.TimeStarted;
             }
         }

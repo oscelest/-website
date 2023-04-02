@@ -30,7 +30,7 @@ namespace api.noxy.io.Controllers
         [HttpPost("Initiate")]
         public async Task<ActionResult<MissionEntity.DTO>> Initiate(InitiateRequest input)
         {
-            MissionEntity entity = await _game.InitiateMission(_jwt.GetUserID(User), input.MissionID, input.UnitID);
+            MissionEntity entity = await _game.InitiateMission(_jwt.GetUserID(User), input.MissionID, input.UnitIDList);
             return Ok(entity.ToDTO());
         }
         
@@ -43,8 +43,8 @@ namespace api.noxy.io.Controllers
 
         public class InitiateRequest
         {
-            public Guid UnitID { get; set; } = default;
-            public Guid MissionID { get; set; } = default;
+            public required List<Guid> UnitIDList { get; set; }
+            public required Guid MissionID { get; set; }
         }
     }
 }

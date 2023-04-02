@@ -20,13 +20,12 @@ namespace api.noxy.io.Models.Game.Guild
         public required int Currency { get; set; }
 
         [Required]
-        public required DateTime TimeUnitRefresh { get; set; }
-
-        [Required]
-        public required DateTime TimeMissionRefresh { get; set; }
-
-        [Required]
         public required UserEntity User { get; set; }
+
+        public DateTime? TimeUnitRefresh { get; set; }
+
+        public DateTime? TimeMissionRefresh { get; set; }
+
 
         #region -- Mapping --
 
@@ -76,8 +75,8 @@ namespace api.noxy.io.Models.Game.Guild
         {
             public string Name { get; set; }
             public int Currency { get; set; }
-            public DateTime TimeUnitRefresh { get; set; }
-            public DateTime TimeMissionRefresh { get; set; }
+            public DateTime? TimeUnitRefresh { get; set; }
+            public DateTime? TimeMissionRefresh { get; set; }
 
             public DTO(GuildEntity entity) : base(entity)
             {

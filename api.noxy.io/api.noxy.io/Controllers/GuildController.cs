@@ -2,10 +2,8 @@
 using api.noxy.io.Models.Auth;
 using api.noxy.io.Models.Game.Guild;
 using api.noxy.io.Utility;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace api.noxy.io.Controllers
 {
@@ -27,8 +25,8 @@ namespace api.noxy.io.Controllers
         [HttpGet("Load")]
         public async Task<ActionResult<GuildEntity.DTO?>> Load()
         {
-            GuildEntity guild = await _game.LoadGuild(_jwt.GetUserID(User));
-            return Ok(guild.ToDTO());
+            GuildEntity? guild = await _game.LoadGuild(_jwt.GetUserID(User));
+            return Ok(guild?.ToDTO());
         }
 
         [HttpPost("Register")]

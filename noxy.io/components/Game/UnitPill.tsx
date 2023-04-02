@@ -13,7 +13,7 @@ export const UnitPill = (props: UnitPillProps) => {
   const {className, unit, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
   const [guild, setGuild] = useSubscription(subscriptionGuild);
-  const [affinity_list, profession_list] = unit.getRoleLevelListSet();
+  const [affinity_list = [], profession_list = []] = unit.getRoleLevelListSet();
   
   return (
     <div {...component_props} className={classes}>
@@ -42,8 +42,8 @@ export const UnitPill = (props: UnitPillProps) => {
   );
   
   async function onRecruitClick() {
-    const unitList = await Guild.recruit(unit);
-    setGuild(new Guild({...guild!.toJSON(), unitList}));
+    await Unit.recruit(unit);
+    setGuild(new Guild({...guild!.toJSON(), unitList: await Unit.load()}));
   }
   
   function renderRoleLevel(level: RoleLevel, index: number = 0) {

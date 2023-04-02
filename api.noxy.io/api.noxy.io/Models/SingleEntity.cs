@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace api.noxy.io.Models
+﻿namespace api.noxy.io.Models
 {
     public abstract class SingleEntity : Entity
     {

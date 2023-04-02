@@ -15,7 +15,7 @@ function Application({Component, pageProps}: AppProps) {
   
   useEffect(() => {
     const {auth} = localStorage;
-    if (auth) {
+    if (!auth) {
       return setAuth({refreshing: false});
     }
     

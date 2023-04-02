@@ -1,8 +1,9 @@
 import {Button} from "@noxy/react-button";
 import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
-import React from "react";
+import React, {useEffect} from "react";
 import {Guild} from "../../../entity/Guild";
+import {Unit} from "../../../entity/Unit";
 import {subscriptionGuild} from "../../../Globals";
 import {ManagementScreen} from "../Screen/ManagementScreen";
 import {UnitPill} from "../UnitPill";
@@ -13,6 +14,10 @@ export const RecruitmentScene = (props: RecruitmentSceneProps) => {
   const classes = sanitizeClassName(Style.Component, className);
   const [guild, setGuild] = useSubscription(subscriptionGuild);
   
+  useEffect(() => {
+    Unit.load().then(unitList => setGuild(new Guild({...guild!.toJSON(), unitList})));
+  }, []);
+  
   return (
     <div {...component_props} className={classes}>
       <ManagementScreen>
@@ -21,14 +26,21 @@ export const RecruitmentScene = (props: RecruitmentSceneProps) => {
           <Button onSubmit={onRecruitmentRefreshClick}>Refresh</Button>
         </div>
         <div className={Style.UnitList}>
-          {guild?.unit_list.map(unit => <UnitPill unit={unit}/>)}
+          {guild?.unit_list.map(renderUnitList)}
         </div>
       </ManagementScreen>
     </div>
   );
   
+  function renderUnitList(unit: Unit, index: number = 0) {
+    return (
+      <UnitPill key={index} unit={unit}/>
+    );
+  }
+  
   async function onRecruitmentRefreshClick() {
-    const unitList = await Guild.refreshUnitList();
+    const unitList = await Unit.refreshUnitList();
+    console.log(unitList);
     setGuild(new Guild({...guild!.toJSON(), unitList}));
   }
 };

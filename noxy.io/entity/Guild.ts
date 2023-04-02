@@ -11,19 +11,19 @@ export class Guild extends SimpleEntity {
   constructor(init?: GuildJSON) {
     super(init);
     this.user = new User(init?.user);
-    this.unit_list = init?.unitList ?? [];
+    this.unit_list = init?.unitList?.map(x => new Unit(x)) ?? [];
   }
   
   public override toJSON(): GuildJSON {
     return {
       ...super.toJSON(),
       user: this.user.toJSON(),
-      unitList: this.unit_list
+      unitList: this.unit_list.map(x => x.toJSON())
     };
   }
   
-  public static async self() {
-    const response = await Superagent.get(`${process.env.NEXT_PUBLIC_API_HOST}/Guild/Self`).auth(localStorage.auth, {type: "bearer"}).send();
+  public static async load() {
+    const response = await Superagent.get(`${process.env.NEXT_PUBLIC_API_HOST}/Guild/Load`).auth(localStorage.auth, {type: "bearer"}).send();
     return response.status !== 204 ? new Guild(response.body) : null;
   }
   
@@ -32,19 +32,9 @@ export class Guild extends SimpleEntity {
     return new Guild(response.body);
   }
   
-  public static async recruit(unit: Unit) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/Guild/RecruitUnit`).auth(localStorage.auth, {type: "bearer"}).send({unitID: unit.id});
-    return response.body.map((x: UnitJSON) => new Unit(x));
-  }
-  
-  public static async refreshUnitList() {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/Guild/RefreshUnitList`).auth(localStorage.auth, {type: "bearer"}).send();
-    return response.body.map((x: UnitJSON) => new Unit(x));
-  }
-  
 }
 
 export interface GuildJSON extends SimpleEntityJSON {
-  user: UserJSON;
-  unitList: Unit[];
+  user?: UserJSON;
+  unitList?: UnitJSON[];
 }

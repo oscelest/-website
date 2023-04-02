@@ -1,9 +1,7 @@
 ﻿using api.noxy.io.Context;
 using api.noxy.io.Exceptions;
 using api.noxy.io.Models.Auth;
-using api.noxy.io.Utility;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace api.noxy.io.Interface
 {

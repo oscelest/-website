@@ -1,3 +1,4 @@
+import Superagent from "superagent";
 import {RoleLevel, RoleLevelJSON} from "./RoleLevel";
 import {SimpleEntity, SimpleEntityJSON} from "./SimpleEntity";
 
@@ -46,6 +47,21 @@ export class Unit extends SimpleEntity {
       },
       [] as RoleLevel[][]
     );
+  }
+  
+  public static async load(): Promise<UnitJSON[]> {
+    const response = await Superagent.get(`${process.env.NEXT_PUBLIC_API_HOST}/Unit/Load`).auth(localStorage.auth, {type: "bearer"}).send();
+    return response.body;
+  }
+  
+  public static async recruit(unit: Unit): Promise<UnitJSON> {
+    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/Unit/Initiate`).auth(localStorage.auth, {type: "bearer"}).send({unitID: unit.id});
+    return response.body;
+  }
+  
+  public static async refreshUnitList(): Promise<UnitJSON[]> {
+    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/Unit/RefreshAvailable`).auth(localStorage.auth, {type: "bearer"}).send();
+    return response.body;
   }
   
 }

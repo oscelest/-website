@@ -74,8 +74,8 @@ WebApplication app = builder.Build();
 using (IServiceScope scope = app.Services.CreateScope())
 {
     APIContext dbContext = scope.ServiceProvider.GetRequiredService<APIContext>();
-    dbContext.Database.EnsureDeleted();
-    dbContext.Database.EnsureCreated();
+    //dbContext.Database.EnsureDeleted();
+    //dbContext.Database.EnsureCreated();
 }
 
 // Configure the HTTP request pipeline.

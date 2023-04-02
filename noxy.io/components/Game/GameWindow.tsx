@@ -24,7 +24,7 @@ export const GameWindow = (props: ScreenProps) => {
   trackSubscription(subscriptionAuth, async auth => {
     if (!auth.user) return;
     
-    const guild = await Guild.self();
+    const guild = await Guild.load();
     if (guild === null) {
       setScene(SceneType.WELCOME);
     }

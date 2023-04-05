@@ -9,14 +9,29 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+ApplicationConfiguration config = new(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddSignalR(options => options.EnableDetailedErrors = true);
 builder.Services.AddControllers();
-builder.Services.AddDbContext<APIContext>(options => options.UseMySQL(builder.Configuration["ConnectionStrings:MySQL"]!));
+builder.Services.AddDbContext<APIContext>(options => options.UseMySQL(config.Database.ConnectionString));
 builder.Services.AddTransient<IJWT, JWT>();
+builder.Services.AddTransient<IApplicationConfiguration, ApplicationConfiguration>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IGameRepository, GameRepository>();
+
+string corsPolicyName = "CORS";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicyName, policy =>
+    {
+        policy.AllowCredentials()
+        .WithOrigins(config.CORS.Origins)
+        .WithMethods(config.CORS.Methods)
+        .WithHeaders(config.CORS.Headers);
+    });
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.SaveToken = true;
@@ -25,9 +40,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:Audience"],
-        ValidIssuer = builder.Configuration["JWT:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!))
+        ValidAudience = config.JWT.Audience,
+        ValidIssuer = config.JWT.Issuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.JWT.Secret))
     };
     options.Events = new JwtBearerEvents
     {
@@ -41,12 +56,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         }
     };
 });
-
-string cors = "CORS Origin Policy";
-string[] origins = builder.Configuration.GetSection("CORS:Origins").Get<string[]>()!;
-string methods = builder.Configuration["CORS:Methods"]!;
-string headers = builder.Configuration["CORS:Headers"]!;
-builder.Services.AddCors(options => options.AddPolicy(cors, policy => policy.WithOrigins(origins).WithMethods(methods).WithHeaders(headers).AllowCredentials()));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -74,14 +83,14 @@ WebApplication app = builder.Build();
 using (IServiceScope scope = app.Services.CreateScope())
 {
     APIContext dbContext = scope.ServiceProvider.GetRequiredService<APIContext>();
-    //dbContext.Database.EnsureDeleted();
-    //dbContext.Database.EnsureCreated();
+    dbContext.Database.EnsureDeleted();
+    dbContext.Database.EnsureCreated();
+    dbContext.Seed();
 }
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -90,7 +99,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStatusCodePages();
-app.UseCors(cors);
+app.UseCors(corsPolicyName);
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseWebSockets();

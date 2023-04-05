@@ -1,9 +1,12 @@
 ﻿using api.noxy.io.Models.Auth;
 using api.noxy.io.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 
 namespace api.noxy.io.Models.Game.Guild
 {
@@ -22,6 +25,9 @@ namespace api.noxy.io.Models.Game.Guild
         [Required]
         public required UserEntity User { get; set; }
 
+        [Column(nameof(State), TypeName = "varchar(32)")]
+        public GuildStateType State { get; set; }
+
         public DateTime? TimeUnitRefresh { get; set; }
 
         public DateTime? TimeMissionRefresh { get; set; }
@@ -32,10 +38,23 @@ namespace api.noxy.io.Models.Game.Guild
         public List<UnitEntity> UnitList { get; set; } = new();
         public List<MissionEntity> MissionList { get; set; } = new();
         public List<GuildFeatEntity> GuildFeatList { get; set; } = new();
+        public List<GuildRoleEntity> GuildRoleList { get; set; } = new();
 
         #endregion -- Mapping --
 
-        public float GetModifierValue<T>(Func<T, bool> fn) where T : GuildModifierEntity => GetModifierValue(0, fn);
+        public GuildRoleModifierEntity.Set GetRoleModifierSet(Guid? type = null)
+        {
+            int count = (int)GetRoleModifierValue(GuildRoleModifierTagType.Count, type);
+            int experience = (int)GetRoleModifierValue(GuildRoleModifierTagType.Experience, type);
+            return new GuildRoleModifierEntity.Set(count, experience);
+        }
+
+        public float GetRoleModifierValue(GuildRoleModifierTagType tag, Guid? type = null, float flat = 0f) => GetModifierValue<GuildRoleModifierEntity>(flat, x => x.RoleType?.ID == type && x.Tag == tag);
+
+        public float GetUnitModifierValue(GuildUnitModifierTagType tag, float flat = 0f) => GetModifierValue<GuildUnitModifierEntity>(flat, x => x.Tag == tag);
+
+        public float GetUnitModifierValue(GuildMissionModifierTagType tag, float flat = 0f) => GetModifierValue<GuildMissionModifierEntity>(flat, x => x.Tag == tag);
+
         public float GetModifierValue<T>(float flat, Func<T, bool> fn) where T : GuildModifierEntity
         {
             float additive = 0f;
@@ -75,6 +94,7 @@ namespace api.noxy.io.Models.Game.Guild
         {
             public string Name { get; set; }
             public int Currency { get; set; }
+            public GuildStateType State { get; set; }
             public DateTime? TimeUnitRefresh { get; set; }
             public DateTime? TimeMissionRefresh { get; set; }
 
@@ -82,6 +102,7 @@ namespace api.noxy.io.Models.Game.Guild
             {
                 Name = entity.Name;
                 Currency = entity.Currency;
+                State = entity.State;
                 TimeUnitRefresh = entity.TimeUnitRefresh;
                 TimeMissionRefresh = entity.TimeMissionRefresh;
             }

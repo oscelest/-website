@@ -19,12 +19,13 @@ VALUES (
 );
 
 -- Insert Guild
-INSERT INTO guild (`ID`, `UserID`, `Name`, `Currency`, `TimeCreated`, `TimeUnitRefresh`, `TimeMissionRefresh`)
+INSERT INTO guild (`ID`, `UserID`, `Name`, `Currency`, `State`, `TimeCreated`, `TimeUnitRefresh`, `TimeMissionRefresh`)
 VALUES (
 	'33c8fcaa-302c-4d4e-9953-c0bb5839f3f5', 
     '6c833097-d117-4215-888e-8f4d882af274',
     'Test', 
     100,
+    'Welcome',
     UTC_TIMESTAMP(),
     UTC_TIMESTAMP(),
     UTC_TIMESTAMP()

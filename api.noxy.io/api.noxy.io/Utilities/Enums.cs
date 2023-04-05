@@ -1,5 +1,11 @@
 ﻿namespace api.noxy.io.Utilities
 {
+    public enum GuildStateType
+    {
+        Home = 0,
+        Combat = 1,
+    }
+
     public enum ArithmeticalTagType
     {
         Additive,

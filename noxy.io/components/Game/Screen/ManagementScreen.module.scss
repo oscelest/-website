@@ -17,5 +17,11 @@
       align-items:     center;
       grid-column-gap: 10px;
     }
+
+    .Page {
+      display:  flex;
+      flex:     1 1 auto;
+      overflow: auto;
+    }
   }
 }

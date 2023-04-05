@@ -13,11 +13,11 @@ namespace api.noxy.io.Controllers
         private readonly IUserRepository _user;
         private readonly IGameRepository _game;
 
-        public MissionController(IJWT jwt, IUserRepository user, IGameRepository guild)
+        public MissionController(IJWT jwt, IUserRepository user, IGameRepository game)
         {
             _jwt = jwt;
             _user = user;
-            _game = guild;
+            _game = game;
         }
 
         [HttpGet("Load")]

@@ -1,69 +1,60 @@
-import {Loader} from "@noxy/react-loader";
 import {trackSubscription, useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
+import {useRouter} from "next/router";
 import React from "react";
 import {Guild} from "../../entity/Guild";
-import {SceneType} from "../../enums/SceneType";
-import {subscriptionAuth, subscriptionGuild, subscriptionScene} from "../../Globals";
+import {subscriptionGuild, subscriptionUser} from "../../Globals";
 import {Authorization} from "../Authorization/Authorization";
 import Style from "./GameWindow.module.scss";
-import {CraftingScene} from "./Scene/CraftingScene";
-import {HomeScene} from "./Scene/HomeScene";
-import {RecruitmentScene} from "./Scene/RecruitmentScene";
-import {ShopScene} from "./Scene/ShopScene";
-import {WelcomeScene} from "./Scene/WelcomeScene";
+import {BattleScreen} from "./Screen/BattleScreen";
+import {ManagementScreen} from "./Screen/ManagementScreen";
 
 export const GameWindow = (props: ScreenProps) => {
   const {className, children, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
   
-  const [scene, setScene] = useSubscription(subscriptionScene);
-  const [auth] = useSubscription(subscriptionAuth);
-  const [, setGuild] = useSubscription(subscriptionGuild);
+  const router = useRouter();
+  const [guild, setGuild] = useSubscription(subscriptionGuild);
   
-  trackSubscription(subscriptionAuth, async auth => {
-    if (!auth.user) return;
-    
-    const guild = await Guild.load();
-    if (guild === null) {
-      setScene(SceneType.WELCOME);
+  trackSubscription(subscriptionUser, async auth => {
+    if (!auth.value) return;
+    setGuild({loading: true});
+    setGuild({loading: false, value: await Guild.load()});
+  });
+  
+  trackSubscription(subscriptionGuild, guild2 => {
+    if (guild2.loading) return;
+    if (guild2.value && guild.value?.state !== guild2.value.state) {
+      if (guild2.value.state === 0) {
+        return router.push("/");
+      }
+      if (guild2.value.state === 1) {
+        return router.push("/battle");
+      }
     }
-    else {
-      setGuild(guild);
-      setScene(SceneType.HOME);
-    }
+    return router.push("/welcome");
   });
   
   return (
     <div {...component_props} className={classes}>
-      <Loader loading={auth.refreshing}>
-        <Authorization>
-          <Loader loading={scene === SceneType.NONE}>
-            {renderScene(scene)}
-          </Loader>
-        </Authorization>
-      </Loader>
+      <Authorization>
+        {renderState(guild.value?.state)}
+      </Authorization>
     </div>
   );
   
-  function renderScene(scene?: SceneType) {
-    switch (scene) {
-      case SceneType.HOME:
-        return <HomeScene/>;
-      case SceneType.WELCOME:
-        return <WelcomeScene/>;
-      case SceneType.CRAFTING:
-        return <CraftingScene/>;
-      case SceneType.SHOP:
-        return <ShopScene/>;
-      case SceneType.RECRUITMENT:
-        return <RecruitmentScene/>;
+  function renderState(state?: number | null) {
+    switch (state) {
+      case 0:
+        return <ManagementScreen>{children}</ManagementScreen>;
+      case 1:
+        return <BattleScreen>{children}</BattleScreen>;
       default:
-        return null;
+        return children as JSX.Element;
     }
   }
 };
 
 export interface ScreenProps extends HTMLComponentProps {
-  children?: never;
+
 }

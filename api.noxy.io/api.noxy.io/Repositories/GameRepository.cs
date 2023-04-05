@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using api.noxy.io.Models.Auth;
+using System;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace api.noxy.io.Interface
 {
@@ -78,9 +80,6 @@ namespace api.noxy.io.Interface
                 Name = name,
                 Currency = 100,
                 User = user,
-                UnitList = new(),
-                MissionList = new(),
-                GuildFeatList = new(),
             });
 
             List<FeatEntity> featList = await _db.Feat.Where(x => x.RequirementList.Count() == 0).ToListAsync();
@@ -90,6 +89,18 @@ namespace api.noxy.io.Interface
                     new GuildFeatEntity
                     {
                         Feat = feat,
+                        Guild = guildEntry.Entity,
+                    }
+                );
+            }
+
+            List<RoleEntity> roleList = await _db.Role.Where(x => x.RequirementList.Count() == 0).ToListAsync();
+            foreach (RoleEntity role in roleList)
+            {
+                await _db.GuildRole.AddAsync(
+                    new GuildRoleEntity
+                    {
+                        Role = role,
                         Guild = guildEntry.Entity,
                     }
                 );
@@ -153,6 +164,7 @@ namespace api.noxy.io.Interface
             GuildEntity guild = await _db.Guild
                 .Include(x => x.UnitList).ThenInclude(x => x.RoleLevelList).ThenInclude(x => x.Role).ThenInclude(x => x.RoleType)
                 .Include(x => x.GuildFeatList).ThenInclude(x => x.Feat).ThenInclude(x => x.GuildModifierList)
+                .Include(x => x.GuildRoleList).ThenInclude(x => x.Role).ThenInclude(x => x.RoleType)
                 .FirstOrDefaultAsync(x => x.User.ID == userID)
                 ?? throw new EntityNotFoundException(userID);
 
@@ -167,46 +179,39 @@ namespace api.noxy.io.Interface
             guild.UnitList = guild.UnitList.Where(x => x.Recruited).ToList();
 
             int countBase = int.TryParse(_config["Game:UnitListCount"], out int countConfig) ? countConfig : 0;
-            int countTotal = (int)guild.GetModifierValue<GuildUnitModifierEntity>(countBase, x => x.Tag == GuildUnitModifierTagType.Count);
-            int experienceTotal = (int)guild.GetModifierValue<GuildUnitModifierEntity>(x => x.Tag == GuildUnitModifierTagType.Experience);
+            int countTotal = (int)guild.GetUnitModifierValue(GuildUnitModifierTagType.Count, countBase);
+            int experienceTotal = (int)guild.GetUnitModifierValue(GuildUnitModifierTagType.Experience);
 
-            // TODO: Should load your available roles
-            List<RoleEntity> role_list = await _db.Role.ToListAsync();
-            Dictionary<Guid, IEnumerable<RoleEntity>> role_dict = new()
-            {
-                { Guid.Empty, role_list }
-            };
-            Dictionary<Guid, int> role_type_dict = new()
-            {
-                { Guid.Empty, (int)guild.GetModifierValue<GuildRoleModifierEntity>(x => x.RoleType == null && x.Tag == GuildRoleModifierTagType.Count) }
-            };
-
-            foreach (RoleTypeEntity type in await _db.RoleType.ToListAsync())
-            {
-                role_dict.Add(type.ID, role_list.Where(x => x.RoleType.ID == type.ID));
-                role_type_dict.Add(type.ID, (int)guild.GetModifierValue<GuildRoleModifierEntity>(x => x.RoleType.ID == type.ID && x.Tag == GuildRoleModifierTagType.Count));
-            }
-
+            GuildRoleModifierEntity.Set current = guild.GetRoleModifierSet();
+            Dictionary<Guid, GuildRoleModifierEntity.Set> dictRole = await _db.RoleType.ToDictionaryAsync(x => x.ID, x => guild.GetRoleModifierSet(x.ID));
             for (int i = 0; i < countTotal; i++)
             {
                 EntityEntry<UnitEntity> unitEntry = await _db.Unit.AddAsync(new()
                 {
                     Name = $"Recruitable Unit #{i + 1}",
-                    Experience = RNG.IntBetweenFactors(experienceTotal),
+                    Experience = RNG.IntBetweenFactors(experienceTotal, 0.9f, 1.1f),
                     Recruited = false,
                     Guild = guild,
                     RoleLevelList = new List<RoleLevelEntity>(),
                 });
 
-                foreach (KeyValuePair<Guid, int> pair in role_type_dict)
+                Stack<int> splitCount = RNG.SplitIntRandomly(current.Count, dictRole.Count);
+                foreach (KeyValuePair<Guid, GuildRoleModifierEntity.Set> pair in dictRole)
                 {
-                    foreach (RoleEntity role in RNG.GetRandomElementList(role_dict[pair.Key], pair.Value))
+                    int nextCount = splitCount.Pop();
+                    int totalCount = pair.Value.Count + nextCount;
+                    int totalExperience = RNG.IntBetweenFactors(current.Experience * nextCount + pair.Value.Experience * pair.Value.Count, 0.9f, 1.1f);
+
+                    Stack<int> splitExperience = RNG.SplitIntRandomly(totalExperience, totalCount);
+                    IEnumerable<GuildRoleEntity> roleList = guild.GuildRoleList.Where(x => x.Role.RoleType.ID == pair.Key);
+                    IEnumerable<GuildRoleEntity> randomList = RNG.GetRandomElementList(roleList, totalCount);
+                    foreach (GuildRoleEntity item in randomList)
                     {
                         EntityEntry<RoleLevelEntity> roleLevelEntry = await _db.RoleLevel.AddAsync(new()
                         {
-                            Experience = 0,
+                            Experience = splitExperience.Pop(),
                             Unit = unitEntry.Entity,
-                            Role = role,
+                            Role = item.Role,
                         });
                     }
                 }
@@ -222,6 +227,7 @@ namespace api.noxy.io.Interface
             GuildEntity guild = await _db.Guild
                 .Include(x => x.MissionList).ThenInclude(x => x.UnitList).ThenInclude(x => x.RoleLevelList).ThenInclude(x => x.Role).ThenInclude(x => x.RoleType)
                 .Include(x => x.GuildFeatList).ThenInclude(x => x.Feat).ThenInclude(x => x.GuildModifierList)
+                .Include(x => x.GuildRoleList).ThenInclude(x => x.Role).ThenInclude(x => x.RoleType)
                 .FirstOrDefaultAsync(x => x.User.ID == userID)
                 ?? throw new EntityNotFoundException(userID);
 

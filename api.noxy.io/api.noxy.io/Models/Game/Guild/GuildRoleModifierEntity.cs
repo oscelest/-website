@@ -11,8 +11,19 @@ namespace api.noxy.io.Models.Game.Guild
         [Column(nameof(Tag), TypeName = "varchar(32)")]
         public required GuildRoleModifierTagType Tag { get; set; }
 
-        [Required]
-        public required RoleTypeEntity RoleType { get; set; }
+        public RoleTypeEntity? RoleType { get; set; }
+
+        public class Set
+        {
+            public int Count;
+            public int Experience;
+
+            public Set(int count, int experience)
+            {
+                Count = count;
+                Experience = experience;
+            }
+        }
 
         #region -- DTO --
 
@@ -21,12 +32,12 @@ namespace api.noxy.io.Models.Game.Guild
         new public class DTO : GuildModifierEntity.DTO
         {
             public GuildRoleModifierTagType Tag { get; set; }
-            public RoleTypeEntity.DTO RoleType { get; set; }
+            public RoleTypeEntity.DTO? RoleType { get; set; }
 
             public DTO(GuildRoleModifierEntity entity) : base(entity)
             {
                 Tag = entity.Tag;
-                RoleType = entity.RoleType.ToDTO();
+                RoleType = entity.RoleType?.ToDTO();
             }
         }
 

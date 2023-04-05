@@ -1,18 +1,19 @@
 import {HubConnection} from "@microsoft/signalr";
 import {createSubscription} from "@noxy/react-subscription-hook";
 import {Guild} from "./entity/Guild";
+import {Mission} from "./entity/Mission";
+import {Unit} from "./entity/Unit";
 import {User} from "./entity/User";
-import {SceneType} from "./enums/SceneType";
 
-export const subscriptionAuth = createSubscription<Authorization>({refreshing: true});
-export const subscriptionGuild = createSubscription<Guild | undefined>(undefined);
-export const subscriptionScene = createSubscription<SceneType>(SceneType.NONE);
+export const subscriptionUser = createSubscription<Data<User>>({});
+export const subscriptionGuild = createSubscription<Data<Guild>>({});
+export const subscriptionUnitList = createSubscription<Data<Unit[]>>({loading: false, value: []});
+export const subscriptionMissionList = createSubscription<Data<Mission[]>>({loading: false, value: []});
 export const subscriptionSocket = createSubscription<HubConnection | undefined>(undefined);
 
-export interface Authorization {
-  refreshing?: boolean;
-  user?: User;
-  jwt?: string;
+export interface Data<E> {
+  value?: E
+  loading?: boolean
 }
 
 export interface APIErrorResponse {

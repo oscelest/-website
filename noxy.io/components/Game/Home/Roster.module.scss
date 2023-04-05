@@ -1,5 +1,7 @@
 .Component {
   display: flex;
   flex: 0 0 auto;
-  width: 350px;
+  flex-flow: column;
+  width: 400px;
+  align-items: center;
 }

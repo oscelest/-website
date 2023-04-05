@@ -1,4 +1,5 @@
-﻿using api.noxy.io.Interface;
+﻿using api.noxy.io.Exceptions;
+using api.noxy.io.Interface;
 using api.noxy.io.Models.Auth;
 using api.noxy.io.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -19,7 +20,7 @@ namespace api.noxy.io.Controllers
         private readonly IJWT _jwt;
         private readonly IUserRepository _user;
 
-        public UserController(IJWT jwt, IUserRepository user, IConfiguration config)
+        public UserController(IJWT jwt, IUserRepository user)
         {
             _jwt = jwt;
             _user = user;
@@ -53,10 +54,13 @@ namespace api.noxy.io.Controllers
         {
             try
             {
-                UserEntity? user = await _user.FindOne(input.Email);
-                if (user == null) return Unauthorized();
+                UserEntity user = await _user.FindOne(input.Email);
                 byte[] hash = UserEntity.GenerateHash(input.Password, user.Salt);
                 return hash.SequenceEqual(user.Hash) ? Ok(new AuthResponse(user.ToDTO(), _jwt.Generate(user))) : Unauthorized();
+            }
+            catch (EntityNotFoundException)
+            {
+                return Unauthorized();
             }
             catch
             {

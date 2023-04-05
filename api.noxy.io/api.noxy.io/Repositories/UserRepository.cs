@@ -35,9 +35,9 @@ namespace api.noxy.io.Interface
 
         public async Task<UserEntity> Create(string email, string password)
         {
-            var salt = UserEntity.GenerateSalt();
-            var hash = UserEntity.GenerateHash(password, salt);
-            var user = new UserEntity() { Email = email, Salt = salt, Hash = hash };
+            byte[] salt = UserEntity.GenerateSalt();
+            byte[] hash = UserEntity.GenerateHash(password, salt);
+            UserEntity user = new() { Email = email, Salt = salt, Hash = hash };
 
             await _db.User!.AddAsync(user);
             await _db.SaveChangesAsync();

@@ -3,16 +3,15 @@ import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
 import Image from "next/image";
 import React from "react";
-import {Guild} from "../../entity/Guild";
 import {RoleLevel} from "../../entity/RoleLevel";
 import {Unit} from "../../entity/Unit";
-import {subscriptionGuild} from "../../Globals";
+import {subscriptionUnitList} from "../../Globals";
 import Style from "./UnitPill.module.scss";
 
 export const UnitPill = (props: UnitPillProps) => {
   const {className, unit, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
-  const [guild, setGuild] = useSubscription(subscriptionGuild);
+  const [, setUnitData] = useSubscription(subscriptionUnitList);
   const [affinity_list = [], profession_list = []] = unit.getRoleLevelListSet();
   
   return (
@@ -27,7 +26,7 @@ export const UnitPill = (props: UnitPillProps) => {
             {unit.getCost()}
             <Image className={Style.RoleIcon} src={`/img/currency.png`} alt="" width={24} height={24}/>
           </div>
-          <Button className={Style.RecruitButton} value={unit} onSubmit={onRecruitClick}>Recruit</Button>
+          <Button className={Style.RecruitButton} value={unit} onSubmit={onRecruitSubmit}>Recruit</Button>
         </div>
       </div>
       <div className={Style.RoleList}>
@@ -41,9 +40,10 @@ export const UnitPill = (props: UnitPillProps) => {
     </div>
   );
   
-  async function onRecruitClick() {
+  async function onRecruitSubmit(unit: Unit) {
+    setUnitData({loading: true});
     await Unit.recruit(unit);
-    setGuild(new Guild({...guild!.toJSON(), unitList: await Unit.load()}));
+    setUnitData({loading: false, value: await Unit.load()});
   }
   
   function renderRoleLevel(level: RoleLevel, index: number = 0) {

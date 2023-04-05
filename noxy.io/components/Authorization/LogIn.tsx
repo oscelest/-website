@@ -5,7 +5,7 @@ import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
 import React, {useState} from "react";
 import {ResponseError} from "superagent";
 import {User} from "../../entity/User";
-import {BadRequestResponse, subscriptionAuth} from "../../Globals";
+import {BadRequestResponse, subscriptionUser} from "../../Globals";
 import Style from "./LogIn.module.scss";
 
 export const LogIn = (props: LogInProps) => {
@@ -17,7 +17,7 @@ export const LogIn = (props: LogInProps) => {
   const [email_error, setEmailError] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [password_error, setPasswordError] = useState<string>("");
-  const [, setAuth] = useSubscription(subscriptionAuth);
+  const [, setUser] = useSubscription(subscriptionUser);
   
   return (
     <div {...component_props} className={classes}>
@@ -44,8 +44,7 @@ export const LogIn = (props: LogInProps) => {
     setPasswordError("");
     
     try {
-      const [user, jwt] = await User.login(email, password);
-      setAuth({jwt, user});
+      setUser({value: await User.login(email, password)});
     }
     catch (error) {
       if (error instanceof Error) {

@@ -1,12 +1,13 @@
 .Component {
   display:      flex;
   flex:         1 1 auto;
+  flex-flow:    column;
   overflow:     auto;
   grid-row-gap: 10px;
 
   .UnitList {
     display:         flex;
-    flex:            0 0  auto;
+    flex:            0 0 auto;
     flex-flow:       row wrap;
     align-items:     flex-start;
     justify-content: flex-start;

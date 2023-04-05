@@ -5,7 +5,7 @@ import {HTMLComponentProps} from "@noxy/react-utils";
 import React, {useState} from "react";
 import {ResponseError} from "superagent";
 import {User} from "../../entity/User";
-import {BadRequestResponse, subscriptionAuth} from "../../Globals";
+import {BadRequestResponse, subscriptionUser} from "../../Globals";
 import Style from "./SignUp.module.scss";
 
 export const SignUp = (props: SignUpProps) => {
@@ -17,7 +17,7 @@ export const SignUp = (props: SignUpProps) => {
   const [password_error, setPasswordError] = useState<string>("");
   const [confirm, setConfirm] = useState<string>("");
   const [confirm_error, setConfirmError] = useState<string>("");
-  const [, setUser] = useSubscription(subscriptionAuth);
+  const [, setUser] = useSubscription(subscriptionUser);
   
   const classes = [Style.Component];
   if (className) classes.push(className);
@@ -52,8 +52,7 @@ export const SignUp = (props: SignUpProps) => {
   
   async function onSignUpClick() {
     try {
-      const [user, jwt] = await User.signup(email, password);
-      setUser({user, jwt});
+      setUser({value: await User.signup(email, password)});
     }
     catch (error) {
       if (error instanceof Error) {

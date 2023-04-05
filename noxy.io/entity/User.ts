@@ -1,10 +1,13 @@
-import Superagent from "superagent";
+import Superagent, {Response, SuperAgentRequest} from "superagent";
+import {LocalStorageKeyType} from "../enums/LocalStorageKeyType";
 import {SimpleEntity, SimpleEntityJSON} from "./SimpleEntity";
 
 export class User extends SimpleEntity {
   
   public email: string;
   public token: string;
+  
+  private static authentication_request: SuperAgentRequest | undefined;
   
   constructor(init?: UserJSON) {
     super(init);
@@ -20,30 +23,53 @@ export class User extends SimpleEntity {
     };
   }
   
+  
+  public static async signup(email: string, password: string) {
+    return this.handleResponse(await this.handleAuthenticationRequest(AuthenticationType.SignUp, email, password));
+  }
+  
   public static async login(email: string, password: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/LogIn`).send({email, password});
-    return this.handleResponse(response.body);
+    return this.handleResponse(await this.handleAuthenticationRequest(AuthenticationType.LogIn, email, password));
   }
   
   public static async refresh(auth: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/Refresh`).auth(auth, {type: "bearer"});
-    return this.handleResponse(response.body);
+    return this.handleResponse(await this.handleAuthenticationRequest(AuthenticationType.Refresh, auth));
   }
   
-  public static async signup(email: string, password: string) {
-    const response = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/SignUp`).send({email, password});
-    return this.handleResponse(response.body);
+  private static async handleAuthenticationRequest(type: AuthenticationType.SignUp | AuthenticationType.LogIn, email: string, password: string): Promise<SuperAgentRequest>
+  private static async handleAuthenticationRequest(type: AuthenticationType.Refresh, auth: string): Promise<SuperAgentRequest>
+  private static async handleAuthenticationRequest(type: AuthenticationType, arg1: string, arg2?: string): Promise<SuperAgentRequest> {
+    if (this.authentication_request) return this.authentication_request;
+    switch (type) {
+      case AuthenticationType.LogIn:
+        this.authentication_request = Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/LogIn`).send({email: arg1, password: arg2});
+        break;
+      case AuthenticationType.SignUp:
+        this.authentication_request = Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/Signup`).send({email: arg1, password: arg2});
+        break;
+      case AuthenticationType.Refresh:
+        this.authentication_request = Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/User/Refresh`).auth(arg1, {type: "bearer"});
+        break;
+    }
+    
+    return this.authentication_request!.then(request => request).finally(() => this.authentication_request = undefined);
   }
   
-  private static handleResponse(response: {user: UserJSON, token: string}): [User, string] {
-    const {user, token} = response;
-    localStorage.setItem("auth", token);
-    return [new User(user), token];
+  private static handleResponse({body}: Response): User {
+    const {user, token} = body;
+    localStorage.setItem(LocalStorageKeyType.JWT, token);
+    return new User(user);
   }
   
   public static logout() {
-    localStorage.removeItem("auth");
+    localStorage.removeItem(LocalStorageKeyType.JWT);
   }
+}
+
+enum AuthenticationType {
+  SignUp  = 0,
+  LogIn   = 1,
+  Refresh = 2,
 }
 
 export interface UserJSON extends SimpleEntityJSON {

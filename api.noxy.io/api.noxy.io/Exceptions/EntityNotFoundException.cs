@@ -4,13 +4,13 @@ namespace api.noxy.io.Exceptions
 {
     public class EntityNotFoundException : Exception
     {
-        public Guid UserID { get; private set; }
-        public SingleEntity? ParentEntity { get; private set; }
-
-        public EntityNotFoundException(Guid userID, SingleEntity? parent = null)
+        public EntityNotFoundException()
         {
-            UserID = userID;
-            ParentEntity = parent;
+        }
+
+        public EntityNotFoundException(string message) : base(message)
+        {
+
         }
     }
 }

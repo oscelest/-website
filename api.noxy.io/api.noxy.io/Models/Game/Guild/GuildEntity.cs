@@ -21,10 +21,11 @@ namespace api.noxy.io.Models.Game.Guild
         public required int Currency { get; set; }
 
         [Required]
-        public required UserEntity User { get; set; }
-
         [Column(nameof(State), TypeName = "varchar(32)")]
         public GuildStateType State { get; set; }
+
+        [Required]
+        public required UserEntity User { get; set; }
 
         public DateTime? TimeUnitRefresh { get; set; }
 
@@ -34,9 +35,9 @@ namespace api.noxy.io.Models.Game.Guild
         
         public List<MissionEntity> MissionList { get; set; } = new();
         
-        public required List<GuildFeatEntity> GuildFeatList { get; set; } = new();
+        public List<GuildFeatEntity> GuildFeatList { get; set; } = new();
         
-        public required List<GuildRoleEntity> GuildRoleList { get; set; } = new();
+        public List<GuildRoleEntity> GuildRoleList { get; set; } = new();
 
         public GuildRoleModifierEntity.Set GetRoleModifierSet(Guid? type = null)
         {

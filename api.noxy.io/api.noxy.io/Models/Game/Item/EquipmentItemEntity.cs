@@ -7,7 +7,7 @@ namespace api.noxy.io.Models.Game.Item
     {
         public required EquipmentSlotEntity Slot { get; set; }
 
-        public required List<ItemSocketEntity> ItemSocketList { get; set; } = new List<ItemSocketEntity>();
+        public List<SocketEntity> SocketList { get; set; } = new List<SocketEntity>();
 
         #region -- DTO --
 

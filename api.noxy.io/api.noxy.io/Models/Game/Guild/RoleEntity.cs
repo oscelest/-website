@@ -13,8 +13,9 @@ namespace api.noxy.io.Models.Game.Guild
         public required string Name { get; set; }
 
         [Required]
-        public required RoleTypeEntity RoleType { get; set; }
+        public required RoleTypeEntity RoleGroup { get; set; }
 
+        [Comment("The list of requirements for a guild to unlock this role")]
         public List<RequirementEntity> RequirementList { get; set; } = new();
 
         #region -- Mapping --
@@ -31,12 +32,12 @@ namespace api.noxy.io.Models.Game.Guild
         new public class DTO : SingleEntity.DTO
         {
             public string Name { get; set; }
-            public RoleTypeEntity.DTO RoleType { get; set; }
+            public RoleTypeEntity.DTO RoleGroup { get; set; }
 
             public DTO(RoleEntity entity) : base(entity)
             {
                 Name = entity.Name;
-                RoleType = entity.RoleType.ToDTO();
+                RoleGroup = entity.RoleGroup.ToDTO();
             }
         }
 

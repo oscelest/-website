@@ -2,15 +2,13 @@
 {
     public class EntityAlreadyExistsException : Exception
     {
-        public string Type { get; private set; }
-        public string Property { get; private set; }
-        public object Value { get; private set; }
-
-        public EntityAlreadyExistsException(string type, string property, object value)
+        public EntityAlreadyExistsException()
         {
-            Type = type;
-            Property = property;
-            Value = value;
+        }
+
+        public EntityAlreadyExistsException(string message) : base(message)
+        {
+
         }
     }
 }

@@ -13,7 +13,7 @@ namespace api.noxy.io.Models.Game.Item
 
         [Required]
         [Comment("The list of unit types using this equipment slot.")]
-        public List<UnitTypeEntity> UnitTypeList { get; set; } = new();
+        public List<UnitEntity> UnitTypeList { get; set; } = new();
         
         #region -- DTO --
 

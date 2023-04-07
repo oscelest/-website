@@ -28,7 +28,7 @@ namespace api.noxy.io.Models.Game.Item
         {
             public string Name { get; set; }
 
-            public DTO(ItemEntity entity) : base(entity)
+            public DTO(SocketEntity entity) : base(entity)
             {
                 Name = entity.Name;
             }

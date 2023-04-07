@@ -7,9 +7,11 @@ namespace api.noxy.io.Models.Game.Guild
     public class GuildRoleEntity : JunctionEntity
     {
         [Required]
-        public required RoleEntity Role { get; set; }
+        public required GuildEntity Guild { get; set; }
 
         [Required]
-        public required GuildEntity Guild { get; set; }
+        public required RoleEntity Role { get; set; }
+
+
     }
 }

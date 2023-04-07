@@ -12,13 +12,6 @@ namespace api.noxy.io.Models.Game.Item
         [MinLength(3), MaxLength(64)]
         public required string Name { get; set; }
 
-        [Required]
-        public required bool Stackable { get; set; }
-
-        [Required]
-        [MinLength(3), MaxLength(64)]
-        public required GuildEntity Guild { get; set; }
-
         #region -- DTO --
 
         new public DTO ToDTO() => new(this);

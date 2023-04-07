@@ -2,11 +2,13 @@
 {
     public class NotEnoughCurrencyException : Exception
     {
-        public int Currency { get; private set; }
-
-        public NotEnoughCurrencyException(int currency)
+        public NotEnoughCurrencyException()
         {
-            Currency = currency;
+        }
+
+        public NotEnoughCurrencyException(string message) : base(message)
+        {
+
         }
     }
 }

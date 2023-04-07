@@ -1,41 +1,20 @@
 ﻿using api.noxy.io.Models.Game.Item;
-using System.ComponentModel;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.Game.Guild
 {
-    [Table("Unit")]
+    [Table("UnitBase")]
     public class UnitEntity : SingleEntity
     {
         [Required]
         [MinLength(3), MaxLength(64)]
-        public required string Name { get; set; } 
+        public required string Name { get; set; }
 
         [Required]
-        [DefaultValue(0)]
-        public required int Experience { get; set; } 
-
-        [Required]
-        [DefaultValue(false)]
-        public required bool Recruited { get; set; }
-
-        [Required]
-        public required GuildEntity Guild { get; set; }
-
-        [Required]
-        public required UnitTypeEntity UnitType { get; set; }
-
-        [Required]
-        public required List<UnitRoleEntity> UnitRoleList { get; set; }
-
-        public required List<EquipmentItemEntity> EquipmentItemList { get; set; }
-
-        public int GetCost()
-        {
-            // TODO: Implement cost calcualtion based on role level list values
-            return 0;
-        }
+        [Comment("The list of equipment slots available to a unit with this unit type.")]
+        public List<EquipmentSlotEntity> EquipmentSlotList { get; set; } = new();
 
         #region -- DTO --
 
@@ -44,16 +23,12 @@ namespace api.noxy.io.Models.Game.Guild
         new public class DTO : SingleEntity.DTO
         {
             public string Name { get; set; }
-            public int Experience { get; set; }
-            public bool Recruited { get; set; }
-            public IEnumerable<UnitRoleEntity.DTO> RoleLevelList { get; set; } 
+            public IEnumerable<EquipmentSlotEntity.DTO> EquipmentSlotList { get; set; }
 
             public DTO(UnitEntity entity) : base(entity)
             {
                 Name = entity.Name;
-                Experience = entity.Experience;
-                Recruited = entity.Recruited;
-                RoleLevelList = entity.RoleLevelList.Select(x => x.ToDTO());
+                EquipmentSlotList = entity.EquipmentSlotList.Select(x => x.ToDTO());
             }
         }
 

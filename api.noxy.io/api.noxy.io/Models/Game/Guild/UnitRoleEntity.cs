@@ -17,7 +17,7 @@ namespace api.noxy.io.Models.Game.Guild
 
         [Required]
         [Comment("The role being owning by the unit")]
-        public required RoleEntity Role { get; set; } 
+        public required GuildRoleEntity Role { get; set; } 
 
         #region -- DTO --
 
@@ -26,7 +26,7 @@ namespace api.noxy.io.Models.Game.Guild
         new public class DTO : SingleEntity.DTO
         {
             public int Experience { get; set; }
-            public RoleEntity.DTO Role { get; set; }
+            public GuildRoleEntity.DTO Role { get; set; }
 
             public DTO(UnitRoleEntity entity) : base(entity)
             {

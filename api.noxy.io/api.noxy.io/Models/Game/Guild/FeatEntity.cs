@@ -12,9 +12,9 @@ namespace api.noxy.io.Models.Game.Guild
         [MinLength(3), MaxLength(64)]
         public required string Name { get; set; } = string.Empty;
 
-        public required List<RequirementEntity> RequirementList { get; set; } = new();
+        public List<RequirementEntity> RequirementList { get; set; } = new();
 
-        public required List<GuildModifierEntity> GuildModifierList { get; set; } = new();
+        public List<GuildModifierEntity> GuildModifierList { get; set; } = new();
 
         #region -- Mapping --
 

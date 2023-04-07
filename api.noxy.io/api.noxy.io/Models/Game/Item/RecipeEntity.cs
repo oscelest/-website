@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using api.noxy.io.Models.Game.Guild;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,9 +9,10 @@ namespace api.noxy.io.Models.Game.Item
     public class RecipeEntity : SingleEntity
     {
         [Required]
-        [Comment("The resulting item of the recipe")]
+        [Comment("The resulting item from performing this recipe.")]
         public required ItemEntity Item { get; set; }
 
+        [Comment("The list of items required to perform this recipe.")]
         public List<RecipeItemEntity> RecipeItemList { get; set; } = new();
 
         #region -- DTO --

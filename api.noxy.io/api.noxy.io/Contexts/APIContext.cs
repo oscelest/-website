@@ -15,30 +15,30 @@ namespace api.noxy.io.Context
         public DbSet<FeatEntity> Feat => Set<FeatEntity>();
 
         public DbSet<GuildEntity> Guild => Set<GuildEntity>();
+        public DbSet<GuildUnitEntity> GuildUnit => Set<GuildUnitEntity>();
         public DbSet<GuildRoleEntity> GuildRole => Set<GuildRoleEntity>();
         public DbSet<GuildFeatEntity> GuildFeat => Set<GuildFeatEntity>();
         public DbSet<GuildItemEntity> GuildItem => Set<GuildItemEntity>();
+        public DbSet<GuildRecipeEntity> GuildRecipe => Set<GuildRecipeEntity>();
 
         public DbSet<GuildModifierEntity> GuildModifier => Set<GuildModifierEntity>();
         public DbSet<GuildRoleModifierEntity> GuildRoleModifier => Set<GuildRoleModifierEntity>();
         public DbSet<GuildUnitModifierEntity> GuildUnitModifier => Set<GuildUnitModifierEntity>();
         public DbSet<GuildMissionModifierEntity> GuildMissionModifier => Set<GuildMissionModifierEntity>();
 
-        public DbSet<RoleEntity> Role => Set<RoleEntity>();
+        public DbSet<GuildRoleEntity> Role => Set<GuildRoleEntity>();
         public DbSet<RoleTypeEntity> RoleType => Set<RoleTypeEntity>();
 
         public DbSet<UnitEntity> Unit => Set<UnitEntity>();
         public DbSet<UnitRoleEntity> UnitRole => Set<UnitRoleEntity>();
-        public DbSet<UnitTypeEntity> UnitType => Set<UnitTypeEntity>();
 
         public DbSet<MissionEntity> Mission => Set<MissionEntity>();
-        public DbSet<MissionTypeEntity> MissionType => Set<MissionTypeEntity>();
 
         public DbSet<RequirementEntity> Requirement => Set<RequirementEntity>();
 
         public DbSet<ItemEntity> Item => Set<ItemEntity>();
         public DbSet<ItemSocketEntity> ItemSocket => Set<ItemSocketEntity>();
-        
+
         public DbSet<MaterialItemEntity> MaterialItem => Set<MaterialItemEntity>();
 
         public DbSet<EquipmentItemEntity> EquipmentItem => Set<EquipmentItemEntity>();
@@ -66,11 +66,12 @@ namespace api.noxy.io.Context
         public void Seed()
         {
 
-            var RequirementRoleAffinity = Requirement.Add(new() { ID = Guid.NewGuid() });
-            var RequirementRoleProfession = Requirement.Add(new() { ID = Guid.NewGuid() });
+            var RequirementRoleAdventuring = Requirement.Add(new() { });
+            var RequirementRoleGathering = Requirement.Add(new() { });
+            var RequirementRoleCrafting = Requirement.Add(new() { });
 
-            var RoleTypeAffinity = RoleType.Add(new() { Name = "Affinity" });
-            var RoleTypeProfession = RoleType.Add(new() { Name = "Profession" });
+            var RoleTypeAdventuring = RoleType.Add(new() { Name = "Adventuring" });
+            var RoleTypeGathering = RoleType.Add(new() { Name = "Gathering" });
 
             var FeatFirstGuild = Feat.Add(new() { Name = "First guild recruited" });
             var FeatFirstUnit = Feat.Add(new() { Name = "First unit recruited" });
@@ -78,25 +79,23 @@ namespace api.noxy.io.Context
             var FeatFirstRole = Feat.Add(new() { Name = "First role unlocked" });
             var FeatFirstAdventure = Feat.Add(new() { Name = "First adventure completed" });
 
-            Role.Add(new() { Name = "Cleric", RoleType = RoleTypeAffinity.Entity });
-            Role.Add(new() { Name = "Knight", RoleType = RoleTypeAffinity.Entity });
-            Role.Add(new() { Name = "Ranger", RoleType = RoleTypeAffinity.Entity });
-            Role.Add(new() { Name = "Paladin", RoleType = RoleTypeAffinity.Entity, RequirementList = new() { RequirementRoleAffinity.Entity } });
-            Role.Add(new() { Name = "Dark Knight", RoleType = RoleTypeAffinity.Entity, RequirementList = new() { RequirementRoleAffinity.Entity } });
+            Role.Add(new() { Name = "Cleric", RoleType = RoleTypeAdventuring.Entity });
+            Role.Add(new() { Name = "Knight", RoleType = RoleTypeAdventuring.Entity });
+            Role.Add(new() { Name = "Ranger", RoleType = RoleTypeAdventuring.Entity });
+            Role.Add(new() { Name = "Paladin", RoleType = RoleTypeAdventuring.Entity, RequirementList = new() { RequirementRoleAdventuring.Entity } });
+            Role.Add(new() { Name = "Dark Knight", RoleType = RoleTypeAdventuring.Entity, RequirementList = new() { RequirementRoleAdventuring.Entity } });
 
-            Role.Add(new() { Name = "Miner", RoleType = RoleTypeProfession.Entity });
-            Role.Add(new() { Name = "Furrier", RoleType = RoleTypeProfession.Entity });
-            Role.Add(new() { Name = "Blacksmith", RoleType = RoleTypeProfession.Entity });
-            Role.Add(new() { Name = "Tailor", RoleType = RoleTypeProfession.Entity, RequirementList = new() { RequirementRoleProfession.Entity } });
-            Role.Add(new() { Name = "Alchemist", RoleType = RoleTypeProfession.Entity, RequirementList = new() { RequirementRoleProfession.Entity } });
-            Role.Add(new() { Name = "Woodcutter", RoleType = RoleTypeProfession.Entity, RequirementList = new() { RequirementRoleProfession.Entity } });
+            Role.Add(new() { Name = "Miner", RoleType = RoleTypeGathering.Entity });
+            Role.Add(new() { Name = "Furrier", RoleType = RoleTypeGathering.Entity });
+            Role.Add(new() { Name = "Herbalist", RoleType = RoleTypeGathering.Entity });
+            Role.Add(new() { Name = "Woodcutter", RoleType = RoleTypeGathering.Entity, RequirementList = new() { RequirementRoleGathering.Entity } });
 
             GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAffinity.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeProfession.Entity });
+            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAdventuring.Entity });
+            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeGathering.Entity });
             GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 200, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 300, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAffinity.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 100, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeProfession.Entity });
+            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 300, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAdventuring.Entity });
+            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 100, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeGathering.Entity });
 
             var EquipmentSlotWeapon = EquipmentSlot.Add(new() { Name = "Weapon slot" });
 
@@ -104,19 +103,35 @@ namespace api.noxy.io.Context
             var UnitTypeElf = UnitType.Add(new() { Name = "Elf", EquipmentSlotList = new() { EquipmentSlotWeapon.Entity } });
 
             var SocketMasterwork = Socket.Add(new() { Name = "Masterwork", Description = "Improvements related to physical offense and defense." });
+            var SocketRunemastery = Socket.Add(new() { Name = "Runemastery", Description = "Improvements related to magical offense and defense." });
+            var SocketEnchantment = Socket.Add(new() { Name = "Enchantment", Description = "Improvements related to elemental offense and defense." });
+            var SocketBlessing = Socket.Add(new() { Name = "Blessing", Description = "Improvements related to beneficial effects and recovering health." });
+            var SocketCurse = Socket.Add(new() { Name = "Curse", Description = "Improvements related to detrimental effects and decaying health." });
+            var SocketBeastcraft = Socket.Add(new() { Name = "Bloodpact", Description = "Improvements related to expending and stealing health." });
 
-            var EquipmentIronSword = EquipmentItem.Add(new() { Name = "Iron Sword", Stackable = false, Slot = EquipmentSlotWeapon.Entity });
+            var EquipmentIronSword = EquipmentItem.Add(new() { Name = "Iron Sword", Slot = EquipmentSlotWeapon.Entity, SocketList = new() { } });
+
+            var EquipmentAnnealedIronSword = EquipmentItem.Add(new() { Name = "Annealed Iron Sword", Slot = EquipmentSlotWeapon.Entity, SocketList = new() { SocketMasterwork.Entity } });
+            var EquipmentCursedIronSword = EquipmentItem.Add(new() { Name = "Cursed Iron Sword", Slot = EquipmentSlotWeapon.Entity, SocketList = new() { SocketCurse.Entity } });
+
+            var EquipmentAnnealedCursedIronSword = EquipmentItem.Add(new() { Name = "Annealed Cursed Iron Sword", Slot = EquipmentSlotWeapon.Entity, SocketList = new() { SocketMasterwork.Entity, SocketCurse.Entity } });
+            var EquipmentTemperedIronSword = EquipmentItem.Add(new() { Name = "Annealed Iron Sword", Slot = EquipmentSlotWeapon.Entity, SocketList = new() { SocketMasterwork.Entity, SocketMasterwork.Entity } });
+            var EquipmentHexedIronSword = EquipmentItem.Add(new() { Name = "Annealed Iron Sword", Slot = EquipmentSlotWeapon.Entity, SocketList = new() { SocketCurse.Entity, SocketCurse.Entity } });
+
+            var MaterialIronOre = MaterialItem.Add(new MaterialItemEntity() { Name = "Iron Ore", RoleType = RoleTypeGathering.Entity });
+            var MaterialMoltenLodestone = MaterialItem.Add(new MaterialItemEntity() { Name = "Firestone Ore", RoleType = RoleTypeGathering.Entity });
+
+            var MaterialDescecratedSoil = MaterialItem.Add(new MaterialItemEntity() { Name = "Descecrated Soil", RoleType = RoleTypeGathering.Entity });
+
+            var RecipeIronSword = Recipe.Add(new() { Item = EquipmentIronSword.Entity });
+            var RecipeItemIronSwordIronOre = RecipeItem.Add(new() { Count = 5, Item = MaterialIronOre.Entity, Recipe = RecipeIronSword.Entity });
+
+
+            var RecipeAnnealedIronSword = Recipe.Add(new() { Item = EquipmentIronSword.Entity });
+            var RecipeAnnealedIronSwordBase = RecipeItem.Add(new() { Count = 1, Item = MaterialIronOre.Entity, Recipe = RecipeIronSword.Entity });
+            var RecipeAnnealedIronSwordRefinement = RecipeItem.Add(new() { Count = 5, Item = MaterialIronOre.Entity, Recipe = RecipeIronSword.Entity });
+
             ItemSocket.Add(new() { Item = EquipmentIronSword.Entity, Socket = SocketMasterwork.Entity });
-
-
-
-            // Polished, annealed, tempered, refined, honed, mastercrafted
-            // Enchanted, enhanced, bolstered, enveloped, inspired, interpolated, infused, empowered, unleashed, 
-            // Runed, shaped, 
-            // Cursed, Malevolent, Blasphemous, Hexed, Occult
-            // Blessed, Radiant, Angelic, Seraphic, Godly, Saintly, Sanctified, Hallowed, Consecrated, Beatified, Anointed
-            // Carved, engraved, 
-            // Chiseled, etched, engraved, embedded, inscribed, lettered, calligraphic
 
             SaveChanges();
         }

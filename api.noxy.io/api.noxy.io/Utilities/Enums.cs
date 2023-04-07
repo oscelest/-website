@@ -30,13 +30,14 @@
         RefreshTime = 0,
         Experience = 1,
         Count = 2,
+        Limit = 3,
     }
 
     public enum GuildMissionModifierTagType
     {
         RefreshTime = 0,
-        CompletionTime = 1,
-        Count = 2,
+        Count = 1,
+        Limit = 2,
     }
 
     public enum StatisticTagType

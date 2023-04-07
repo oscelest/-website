@@ -25,14 +25,15 @@ export const GameWindow = (props: ScreenProps) => {
   trackSubscription(subscriptionGuild, guild2 => {
     if (guild2.loading) return;
     if (guild2.value && guild.value?.state !== guild2.value.state) {
+      if (guild2.value.state === children.props.state) return
       if (guild2.value.state === 0) {
-        return router.push("/");
+        return router.push("/home");
       }
       if (guild2.value.state === 1) {
         return router.push("/battle");
       }
     }
-    return router.push("/welcome");
+    return router.push("/");
   });
   
   return (
@@ -44,6 +45,7 @@ export const GameWindow = (props: ScreenProps) => {
   );
   
   function renderState(state?: number | null) {
+    console.log(children);
     switch (state) {
       case 0:
         return <ManagementScreen>{children}</ManagementScreen>;
@@ -56,5 +58,5 @@ export const GameWindow = (props: ScreenProps) => {
 };
 
 export interface ScreenProps extends HTMLComponentProps {
-
+  children: React.ReactElement<{state: number | null}>;
 }

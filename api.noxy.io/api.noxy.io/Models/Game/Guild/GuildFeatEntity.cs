@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.Game.Guild
 {
-    [Table("GuildFeat")]
+    [Table("AGuildHasFeat")]
     public class GuildFeatEntity : JunctionEntity
     {
         [Required]

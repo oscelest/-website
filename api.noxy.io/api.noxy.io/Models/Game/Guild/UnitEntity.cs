@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using api.noxy.io.Models.Game.Item;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -10,6 +11,7 @@ namespace api.noxy.io.Models.Game.Guild
         [Required]
         [MinLength(3), MaxLength(64)]
         public required string Name { get; set; } 
+
         [Required]
         [DefaultValue(0)]
         public required int Experience { get; set; } 
@@ -22,7 +24,12 @@ namespace api.noxy.io.Models.Game.Guild
         public required GuildEntity Guild { get; set; }
 
         [Required]
-        public required List<RoleLevelEntity> RoleLevelList { get; set; } = new();
+        public required UnitTypeEntity UnitType { get; set; }
+
+        [Required]
+        public required List<UnitRoleEntity> UnitRoleList { get; set; }
+
+        public required List<EquipmentItemEntity> EquipmentItemList { get; set; }
 
         public int GetCost()
         {
@@ -39,7 +46,7 @@ namespace api.noxy.io.Models.Game.Guild
             public string Name { get; set; }
             public int Experience { get; set; }
             public bool Recruited { get; set; }
-            public IEnumerable<RoleLevelEntity.DTO> RoleLevelList { get; set; } 
+            public IEnumerable<UnitRoleEntity.DTO> RoleLevelList { get; set; } 
 
             public DTO(UnitEntity entity) : base(entity)
             {

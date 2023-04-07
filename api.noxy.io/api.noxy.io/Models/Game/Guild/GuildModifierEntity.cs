@@ -15,7 +15,7 @@ namespace api.noxy.io.Models.Game.Guild
         public required ArithmeticalTagType ArithmeticalTag { get; set; }
 
         [Required]
-        public required FeatEntity Feat { get; set; }
+        public required ItemEntity Feat { get; set; }
 
         #region -- DTO --
 

@@ -1,8 +1,9 @@
 import {Button} from "@noxy/react-button";
+import {Loader} from "@noxy/react-loader";
 import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
 import Image from "next/image";
-import React from "react";
+import React, {useState} from "react";
 import {RoleLevel} from "../../entity/RoleLevel";
 import {Unit} from "../../entity/Unit";
 import {subscriptionUnitList} from "../../Globals";
@@ -11,6 +12,8 @@ import Style from "./UnitPill.module.scss";
 export const UnitPill = (props: UnitPillProps) => {
   const {className, unit, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
+  
+  const [loading, setLoading] = useState<boolean>(false);
   const [, setUnitData] = useSubscription(subscriptionUnitList);
   const [affinity_list = [], profession_list = []] = unit.getRoleLevelListSet();
   
@@ -26,7 +29,11 @@ export const UnitPill = (props: UnitPillProps) => {
             {unit.getCost()}
             <Image className={Style.RoleIcon} src={`/img/currency.png`} alt="" width={24} height={24}/>
           </div>
-          <Button className={Style.RecruitButton} value={unit} onSubmit={onRecruitSubmit}>Recruit</Button>
+          <Button className={Style.RecruitButton} value={unit} onSubmit={onRecruitSubmit}>
+            <Loader className={Style.RecruitLoader} loading={loading}>
+              Recruit
+            </Loader>
+          </Button>
         </div>
       </div>
       <div className={Style.RoleList}>
@@ -41,9 +48,12 @@ export const UnitPill = (props: UnitPillProps) => {
   );
   
   async function onRecruitSubmit(unit: Unit) {
-    setUnitData({loading: true});
+    setLoading(true);
     await Unit.recruit(unit);
-    setUnitData({loading: false, value: await Unit.load()});
+    setLoading(false);
+    setUnitData({loading: true});
+    const value = await Unit.load();
+    setUnitData({loading: false, value});
   }
   
   function renderRoleLevel(level: RoleLevel, index: number = 0) {

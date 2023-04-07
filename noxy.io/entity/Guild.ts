@@ -1,12 +1,13 @@
 import Superagent from "superagent";
 import {LocalStorageKeyType} from "../enums/LocalStorageKeyType";
+import {GuildStateType} from "../enums/GuildStateType";
 import {SimpleEntity, SimpleEntityJSON} from "./SimpleEntity";
 
 export class Guild extends SimpleEntity {
   
   public name: string;
   public currency: number;
-  public state: number | null;
+  public state: GuildStateType | null;
   public time_unit_refresh: Date | null;
   public time_mission_refresh: Date | null;
   
@@ -45,7 +46,7 @@ export class Guild extends SimpleEntity {
 export interface GuildJSON extends SimpleEntityJSON {
   name: string;
   currency: number;
-  state: number | null;
+  state: GuildStateType | null;
   timeUnitRefresh: Date | null;
   timeMissionRefresh: Date | null;
 }

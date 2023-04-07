@@ -4,18 +4,12 @@ import {useSubscription} from "@noxy/react-subscription-hook";
 import {HTMLComponentProps, sanitizeClassName} from "@noxy/react-utils";
 import Image from "next/image";
 import React, {useState} from "react";
-import {RoleLevel} from "../../entity/RoleLevel";
-import {Unit} from "../../entity/Unit";
-import {subscriptionUnitList} from "../../Globals";
+import {Mission} from "../../../entity/Mission";
 import Style from "./UnitPill.module.scss";
 
-export const UnitPill = (props: UnitPillProps) => {
-  const {className, unit, ...component_props} = props;
+export const MissionItem = (props: MissionItemProps) => {
+  const {className, mission, ...component_props} = props;
   const classes = sanitizeClassName(Style.Component, className);
-  
-  const [loading, setLoading] = useState<boolean>(false);
-  const [, setUnitData] = useSubscription(subscriptionUnitList);
-  const [affinity_list = [], profession_list = []] = unit.getRoleLevelListSet();
   
   return (
     <div {...component_props} className={classes}>
@@ -66,7 +60,7 @@ export const UnitPill = (props: UnitPillProps) => {
   }
 };
 
-export interface UnitPillProps extends HTMLComponentProps {
+export interface MissionItemProps extends HTMLComponentProps {
   children?: never;
-  unit: Unit;
+  mission: Mission;
 }

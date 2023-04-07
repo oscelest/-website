@@ -2,25 +2,21 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.Game.Guild
+namespace api.noxy.io.Models.Game.Item
 {
-    [Table("Role")]
     [Index(nameof(Name), IsUnique = true)]
-    public class RoleEntity : SingleEntity
+    public class SocketEntity : SingleEntity
     {
         [Required]
         [MinLength(3), MaxLength(64)]
         public required string Name { get; set; }
 
         [Required]
-        public required RoleTypeEntity RoleType { get; set; }
-
-        public List<RequirementEntity> RequirementList { get; set; } = new();
+        public required string Description { get; set; }
 
         #region -- Mapping --
 
-        public List<MissionEntity> MissionList { get; set; } = new();
-        public List<UnitRoleEntity> UnitRoleList { get; set; } = new();
+        public List<ItemSocketEntity> ItemSocketList { get; set; } = new List<ItemSocketEntity>();
 
         #endregion -- Mapping --
 
@@ -31,12 +27,10 @@ namespace api.noxy.io.Models.Game.Guild
         new public class DTO : SingleEntity.DTO
         {
             public string Name { get; set; }
-            public RoleTypeEntity.DTO RoleType { get; set; }
 
-            public DTO(RoleEntity entity) : base(entity)
+            public DTO(ItemEntity entity) : base(entity)
             {
                 Name = entity.Name;
-                RoleType = entity.RoleType.ToDTO();
             }
         }
 

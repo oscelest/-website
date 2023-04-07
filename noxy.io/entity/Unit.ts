@@ -60,7 +60,7 @@ export class Unit extends SimpleEntity {
     return new Unit(body as UnitJSON);
   }
   
-  public static async refreshUnitList(): Promise<Unit[]> {
+  public static async refreshAvailable(): Promise<Unit[]> {
     const {body} = await Superagent.post(`${process.env.NEXT_PUBLIC_API_HOST}/Unit/RefreshAvailable`).auth(localStorage[LocalStorageKeyType.JWT], {type: "bearer"}).send();
     return (body as UnitJSON[]).map(x => new Unit(x));
   }

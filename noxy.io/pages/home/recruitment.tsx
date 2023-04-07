@@ -4,21 +4,23 @@ import {useSubscription} from "@noxy/react-subscription-hook";
 import {GetStaticPropsContext, NextPage} from "next";
 import {serverSideTranslations} from "next-i18next/serverSideTranslations";
 import React, {useEffect} from "react";
-import {UnitPill} from "../components/Game/UnitPill";
-import {Unit} from "../entity/Unit";
-import {subscriptionUnitList} from "../Globals";
-import {i18n} from "../next-i18next.config";
+import {UnitPill} from "../../components/Game/UnitPill";
+import {Unit} from "../../entity/Unit";
+import {GuildStateType} from "../../enums/GuildStateType";
+import {subscriptionUnitList} from "../../Globals";
+import {i18n} from "../../next-i18next.config";
 import Style from "./recruitment.module.scss";
 
 export async function getStaticProps({locale}: GetStaticPropsContext) {
   return {
     props: {
+      state: GuildStateType.HOME,
       ...(await serverSideTranslations(locale ?? i18n.defaultLocale, ["common"]))
     }
   };
 }
 
-const RecruitmentPage: NextPage = () => {
+const HomeRecruitmentPage: NextPage = () => {
   const [unit_data, setUnitData] = useSubscription(subscriptionUnitList);
   const unit_list = unit_data.value?.filter(x => !x.recruited) ?? [];
   
@@ -49,7 +51,7 @@ const RecruitmentPage: NextPage = () => {
   
   async function onRecruitmentRefreshClick() {
     setUnitData({loading: true});
-    setUnitData({loading: false, value: await Unit.refreshUnitList()});
+    setUnitData({loading: false, value: await Unit.refreshAvailable()});
   }
 };
 
@@ -60,6 +62,6 @@ function renderUnitList(unit: Unit, index: number = 0) {
   );
 }
 
-export default RecruitmentPage;
+export default HomeRecruitmentPage;
 
 

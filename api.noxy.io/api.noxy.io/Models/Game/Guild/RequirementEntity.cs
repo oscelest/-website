@@ -4,7 +4,7 @@
     {
         #region -- Mapping --
 
-        public List<FeatEntity> FeatList { get; set; } = new();
+        public List<ItemEntity> FeatList { get; set; } = new();
         public List<RoleEntity> RoleList { get; set; } = new();
 
         #endregion -- Mapping --

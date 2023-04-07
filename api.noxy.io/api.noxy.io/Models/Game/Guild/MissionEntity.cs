@@ -7,9 +7,6 @@ namespace api.noxy.io.Models.Game.Guild
     public class MissionEntity : SingleEntity
     {
         [Required]
-        public required int BaseDuration { get; set; }
-
-        [Required]
         public required GuildEntity Guild { get; set; }
 
         public DateTime? TimeStarted { get; set; } = default;
@@ -17,6 +14,8 @@ namespace api.noxy.io.Models.Game.Guild
         #region -- Mapping --
 
         public List<UnitEntity> UnitList { get; set; } = new();
+
+        public List<RoleEntity> RoleList { get; set; } = new();
 
         #endregion -- Mapping --
 
@@ -26,14 +25,14 @@ namespace api.noxy.io.Models.Game.Guild
 
         new public class DTO : SingleEntity.DTO
         {
-            public int BaseDuration { get; set; }
             public IEnumerable<UnitEntity.DTO> UnitList { get; set; }
+            public IEnumerable<RoleEntity.DTO> RoleList { get; set; }
             public DateTime? TimeStarted { get; set; }
 
             public DTO(MissionEntity entity) : base(entity)
             {
-                BaseDuration = entity.BaseDuration;
                 UnitList = entity.UnitList.Select(x => x.ToDTO());
+                RoleList = entity.RoleList.Select(x => x.ToDTO());
                 TimeStarted = entity.TimeStarted;
             }
         }

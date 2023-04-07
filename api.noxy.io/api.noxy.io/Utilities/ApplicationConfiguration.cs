@@ -68,6 +68,7 @@
             public int UnitListRefresh { get; }
             public int MissionListCount { get; }
             public int MissionListRefresh { get; }
+            public float MissionListRoleRatio { get; }
 
             public GameConfiguration(IConfigurationSection? section)
             {
@@ -77,6 +78,7 @@
                 UnitListRefresh = section.GetSection("UnitListRefresh")?.Get<int>() ?? throw new ArgumentNullException("Game:UnitListRefresh");
                 MissionListCount = section.GetSection("MissionListCount")?.Get<int>() ?? throw new ArgumentNullException("Game:MissionListCount");
                 MissionListRefresh = section.GetSection("MissionListRefresh")?.Get<int>() ?? throw new ArgumentNullException("Game:MissionListRefresh");
+                MissionListRoleRatio = section.GetSection("MissionListRoleRatio")?.Get<float>() ?? throw new ArgumentNullException("Game:MissionListRoleRatio");
             }
         }
 

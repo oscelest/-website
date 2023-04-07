@@ -1,12 +1,10 @@
 ﻿using api.noxy.io.Models.Auth;
 using api.noxy.io.Utilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 
 namespace api.noxy.io.Models.Game.Guild
 {
@@ -32,15 +30,13 @@ namespace api.noxy.io.Models.Game.Guild
 
         public DateTime? TimeMissionRefresh { get; set; }
 
-
-        #region -- Mapping --
-
         public List<UnitEntity> UnitList { get; set; } = new();
+        
         public List<MissionEntity> MissionList { get; set; } = new();
-        public List<GuildFeatEntity> GuildFeatList { get; set; } = new();
-        public List<GuildRoleEntity> GuildRoleList { get; set; } = new();
-
-        #endregion -- Mapping --
+        
+        public required List<GuildFeatEntity> GuildFeatList { get; set; } = new();
+        
+        public required List<GuildRoleEntity> GuildRoleList { get; set; } = new();
 
         public GuildRoleModifierEntity.Set GetRoleModifierSet(Guid? type = null)
         {

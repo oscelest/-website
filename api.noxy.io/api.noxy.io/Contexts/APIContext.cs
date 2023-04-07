@@ -4,6 +4,7 @@ using api.noxy.io.Models.Auth;
 using api.noxy.io.Models.Game.Guild;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using api.noxy.io.Models.Game.Item;
 
 namespace api.noxy.io.Context
 {
@@ -16,6 +17,7 @@ namespace api.noxy.io.Context
         public DbSet<GuildEntity> Guild => Set<GuildEntity>();
         public DbSet<GuildRoleEntity> GuildRole => Set<GuildRoleEntity>();
         public DbSet<GuildFeatEntity> GuildFeat => Set<GuildFeatEntity>();
+        public DbSet<GuildItemEntity> GuildItem => Set<GuildItemEntity>();
 
         public DbSet<GuildModifierEntity> GuildModifier => Set<GuildModifierEntity>();
         public DbSet<GuildRoleModifierEntity> GuildRoleModifier => Set<GuildRoleModifierEntity>();
@@ -24,14 +26,28 @@ namespace api.noxy.io.Context
 
         public DbSet<RoleEntity> Role => Set<RoleEntity>();
         public DbSet<RoleTypeEntity> RoleType => Set<RoleTypeEntity>();
-        public DbSet<RoleLevelEntity> RoleLevel => Set<RoleLevelEntity>();
 
         public DbSet<UnitEntity> Unit => Set<UnitEntity>();
+        public DbSet<UnitRoleEntity> UnitRole => Set<UnitRoleEntity>();
+        public DbSet<UnitTypeEntity> UnitType => Set<UnitTypeEntity>();
 
         public DbSet<MissionEntity> Mission => Set<MissionEntity>();
         public DbSet<MissionTypeEntity> MissionType => Set<MissionTypeEntity>();
 
         public DbSet<RequirementEntity> Requirement => Set<RequirementEntity>();
+
+        public DbSet<ItemEntity> Item => Set<ItemEntity>();
+        public DbSet<ItemSocketEntity> ItemSocket => Set<ItemSocketEntity>();
+        
+        public DbSet<MaterialItemEntity> MaterialItem => Set<MaterialItemEntity>();
+
+        public DbSet<EquipmentItemEntity> EquipmentItem => Set<EquipmentItemEntity>();
+        public DbSet<EquipmentSlotEntity> EquipmentSlot => Set<EquipmentSlotEntity>();
+
+        public DbSet<SocketEntity> Socket => Set<SocketEntity>();
+
+        public DbSet<RecipeEntity> Recipe => Set<RecipeEntity>();
+        public DbSet<RecipeItemEntity> RecipeItem => Set<RecipeItemEntity>();
 
 
         public APIContext() { }
@@ -42,8 +58,9 @@ namespace api.noxy.io.Context
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<GuildModifierEntity>().UseTpcMappingStrategy();
+            builder.Entity<ItemEntity>().UseTpcMappingStrategy();
             builder.Entity<RequirementEntity>().UseTpcMappingStrategy();
+            builder.Entity<GuildModifierEntity>().UseTpcMappingStrategy();
         }
 
         public void Seed()
@@ -80,6 +97,26 @@ namespace api.noxy.io.Context
             GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 200, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity });
             GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 300, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAffinity.Entity });
             GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 100, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeProfession.Entity });
+
+            var EquipmentSlotWeapon = EquipmentSlot.Add(new() { Name = "Weapon slot" });
+
+            var UnitTypeHuman = UnitType.Add(new() { Name = "Human", EquipmentSlotList = new() { EquipmentSlotWeapon.Entity } });
+            var UnitTypeElf = UnitType.Add(new() { Name = "Elf", EquipmentSlotList = new() { EquipmentSlotWeapon.Entity } });
+
+            var SocketMasterwork = Socket.Add(new() { Name = "Masterwork", Description = "Improvements related to physical offense and defense." });
+
+            var EquipmentIronSword = EquipmentItem.Add(new() { Name = "Iron Sword", Stackable = false, Slot = EquipmentSlotWeapon.Entity });
+            ItemSocket.Add(new() { Item = EquipmentIronSword.Entity, Socket = SocketMasterwork.Entity });
+
+
+
+            // Polished, annealed, tempered, refined, honed, mastercrafted
+            // Enchanted, enhanced, bolstered, enveloped, inspired, interpolated, infused, empowered, unleashed, 
+            // Runed, shaped, 
+            // Cursed, Malevolent, Blasphemous, Hexed, Occult
+            // Blessed, Radiant, Angelic, Seraphic, Godly, Saintly, Sanctified, Hallowed, Consecrated, Beatified, Anointed
+            // Carved, engraved, 
+            // Chiseled, etched, engraved, embedded, inscribed, lettered, calligraphic
 
             SaveChanges();
         }

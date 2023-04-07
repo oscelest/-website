@@ -14,12 +14,12 @@ export async function getStaticProps({locale}: GetStaticPropsContext) {
   };
 }
 
-const HomeIndexPage: NextPage = () => {
+const BattleIndexPage: NextPage = () => {
   return (
     <div className={Style.Component}>
-      Home
+      Battle
     </div>
   );
 };
 
-export default HomeIndexPage;
+export default BattleIndexPage;

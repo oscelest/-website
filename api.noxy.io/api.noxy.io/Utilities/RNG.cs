@@ -17,9 +17,12 @@
             return stack;
         }
 
-        public static int FromZeroToPositiveIntIncluding(int value)
+        public static int NextInt(int max) => NextInt(0, max, true);
+        public static int NextInt(int max, bool inclusive) => NextInt(0, max, inclusive);
+        public static int NextInt(int min, int max) => NextInt(min, max, true);
+        public static int NextInt(int min, int max, bool inclusive)
         {
-            return value > 0 ? random.Next(value + 1) : 0;
+            return inclusive ? random.Next(min, max + 1) : random.Next(min, max);
         }
 
         public static int IntBetweenFactors(float value, float fmin = 0.9f, float fmax = 1.1f)

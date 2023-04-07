@@ -23,7 +23,7 @@ namespace api.noxy.io.Controllers
         [HttpGet("Load")]
         public async Task<ActionResult<IEnumerable<MissionEntity.DTO>>> Load()
         {
-            List<UnitEntity> list = await _game.LoadUnitList(_jwt.GetUserID(User));
+            List<MissionEntity> list = await _game.LoadMissionList(_jwt.GetUserID(User));
             return Ok(list.Select(x => x.ToDTO()));
         }
 

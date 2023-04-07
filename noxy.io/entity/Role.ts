@@ -32,6 +32,8 @@ export class Role extends SimpleEntity {
         return "marksman.png";
       case "Paladin":
         return "paladin.png";
+        case "Cleric":
+        return "cleric.png";
       case "Miner":
       case "Furrier":
       case "Blacksmith":

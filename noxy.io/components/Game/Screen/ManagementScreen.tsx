@@ -15,15 +15,15 @@ export const ManagementScreen = (props: ManagementScreenProps) => {
       <Roster/>
       <div className={Style.Content}>
         <div className={Style.Navigation}>
-          <Link href={"/"}>
+          <Link href={"/home"}>
             <Button>Home</Button>
           </Link>
-          <Link href={"/recruitment"}>
+          <Link href={"/home/recruitment"}>
             <Button>Recruitment</Button>
           </Link>
-          {/*<Button onSubmit={setScene} value={SceneType.RECRUITMENT} disabled={scene === SceneType.RECRUITMENT}>Recruitment</Button>*/}
-          {/*<Button onSubmit={setScene} value={SceneType.CRAFTING} disabled={scene === SceneType.CRAFTING}>Crafting</Button>*/}
-          {/*<Button onSubmit={setScene} value={SceneType.SHOP} disabled={scene === SceneType.SHOP}>Shop</Button>*/}
+          <Link href={"/home/mission"}>
+            <Button>Mission</Button>
+          </Link>
         </div>
         <div className={Style.Page}>
           {children}

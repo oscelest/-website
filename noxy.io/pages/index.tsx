@@ -7,17 +7,18 @@ import React, {useState} from "react";
 import {Guild} from "../entity/Guild";
 import {subscriptionGuild} from "../Globals";
 import {i18n} from "../next-i18next.config";
-import Style from "./welcome.module.scss";
+import Style from "./index.module.scss";
 
 export async function getStaticProps({locale}: GetStaticPropsContext) {
   return {
     props: {
+      state: null,
       ...(await serverSideTranslations(locale ?? i18n.defaultLocale, ["common"]))
     }
   };
 }
 
-const WelcomePage: NextPage = () => {
+const IndexPage: NextPage = () => {
   const [value, setValue] = useState<string>("");
   const [, setGuild] = useSubscription(subscriptionGuild);
   
@@ -40,4 +41,4 @@ const WelcomePage: NextPage = () => {
   }
 };
 
-export default WelcomePage;
+export default IndexPage;

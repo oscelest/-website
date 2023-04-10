@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using api.noxy.io.Models.Game.Guild;
+using api.noxy.io.Models.Game.Unit;
 
-namespace api.noxy.io.Models.Game.Guild
+namespace api.noxy.io.Models.Game.Mission
 {
     [Table("Mission")]
     public class MissionEntity : SingleEntity
@@ -9,11 +11,11 @@ namespace api.noxy.io.Models.Game.Guild
         public DateTime? TimeStarted { get; set; } = default;
 
         [Required]
-        public required GuildEntity Guild { get; set; }
+        public required Guild.GuildEntity Guild { get; set; }
 
         #region -- Mapping --
 
-        public List<UnitEntity> UnitList { get; set; } = new();
+        public List<UnitTypeEntity> UnitList { get; set; } = new();
 
         public List<GuildRoleEntity> RoleList { get; set; } = new();
 
@@ -25,8 +27,8 @@ namespace api.noxy.io.Models.Game.Guild
 
         new public class DTO : SingleEntity.DTO
         {
-            public IEnumerable<UnitEntity.DTO> UnitList { get; set; }
-            public IEnumerable<GuildRoleEntity.DTO> RoleList { get; set; }
+            public IEnumerable<UnitTypeEntity.DTO> UnitList { get; set; }
+            public IEnumerable<JunctionEntity.DTO> RoleList { get; set; }
             public DateTime? TimeStarted { get; set; }
 
             public DTO(MissionEntity entity) : base(entity)

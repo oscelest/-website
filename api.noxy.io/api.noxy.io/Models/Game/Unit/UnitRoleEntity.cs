@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using api.noxy.io.Models.Game.Guild;
+using api.noxy.io.Models.Game.Role;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.Game.Guild
+namespace api.noxy.io.Models.Game.Unit
 {
     [Table("UnitRole")]
     public class UnitRoleEntity : SingleEntity
@@ -17,7 +19,7 @@ namespace api.noxy.io.Models.Game.Guild
 
         [Required]
         [Comment("The role being owning by the unit")]
-        public required GuildRoleEntity Role { get; set; } 
+        public required RoleEntity Role { get; set; }
 
         #region -- DTO --
 
@@ -26,7 +28,7 @@ namespace api.noxy.io.Models.Game.Guild
         new public class DTO : SingleEntity.DTO
         {
             public int Experience { get; set; }
-            public GuildRoleEntity.DTO Role { get; set; }
+            public RoleEntity.DTO Role { get; set; }
 
             public DTO(UnitRoleEntity entity) : base(entity)
             {

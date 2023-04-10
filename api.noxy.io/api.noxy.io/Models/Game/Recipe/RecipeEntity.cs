@@ -1,9 +1,10 @@
 ﻿using api.noxy.io.Models.Game.Guild;
+using api.noxy.io.Models.Game.Item;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.Game.Item
+namespace api.noxy.io.Models.Game.Recipe
 {
     [Table("Recipe")]
     public class RecipeEntity : SingleEntity
@@ -15,13 +16,19 @@ namespace api.noxy.io.Models.Game.Item
         [Comment("The list of items required to perform this recipe.")]
         public List<RecipeItemEntity> RecipeItemList { get; set; } = new();
 
+        #region -- Mapping --
+
+        public List<GuildRecipeEntity> GuildRecipeList { get; set; } = new();
+
+        #endregion -- Mapping --
+
         #region -- DTO --
 
         new public DTO ToDTO() => new(this);
 
         new public class DTO : SingleEntity.DTO
         {
-            public ItemEntity.DTO Item  { get; set; }
+            public ItemEntity.DTO Item { get; set; }
             public IEnumerable<RecipeItemEntity.DTO> RecipeItemList { get; set; }
 
             public DTO(RecipeEntity entity) : base(entity)

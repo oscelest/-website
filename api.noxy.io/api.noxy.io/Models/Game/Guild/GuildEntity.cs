@@ -1,7 +1,7 @@
 ﻿using api.noxy.io.Models.Auth;
+using api.noxy.io.Models.Game.Mission;
 using api.noxy.io.Utilities;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,20 +24,22 @@ namespace api.noxy.io.Models.Game.Guild
         [Column(nameof(State), TypeName = "varchar(32)")]
         public GuildStateType State { get; set; }
 
+        #region -- Mappings --
+
         [Required]
         public required UserEntity User { get; set; }
 
-        public DateTime? TimeUnitRefresh { get; set; }
-
-        public DateTime? TimeMissionRefresh { get; set; }
-
         public List<UnitEntity> UnitList { get; set; } = new();
-        
+
         public List<MissionEntity> MissionList { get; set; } = new();
-        
+
         public List<GuildFeatEntity> GuildFeatList { get; set; } = new();
-        
+
         public List<GuildRoleEntity> GuildRoleList { get; set; } = new();
+
+        public List<GuildEventEntity> GuildEventList { get; set; } = new();
+
+        #endregion -- Mappings --
 
         public GuildRoleModifierEntity.Set GetRoleModifierSet(Guid? type = null)
         {
@@ -95,7 +97,7 @@ namespace api.noxy.io.Models.Game.Guild
             public DateTime? TimeUnitRefresh { get; set; }
             public DateTime? TimeMissionRefresh { get; set; }
 
-            public DTO(GuildEntity entity) : base(entity)
+            public DTO(Guild entity) : base(entity)
             {
                 Name = entity.Name;
                 Currency = entity.Currency;

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using api.noxy.io.Models.Game.Socket;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.noxy.io.Models.Game.Item
 {

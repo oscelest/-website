@@ -1,4 +1,7 @@
-﻿namespace api.noxy.io.Models.Game.Guild
+﻿using api.noxy.io.Models.Game.Feat;
+using api.noxy.io.Models.Game.Guild;
+
+namespace api.noxy.io.Models.Game.Requirement
 {
     public class RequirementEntity : SingleEntity
     {

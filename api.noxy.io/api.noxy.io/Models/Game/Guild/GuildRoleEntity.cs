@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using api.noxy.io.Models.Game.Role;
 
 namespace api.noxy.io.Models.Game.Guild
 {
-    [Table("GuildRole")]
+    [Table("Role")]
     public class GuildRoleEntity : JunctionEntity
     {
         [Required]

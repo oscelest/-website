@@ -1,4 +1,4 @@
-﻿using api.noxy.io.Models.Game.Guild;
+﻿using api.noxy.io.Models.Game.Role;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.noxy.io.Models.Game.Item

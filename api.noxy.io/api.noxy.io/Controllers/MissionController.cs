@@ -1,5 +1,5 @@
 ﻿using api.noxy.io.Interface;
-using api.noxy.io.Models.Game.Guild;
+using api.noxy.io.Models.Game.Mission;
 using api.noxy.io.Utility;
 using Microsoft.AspNetCore.Mvc;
 

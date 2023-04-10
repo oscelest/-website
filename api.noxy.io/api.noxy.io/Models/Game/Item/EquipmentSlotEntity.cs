@@ -1,4 +1,4 @@
-﻿using api.noxy.io.Models.Game.Guild;
+﻿using api.noxy.io.Models.Game.Unit;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,7 +13,7 @@ namespace api.noxy.io.Models.Game.Item
 
         [Required]
         [Comment("The list of unit types using this equipment slot.")]
-        public List<UnitEntity> UnitTypeList { get; set; } = new();
+        public List<UnitTypeEntity> UnitTypeList { get; set; } = new();
         
         #region -- DTO --
 

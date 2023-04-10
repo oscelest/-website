@@ -47,4 +47,10 @@
         TotalFeatCount = 2,
         TotalMissionCount = 3,
     }
+
+    public enum EventTagType
+    {
+        UnitRefresh = 0,
+        MissionRefresh = 1,
+    }
 }

@@ -1,4 +1,4 @@
-﻿using api.noxy.io.Models.Game.Item;
+﻿using api.noxy.io.Models.Game.Recipe;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

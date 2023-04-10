@@ -1,7 +1,5 @@
-﻿using api.noxy.io.Models.Game.Guild;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.Game.Item
 {
@@ -11,6 +9,12 @@ namespace api.noxy.io.Models.Game.Item
         [Required]
         [MinLength(3), MaxLength(64)]
         public required string Name { get; set; }
+
+        #region -- Mapping --
+
+        public List<GuildItemEntity> GuildItemList { get; set; } = new();
+
+        #endregion -- Mapping --
 
         #region -- DTO --
 

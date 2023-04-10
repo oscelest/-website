@@ -5,6 +5,13 @@ using api.noxy.io.Models.Game.Guild;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using api.noxy.io.Models.Game.Item;
+using api.noxy.io.Models.Game.Socket;
+using api.noxy.io.Models.Game.Recipe;
+using api.noxy.io.Models.Game.Requirement;
+using api.noxy.io.Models.Game.Mission;
+using api.noxy.io.Models.Game.Role;
+using api.noxy.io.Models.Game.Feat;
+using api.noxy.io.Models.Game.Unit;
 
 namespace api.noxy.io.Context
 {
@@ -15,21 +22,25 @@ namespace api.noxy.io.Context
         public DbSet<FeatEntity> Feat => Set<FeatEntity>();
 
         public DbSet<GuildEntity> Guild => Set<GuildEntity>();
-        public DbSet<GuildUnitEntity> GuildUnit => Set<GuildUnitEntity>();
         public DbSet<GuildRoleEntity> GuildRole => Set<GuildRoleEntity>();
         public DbSet<GuildFeatEntity> GuildFeat => Set<GuildFeatEntity>();
-        public DbSet<GuildItemEntity> GuildItem => Set<GuildItemEntity>();
         public DbSet<GuildRecipeEntity> GuildRecipe => Set<GuildRecipeEntity>();
+
+        public DbSet<GuildUnitEntity> GuildUnit => Set<GuildUnitEntity>();
+        public DbSet<GuildItemEntity<ItemEntity>> GuildItem => Set<GuildItemEntity<ItemEntity>>();
+        public DbSet<GuildEquipmentItemEntity> GuildEquipmentItem => Set<GuildEquipmentItemEntity>();
+        public DbSet<GuildMaterialItemEntity> GuildMaterialItem => Set<GuildMaterialItemEntity>();
 
         public DbSet<GuildModifierEntity> GuildModifier => Set<GuildModifierEntity>();
         public DbSet<GuildRoleModifierEntity> GuildRoleModifier => Set<GuildRoleModifierEntity>();
         public DbSet<GuildUnitModifierEntity> GuildUnitModifier => Set<GuildUnitModifierEntity>();
         public DbSet<GuildMissionModifierEntity> GuildMissionModifier => Set<GuildMissionModifierEntity>();
 
-        public DbSet<GuildRoleEntity> Role => Set<GuildRoleEntity>();
+        public DbSet<RoleEntity> Role => Set<RoleEntity>();
         public DbSet<RoleTypeEntity> RoleType => Set<RoleTypeEntity>();
 
         public DbSet<UnitEntity> Unit => Set<UnitEntity>();
+        public DbSet<UnitTypeEntity> UnitType => Set<UnitTypeEntity>();
         public DbSet<UnitRoleEntity> UnitRole => Set<UnitRoleEntity>();
 
         public DbSet<MissionEntity> Mission => Set<MissionEntity>();
@@ -61,6 +72,7 @@ namespace api.noxy.io.Context
             builder.Entity<ItemEntity>().UseTpcMappingStrategy();
             builder.Entity<RequirementEntity>().UseTpcMappingStrategy();
             builder.Entity<GuildModifierEntity>().UseTpcMappingStrategy();
+            builder.Entity<GuildItemEntity<ItemEntity>>().UseTpcMappingStrategy();
         }
 
         public void Seed()

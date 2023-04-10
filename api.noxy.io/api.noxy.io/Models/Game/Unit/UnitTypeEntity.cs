@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.Game.Guild
+namespace api.noxy.io.Models.Game.Unit
 {
     [Table("UnitBase")]
-    public class UnitEntity : SingleEntity
+    public class UnitTypeEntity : SingleEntity
     {
         [Required]
         [MinLength(3), MaxLength(64)]
@@ -25,7 +25,7 @@ namespace api.noxy.io.Models.Game.Guild
             public string Name { get; set; }
             public IEnumerable<EquipmentSlotEntity.DTO> EquipmentSlotList { get; set; }
 
-            public DTO(UnitEntity entity) : base(entity)
+            public DTO(UnitTypeEntity entity) : base(entity)
             {
                 Name = entity.Name;
                 EquipmentSlotList = entity.EquipmentSlotList.Select(x => x.ToDTO());

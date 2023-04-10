@@ -1,4 +1,5 @@
-﻿using api.noxy.io.Utilities;
+﻿using api.noxy.io.Models.Game.Feat;
+using api.noxy.io.Utilities;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

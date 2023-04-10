@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using api.noxy.io.Models.Game.Guild;
+using api.noxy.io.Models.Game.Requirement;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.Game.Guild
+namespace api.noxy.io.Models.Game.Feat
 {
     [Table("Feat")]
     [Index(nameof(Name), IsUnique = true)]

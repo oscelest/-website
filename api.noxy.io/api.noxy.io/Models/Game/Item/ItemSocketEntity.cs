@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using api.noxy.io.Models.Game.Socket;
 
 namespace api.noxy.io.Models.Game.Item
 {

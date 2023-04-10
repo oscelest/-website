@@ -1,19 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using api.noxy.io.Models.Game.Item;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.Game.Item
+namespace api.noxy.io.Models.Game.Recipe
 {
     [Table("Recipe")]
     public class RecipeItemEntity : JunctionEntity
     {
-        [Required]
-        [Comment("The specific item needed")]
-        public required ItemEntity Item { get; set; }
 
         [Required]
         [Comment("The recipe the item is needed for")]
         public required RecipeEntity Recipe { get; set; }
+
+        [Required]
+        [Comment("The specific item needed")]
+        public required ItemEntity Item { get; set; }
 
         [Required]
         [Comment("The amount of the item that's needed")]

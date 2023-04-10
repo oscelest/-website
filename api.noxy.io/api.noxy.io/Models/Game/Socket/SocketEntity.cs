@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using api.noxy.io.Models.Game.Item;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.Game.Item
+namespace api.noxy.io.Models.Game.Socket
 {
     [Index(nameof(Name), IsUnique = true)]
     public class SocketEntity : SingleEntity

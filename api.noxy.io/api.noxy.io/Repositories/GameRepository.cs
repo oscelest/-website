@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using api.noxy.io.Models.Auth;
 using api.noxy.io.Utility;
 using api.noxy.io.Models.Game.Item;
+using api.noxy.io.Models.Game.Recipe;
+using api.noxy.io.Models.Game.Mission;
+using api.noxy.io.Models.Game.Feat;
+using api.noxy.io.Models.Game.Unit;
 
 namespace api.noxy.io.Interface
 {
@@ -15,13 +19,13 @@ namespace api.noxy.io.Interface
     {
         public Task<GuildEntity?> LoadGuild(Guid userID);
         public Task<GuildEntity> CreateGuild(UserEntity user, string name);
-        public Task<List<UnitEntity>> LoadUnitList(Guid userID);
-        public Task<List<UnitEntity>> LoadUnitList(GuildEntity guild);
+        public Task<List<UnitTypeEntity>> LoadUnitList(Guid userID);
+        public Task<List<UnitTypeEntity>> LoadUnitList(GuildEntity guild);
         public Task<List<MissionEntity>> LoadMissionList(Guid userID);
         public Task<List<MissionEntity>> LoadMissionList(GuildEntity guild);
-        public Task<UnitEntity> InitiateUnit(Guid userID, Guid unitID);
+        public Task<UnitTypeEntity> InitiateUnit(Guid userID, Guid unitID);
         public Task<MissionEntity> InitiateMission(Guid userID, Guid missionID, List<Guid> listUnitID);
-        public Task<List<UnitEntity>> RefreshAvailableUnitList(Guid userID);
+        public Task<List<UnitTypeEntity>> RefreshAvailableUnitList(Guid userID);
         public Task<List<MissionEntity>> RefreshAvailableMissionList(Guid userID);
     }
 
@@ -41,12 +45,12 @@ namespace api.noxy.io.Interface
             return await _db.Guild.FirstOrDefaultAsync(x => x.User.ID == userID);
         }
 
-        public async Task<List<UnitEntity>> LoadUnitList(Guid userID)
+        public async Task<List<UnitTypeEntity>> LoadUnitList(Guid userID)
         {
             return await LoadUnitList(await GetGuild(userID));
         }
 
-        public async Task<List<UnitEntity>> LoadUnitList(GuildEntity guild)
+        public async Task<List<UnitTypeEntity>> LoadUnitList(GuildEntity guild)
         {
             return await _db.Unit
                  .Include(x => x.UnitType).ThenInclude(x => x.EquipmentSlotList)
@@ -89,10 +93,10 @@ namespace api.noxy.io.Interface
             return guildEntry.Entity;
         }
 
-        public async Task<UnitEntity> InitiateUnit(Guid userID, Guid unitID)
+        public async Task<UnitTypeEntity> InitiateUnit(Guid userID, Guid unitID)
         {
             GuildEntity guild = await GetGuild(userID);
-            UnitEntity unit = await GetFullUnit(unitID, guild.ID);
+            UnitTypeEntity unit = await GetFullUnit(unitID, guild.ID);
 
             if (unit.Recruited)
             {
@@ -121,7 +125,7 @@ namespace api.noxy.io.Interface
                 throw new EntityStateException();
             }
 
-            List<UnitEntity> listUnit = await _db.Unit.Where(x => listUnitID.Contains(x.ID) && x.Guild.ID == guild.ID).ToListAsync();
+            List<UnitTypeEntity> listUnit = await _db.Unit.Where(x => listUnitID.Contains(x.ID) && x.Guild.ID == guild.ID).ToListAsync();
             List<Guid> listMissingUnit = listUnitID.Except(listUnit.Select(x => x.ID)).ToList();
 
             if (listMissingUnit.Count > 0)
@@ -137,7 +141,7 @@ namespace api.noxy.io.Interface
             return mission;
         }
 
-        public async Task<List<UnitEntity>> RefreshAvailableUnitList(Guid userID)
+        public async Task<List<UnitTypeEntity>> RefreshAvailableUnitList(Guid userID)
         {
             GuildEntity guild = await _db.Guild
                 .Include(x => x.UnitList).ThenInclude(x => x.UnitRoleList).ThenInclude(x => x.Role).ThenInclude(x => x.RoleType)
@@ -160,11 +164,11 @@ namespace api.noxy.io.Interface
             int experienceTotal = (int)guild.GetUnitModifierValue(GuildUnitModifierTagType.Experience);
 
             GuildRoleModifierEntity.Set current = guild.GetRoleModifierSet();
-            List<UnitEntity> listUnitType = await _db.UnitType.ToListAsync();
+            List<UnitTypeEntity> listUnitType = await _db.UnitType.ToListAsync();
             Dictionary<Guid, GuildRoleModifierEntity.Set> dictRole = await _db.RoleType.ToDictionaryAsync(x => x.ID, x => guild.GetRoleModifierSet(x.ID));
             for (int i = 0; i < countTotal; i++)
             {
-                EntityEntry<UnitEntity> unitEntry = await _db.Unit.AddAsync(new()
+                EntityEntry<UnitTypeEntity> unitEntry = await _db.Unit.AddAsync(new()
                 {
                     Name = $"Recruitable Unit #{i + 1}",
                     Experience = RNG.IntBetweenFactors(experienceTotal, 0.9f, 1.1f),
@@ -287,6 +291,8 @@ namespace api.noxy.io.Interface
                     entityGuildItem.Count++;
                 }
             }
+
+            await _db.SaveChangesAsync();
         }
 
 
@@ -295,17 +301,59 @@ namespace api.noxy.io.Interface
             GuildEntity entityGuild = await _db.Guild.FirstOrDefaultAsync(x => x.User.ID == userID)
                 ?? throw new EntityNotFoundException();
 
+            GuildEquipmentItemEntity entityGuildEquipmentItem = await _db.GuildEquipmentItem
+                .Include(x => x.Item.Slot)
+                .FirstOrDefaultAsync(x => x.Guild.ID == entityGuild.ID && x.Item.ID ==  itemID)
+                ?? throw new EntityNotFoundException();
+
             UnitEntity entityUnit = await _db.Unit
-                .Include(x => x.UnitType)
-                .FirstOrDefaultAsync(x => x.Guild.ID == entityGuild.ID && x.ID == unitID) 
+            .Include(x => x.UnitType).ThenInclude(x => x.EquipmentSlotList)
+            .FirstOrDefaultAsync(x => x.ID == unitID && x.GuildUnitList.Any(x => x.Guild.ID == entityGuild.ID))
+            ?? throw new EntityNotFoundException();
+
+            entityGuildEquipmentItem.Unit = entityUnit;
+
+            EquipmentItemEntity entityEquipmentItem = await _db.EquipmentItem
+                .Include(x => x.Slot)
+                .FirstOrDefaultAsync(x => x.ID == itemID && x.GuildItemList.Any(x => x.Guild.ID == entityGuild.ID))
                 ?? throw new EntityNotFoundException();
 
-            GuildItemEntity entityItem = await _db.GuildItem
-                .Include(x => x.Item)
-                .FirstOrDefaultAsync(x => x.Guild.ID == entityGuild.ID && x.ID == itemID)
+        
+
+            if (!entityUnit.HasEquipmentSlot(entityEquipmentItem.Slot))
+            {
+                throw new EntityStateException("Unit does not have an equipment slot to equip the given item.");
+            }
+
+            List<EquipmentItemEntity> listEquipmentItem = await _db.EquipmentItem
+                      .Where(x => x.GuildItemList.Any(x => x.))
+                      ?? throw new EntityNotFoundException();
+
+            await _db.GuildUnitGuildItem.RemoveRange(_db.GuildUnitGuildItem.Where(x => x.GuildItem.));
+
+
+            await _db.SaveChangesAsync();
+
+
+            var a = equipment.Slot;
+
+            EquipmentItemEntity a = entityGuildItem.Item;
+
+            GuildUnitEntity entityUnit = await _db.GuildUnit
+                .Include(x => x.Unit)
+                .FirstOrDefaultAsync(x => x.Guild.ID == entityGuild.ID && x.Unit.ID == unitID)
                 ?? throw new EntityNotFoundException();
 
-            entityUnit.UnitType.EquipmentSlotList.
+
+
+
+
+            //GuildItemEntity entityItem = await _db.GuildItem
+            //    .Include(x => x.Item)
+            //    .FirstOrDefaultAsync(x => x.Guild.ID == entityGuild.ID && x.ID == itemID)
+            //    ?? throw new EntityNotFoundException();
+
+            //entityUnit.UnitType.EquipmentSlotList.
         }
 
 
@@ -317,7 +365,7 @@ namespace api.noxy.io.Interface
                 ?? throw new EntityNotFoundException();
         }
 
-        private async Task<UnitEntity> GetFullUnit(Guid unitID, Guid guildID)
+        private async Task<UnitTypeEntity> GetFullUnit(Guid unitID, Guid guildID)
         {
             return await _db.Unit
                 .Include(x => x.UnitRoleList).ThenInclude(x => x.Role).ThenInclude(x => x.RoleType)

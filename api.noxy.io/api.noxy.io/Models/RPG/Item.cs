@@ -12,7 +12,7 @@ namespace api.noxy.io.Models.RPG
         public required Guild Guild { get; set; }
 
         [Required]
-        public required Template.Item TemplateItem { get; set; }
+        public required Template.Item TemplateItemRef { get; set; }
 
         [Required]
         public DateTime TimeCreated { get; set; }

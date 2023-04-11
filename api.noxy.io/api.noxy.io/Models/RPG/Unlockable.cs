@@ -16,10 +16,19 @@ namespace api.noxy.io.Models.RPG
 
         [Table("UnlockableRole")]
         [PrimaryKey(nameof(Guild), nameof(TemplateRole))]
-        public class Role
+        public class Role : Unlockable
         {
             [Required]
             public required Template.Role TemplateRole { get; set; }
+        }
+
+
+        [Table("UnlockableFeat")]
+        [PrimaryKey(nameof(Guild), nameof(TemplateFeat))]
+        public class Feat : Unlockable
+        {
+            [Required]
+            public required Template.Feat TemplateFeat { get; set; }
         }
     }
 }

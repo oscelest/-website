@@ -27,8 +27,15 @@ namespace api.noxy.io.Models.RPG
         public class Attribute : Modifier
         {
             [Required]
-            [Column(nameof(MissionTag), TypeName = "varchar(32)")]
+            [Column(nameof(AttributeTag), TypeName = "varchar(32)")]
             public required AttributeTagType AttributeTag { get; set; }
+        }
+
+        public class Combat : Modifier
+        {
+            [Required]
+            [Column(nameof(CombatTag), TypeName = "varchar(32)")]
+            public required CombatTagType CombatTag { get; set; }
         }
 
         public class Guild : Modifier

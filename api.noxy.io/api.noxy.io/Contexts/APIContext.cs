@@ -102,12 +102,12 @@ namespace api.noxy.io.Context
             Role.Add(new() { Name = "Herbalist", RoleType = RoleTypeGathering.Entity });
             Role.Add(new() { Name = "Woodcutter", RoleType = RoleTypeGathering.Entity, RequirementList = new() { RequirementRoleGathering.Entity } });
 
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAdventuring.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeGathering.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 200, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 300, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAdventuring.Entity });
-            GuildRoleModifier.Add(new() { Tag = GuildRoleModifierTagType.Experience, Value = 100, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeGathering.Entity });
+            GuildRoleModifier.Add(new() { Tag = ModifierGuildRoleTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity });
+            GuildRoleModifier.Add(new() { Tag = ModifierGuildRoleTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAdventuring.Entity });
+            GuildRoleModifier.Add(new() { Tag = ModifierGuildRoleTagType.Count, Value = 1, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeGathering.Entity });
+            GuildRoleModifier.Add(new() { Tag = ModifierGuildRoleTagType.Experience, Value = 200, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity });
+            GuildRoleModifier.Add(new() { Tag = ModifierGuildRoleTagType.Experience, Value = 300, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeAdventuring.Entity });
+            GuildRoleModifier.Add(new() { Tag = ModifierGuildRoleTagType.Experience, Value = 100, ArithmeticalTag = ArithmeticalTagType.Additive, Feat = FeatFirstGuild.Entity, RoleType = RoleTypeGathering.Entity });
 
             var EquipmentSlotWeapon = EquipmentSlot.Add(new() { Name = "Weapon slot" });
 

@@ -1,51 +1,40 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.RPG
 {
     public abstract class Item
     {
         [Key]
-        public Guid ID { get; set; } = Guid.NewGuid();
+        public Guid ID { get; set; }
 
         [Required]
-        public required string Name { get; set; }
+        public required Guild Guild { get; set; }
 
+        [Required]
+        public required Template.Item TemplateItem { get; set; }
 
+        [Required]
+        public DateTime TimeCreated { get; set; }
 
-        [Table("ItemAugmentation")]
-        public class Augmentation : Item
-        {
-            [Required]
-            public required Slot Slot { get; set; }
-
-            public required List<Guid> ModifierList { get; set; }
-
-            [Required]
-            public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
-        }
-
-
+        // Implementations
 
         [Table("ItemEquipment")]
         public class Equipment : Item
         {
-            [Required]
-            public required Slot Slot { get; set; }
 
-            public required List<AugmentationSlot> AugmentationSlotList { get; set; }
-
-            [Required]
-            public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
         }
 
-
-
-        [Table("ItemMap")]
-        public class Map : Item
+        [Table("ItemAugmentation")]
+        public class Augmentation : Item
         {
-            public required List<AugmentationSlot> AugmentationSlotList { get; set; }
 
+        }
+
+        [Table("ItemMaterial")]
+        public class Material : Item
+        {
+            public int Count { get; set; }
         }
     }
 }

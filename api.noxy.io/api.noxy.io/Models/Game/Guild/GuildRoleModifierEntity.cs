@@ -10,7 +10,7 @@ namespace api.noxy.io.Models.Game.Guild
     {
         [Required]
         [Column(nameof(Tag), TypeName = "varchar(32)")]
-        public required GuildRoleModifierTagType Tag { get; set; }
+        public required ModifierGuildRoleTagType Tag { get; set; }
 
         public RoleTypeEntity? RoleType { get; set; }
 
@@ -32,7 +32,7 @@ namespace api.noxy.io.Models.Game.Guild
 
         new public class DTO : GuildModifierEntity.DTO
         {
-            public GuildRoleModifierTagType Tag { get; set; }
+            public ModifierGuildRoleTagType Tag { get; set; }
             public RoleTypeEntity.DTO? RoleType { get; set; }
 
             public DTO(GuildRoleModifierEntity entity) : base(entity)

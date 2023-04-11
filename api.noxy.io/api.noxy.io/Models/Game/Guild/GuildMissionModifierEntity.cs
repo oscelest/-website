@@ -10,7 +10,7 @@ namespace api.noxy.io.Models.Game.Guild
     {
         [Required]
         [Column(nameof(Tag), TypeName = "varchar(32)")]
-        public GuildMissionModifierTagType Tag { get; set; }
+        public ModifierGuildMissionTagType Tag { get; set; }
 
         #region -- DTO --
 
@@ -18,7 +18,7 @@ namespace api.noxy.io.Models.Game.Guild
 
         new public class DTO : GuildModifierEntity.DTO
         {
-            public GuildMissionModifierTagType Tag { get; set; }
+            public ModifierGuildMissionTagType Tag { get; set; }
 
             public DTO(GuildMissionModifierEntity entity) : base(entity)
             {

@@ -151,7 +151,7 @@ namespace api.noxy.io.Interface
                 .FirstOrDefaultAsync(x => x.User.ID == userID)
                 ?? throw new EntityNotFoundException();
 
-            int refreshTotal = (int)guild.GetModifierValue<GuildUnitModifierEntity>(_config.Game.UnitListRefresh, x => x.Tag == GuildUnitModifierTagType.RefreshTime);
+            int refreshTotal = (int)guild.GetModifierValue<GuildUnitModifierEntity>(_config.Game.UnitListRefresh, x => x.Tag == ModifierGuildUnitTagType.RefreshTime);
             if (guild.TimeUnitRefresh != null && guild.TimeUnitRefresh?.AddSeconds(refreshTotal) >= DateTime.UtcNow)
             {
                 return guild.UnitList;
@@ -160,8 +160,8 @@ namespace api.noxy.io.Interface
             guild.TimeUnitRefresh = DateTime.UtcNow;
             guild.UnitList = guild.UnitList.Where(x => x.Recruited).ToList();
 
-            int countTotal = (int)guild.GetUnitModifierValue(GuildUnitModifierTagType.Count, _config.Game.UnitListCount);
-            int experienceTotal = (int)guild.GetUnitModifierValue(GuildUnitModifierTagType.Experience);
+            int countTotal = (int)guild.GetUnitModifierValue(ModifierGuildUnitTagType.Count, _config.Game.UnitListCount);
+            int experienceTotal = (int)guild.GetUnitModifierValue(ModifierGuildUnitTagType.Experience);
 
             GuildRoleModifierEntity.Set current = guild.GetRoleModifierSet();
             List<UnitTypeEntity> listUnitType = await _db.UnitType.ToListAsync();
@@ -213,8 +213,8 @@ namespace api.noxy.io.Interface
                 .FirstOrDefaultAsync(x => x.User.ID == userID)
                 ?? throw new EntityNotFoundException();
 
-            int countTotal = (int)guild.GetModifierValue<GuildMissionModifierEntity>(_config.Game.MissionListCount, x => x.Tag == GuildMissionModifierTagType.Count);
-            int refreshTotal = (int)guild.GetModifierValue<GuildMissionModifierEntity>(_config.Game.MissionListRefresh, x => x.Tag == GuildMissionModifierTagType.RefreshTime);
+            int countTotal = (int)guild.GetModifierValue<GuildMissionModifierEntity>(_config.Game.MissionListCount, x => x.Tag == ModifierGuildMissionTagType.Count);
+            int refreshTotal = (int)guild.GetModifierValue<GuildMissionModifierEntity>(_config.Game.MissionListRefresh, x => x.Tag == ModifierGuildMissionTagType.RefreshTime);
             if (guild.TimeMissionRefresh != null && guild.TimeMissionRefresh?.AddSeconds(refreshTotal) >= DateTime.UtcNow)
             {
                 return guild.MissionList;

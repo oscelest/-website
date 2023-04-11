@@ -15,9 +15,5 @@ namespace api.noxy.io.Models.RPG
 
         [Required]
         public required DateTime TimeCreated { get; set; } = DateTime.UtcNow;
-
-        // Mappings
-        public required List<UnitWithEquipmentInSlot> UnitEquipmentSlotList { get; set; }
-
     }
 }

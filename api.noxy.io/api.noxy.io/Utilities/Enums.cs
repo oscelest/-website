@@ -19,13 +19,13 @@
         Role = 1
     }
 
-    public enum GuildRoleModifierTagType
+    public enum ModifierGuildRoleTagType
     {
         Experience = 0,
         Count = 1,
     }
 
-    public enum GuildUnitModifierTagType
+    public enum ModifierGuildUnitTagType
     {
         RefreshTime = 0,
         Experience = 1,
@@ -33,7 +33,7 @@
         Limit = 3,
     }
 
-    public enum GuildMissionModifierTagType
+    public enum ModifierGuildMissionTagType
     {
         RefreshTime = 0,
         Count = 1,
@@ -52,5 +52,35 @@
     {
         UnitRefresh = 0,
         MissionRefresh = 1,
+    }
+
+    public enum AttributeTagType
+    {
+        Health,
+        AttackPower,
+        SpellPower,
+        Armor,
+        Ward,
+    }
+
+    public enum CombatTagType
+    {
+        Damage,
+        Heal,
+
+        ChargeSkillMax,
+
+        ComboPointChange,
+        ComboPointRetain,
+        ComboPointMax,
+
+        EffectDuration,
+        HitCount,
+
+        UnitAttributeHealth,
+        UnitAttributeAttackPower,
+        UnitAttributeSpellPower,
+        UnitAttributeArmor,
+        UnitAttributeWard
     }
 }

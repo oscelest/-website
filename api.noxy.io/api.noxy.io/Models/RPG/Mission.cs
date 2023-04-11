@@ -1,43 +1,46 @@
-﻿using api.noxy.io.Models.RPG.Junction;
+﻿using api.noxy.io.Models.Game.Guild;
+using api.noxy.io.Models.Game.Unit;
+using api.noxy.io.Models.RPG.Junction;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.RPG
 {
-    public abstract class Unit
+    public abstract class Mission
     {
         [Key]
         public Guid ID { get; set; } = Guid.NewGuid();
 
         [Required]
-        public required Template.Unit TemplateUnit { get; set; }
+        public required Template.Mission TemplateMission { get; set; }
 
         [Required]
         public required Guild Guild { get; set; }
 
         [Required]
-        public required int Experience { get; set; }
-
-        [Required]
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
 
         // Mappings
-        public required List<UnitWithEquipmentInSlot> UnitEquipmentSlotList { get; set; }
+
+        public List<Template.Role> TemplateRoleList { get; set; } = new();
 
         // Implementations
 
-        [Table("UnitInitiated")]
-        public class Initiated : Unit
+        [Table("MissionInitiated")]
+        public class Initiated : Mission
         {
             [Required]
             public DateTime TimeInitiated { get; set; } = DateTime.UtcNow;
+
+            // Mappings
+
+            public List<Unit.Initiated> UnitList { get; set; } = new();
         }
 
-        [Table("UnitAvailable")]
-        public class Available : Unit
+        [Table("MissionAvailable")]
+        public class Available : Mission
         {
 
         }
-
     }
 }

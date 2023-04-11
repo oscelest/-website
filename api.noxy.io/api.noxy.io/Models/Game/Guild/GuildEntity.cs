@@ -43,16 +43,16 @@ namespace api.noxy.io.Models.Game.Guild
 
         public GuildRoleModifierEntity.Set GetRoleModifierSet(Guid? type = null)
         {
-            int count = (int)GetRoleModifierValue(GuildRoleModifierTagType.Count, type);
-            int experience = (int)GetRoleModifierValue(GuildRoleModifierTagType.Experience, type);
+            int count = (int)GetRoleModifierValue(ModifierGuildRoleTagType.Count, type);
+            int experience = (int)GetRoleModifierValue(ModifierGuildRoleTagType.Experience, type);
             return new GuildRoleModifierEntity.Set(count, experience);
         }
 
-        public float GetRoleModifierValue(GuildRoleModifierTagType tag, Guid? type = null, float flat = 0f) => GetModifierValue<GuildRoleModifierEntity>(flat, x => x.RoleType?.ID == type && x.Tag == tag);
+        public float GetRoleModifierValue(ModifierGuildRoleTagType tag, Guid? type = null, float flat = 0f) => GetModifierValue<GuildRoleModifierEntity>(flat, x => x.RoleType?.ID == type && x.Tag == tag);
 
-        public float GetUnitModifierValue(GuildUnitModifierTagType tag, float flat = 0f) => GetModifierValue<GuildUnitModifierEntity>(flat, x => x.Tag == tag);
+        public float GetUnitModifierValue(ModifierGuildUnitTagType tag, float flat = 0f) => GetModifierValue<GuildUnitModifierEntity>(flat, x => x.Tag == tag);
 
-        public float GetUnitModifierValue(GuildMissionModifierTagType tag, float flat = 0f) => GetModifierValue<GuildMissionModifierEntity>(flat, x => x.Tag == tag);
+        public float GetUnitModifierValue(ModifierGuildMissionTagType tag, float flat = 0f) => GetModifierValue<GuildMissionModifierEntity>(flat, x => x.Tag == tag);
 
         public float GetModifierValue<T>(float flat, Func<T, bool> fn) where T : GuildModifierEntity
         {

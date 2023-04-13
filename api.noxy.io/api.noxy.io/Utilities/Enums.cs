@@ -54,7 +54,7 @@
         MissionRefresh = 1,
     }
 
-    public enum AttributeTagType
+    public enum ItemAttributeTagType
     {
         Health,
         AttackPower,
@@ -63,7 +63,16 @@
         Ward,
     }
 
-    public enum CombatTagType
+    public enum UnitAttributeTagType
+    {
+        Health,
+        AttackPower,
+        SpellPower,
+        Armor,
+        Ward,
+    }
+
+    public enum SkillAttributeTagType
     {
         Damage,
         Heal,

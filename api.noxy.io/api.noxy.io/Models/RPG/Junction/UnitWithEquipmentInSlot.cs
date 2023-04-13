@@ -5,17 +5,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace api.noxy.io.Models.RPG.Junction
 {
     [Table("$UnitWithEquipmentInSlot")]
-    [PrimaryKey(nameof(Unit), nameof(ItemEquipment), nameof(SlotEquipment))]
+    [PrimaryKey(nameof(UnitID), nameof(ItemEquipmentID), nameof(SlotEquipmentID))]
     public class UnitWithEquipmentInSlot
     {
         [Required]
+        public Guid UnitID { get; set; }
         public required Unit Unit { get; set; }
 
         [Required]
-        public required Item.Equipment ItemEquipment { get; set; }
+        public Guid ItemEquipmentID { get; set; }
+        public required ItemEquipment ItemEquipment { get; set; }
 
         [Required] 
-        public required Slot.Equipment SlotEquipment { get; set; }
+        public Guid SlotEquipmentID { get; set; }
+        public required SlotEquipment SlotEquipment { get; set; }
 
         [Required]
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;

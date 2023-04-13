@@ -14,11 +14,11 @@ ApplicationConfiguration config = new(builder.Configuration);
 // Add services to the container.
 builder.Services.AddSignalR(options => options.EnableDetailedErrors = true);
 builder.Services.AddControllers();
-builder.Services.AddDbContext<APIContext>(options => options.UseMySQL(config.Database.ConnectionString));
+//builder.Services.AddDbContext<APIContext>(options => options.UseMySQL(config.Database.ConnectionString));
+builder.Services.AddDbContext<RPGContext>(options => options.UseMySQL(config.Database.ConnectionString));
 builder.Services.AddTransient<IJWT, JWT>();
 builder.Services.AddTransient<IApplicationConfiguration, ApplicationConfiguration>();
-builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IGameRepository, GameRepository>();
+builder.Services.AddTransient<IRPGRepository, RPGRepository>();
 
 string corsPolicyName = "CORS";
 builder.Services.AddCors(options =>
@@ -82,7 +82,7 @@ WebApplication app = builder.Build();
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
-    APIContext dbContext = scope.ServiceProvider.GetRequiredService<APIContext>();
+    RPGContext dbContext = scope.ServiceProvider.GetRequiredService<RPGContext>();
     dbContext.Database.EnsureDeleted();
     dbContext.Database.EnsureCreated();
     dbContext.Seed();

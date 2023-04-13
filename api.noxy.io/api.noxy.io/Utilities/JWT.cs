@@ -1,4 +1,4 @@
-﻿using api.noxy.io.Models.Auth;
+﻿using api.noxy.io.Models.RPG;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -11,7 +11,7 @@ namespace api.noxy.io.Utility
         public Guid GetUserID(ClaimsPrincipal claim);
         public Guid GetUserID(JwtSecurityToken token);
         public Guid GetUserID(ClaimsIdentity identity);
-        public string Generate(UserEntity user, DateTime? activation = null, DateTime? expiration = null);
+        public string Generate(User user, DateTime? activation = null, DateTime? expiration = null);
     }
 
     public class JWT : IJWT
@@ -52,7 +52,7 @@ namespace api.noxy.io.Utility
                 : throw new Exception("");
         }
 
-        public string Generate(UserEntity user, DateTime? activation = null, DateTime? expiration = null)
+        public string Generate(User user, DateTime? activation = null, DateTime? expiration = null)
         {
             SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_config.JWT.Secret));
             SigningCredentials signIn = new(key, SecurityAlgorithms.HmacSha256);

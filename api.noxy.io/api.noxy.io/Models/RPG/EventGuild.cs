@@ -11,7 +11,7 @@ namespace api.noxy.io.Models.RPG
         [Column(nameof(Tag), TypeName = "varchar(32)")]
         public required EventTagType Tag { get; set; }
 
-        public required Guild GuildRef { get; set; }
+        public required Guild Guild { get; set; }
     }
 
 }

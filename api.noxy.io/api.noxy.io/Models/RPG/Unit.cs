@@ -20,6 +20,6 @@ namespace api.noxy.io.Models.RPG
         [Required]
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
 
-        public DateTime TimeInitiated { get; set; }
+        public DateTime? TimeInitiated { get; set; }
     }
 }

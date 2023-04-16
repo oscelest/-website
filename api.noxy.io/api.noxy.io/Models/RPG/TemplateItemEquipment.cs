@@ -9,7 +9,7 @@ namespace api.noxy.io.Models.RPG
         [Required]
         public required TemplateSlot TemplateSlot { get; set; }
 
-        public required List<TemplateSlot> TemplateSlotList { get; set; }
+        public List<TemplateSlot> TemplateSlotList { get; set; }
 
         #region -- Mappings --
 

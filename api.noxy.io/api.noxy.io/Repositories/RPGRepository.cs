@@ -8,6 +8,8 @@ namespace api.noxy.io.Interface
 {
     public interface IRPGRepository
     {
+
+
         public Task<Guild> CreateGuild(User user, string name);
         public Task<Guild?> LoadGuild(User user);
         public Task<Guild?> LoadGuild(string name);
@@ -27,7 +29,7 @@ namespace api.noxy.io.Interface
 
         public async Task<Guild> CreateGuild(User user, string name)
         {
-            Guild entityGuild = (await _db.Guild.AddAsync(new Guild { Name = name, UserRef = user })).Entity;
+            Guild entityGuild = (await _db.Guild.AddAsync(new Guild { Name = name, User = user })).Entity;
 
             List<TemplateFeat> listTemplateFeat = await _db.TemplateFeat.Where(x => x.TemplateRequirementList.Count == 0).ToListAsync();
             foreach (TemplateFeat entityTemplateFeat in listTemplateFeat)
@@ -52,7 +54,7 @@ namespace api.noxy.io.Interface
 
         public async Task<Guild?> LoadGuild(User user)
         {
-            return await _db.Guild.FirstOrDefaultAsync(x => x.UserRef.ID == user.ID);
+            return await _db.Guild.FirstOrDefaultAsync(x => x.User.ID == user.ID);
         }
 
         public async Task CleanUnitAvailableList(Guild guild)
@@ -76,7 +78,7 @@ namespace api.noxy.io.Interface
         {
             List<Item> items = await _db.Item.Where(x => listItem.Contains(x.ID)).ToListAsync();
             List<VolumeItemRecipe> listVolumeItemRecipe = await _db.VolumeItemRecipe.Where(x => x.TemplateRecipe.ID == recipe.ID).ToListAsync();
-            List<VolumeItemRecipe> listInput = listVolumeItemRecipe.Where(x => x.Input).ToList();
+            List<VolumeItemRecipe> listInput = listVolumeItemRecipe.Where(x => x.Component).ToList();
 
             foreach (var entityVolumeItem in listInput)
             {
@@ -87,21 +89,14 @@ namespace api.noxy.io.Interface
 
             }
 
-            List<VolumeItemRecipe> listOutput = listVolumeItemRecipe.Where(x => !x.Input).ToList();
+            List<VolumeItemRecipe> listOutput = listVolumeItemRecipe.Where(x => !x.Component).ToList();
 
 
 
             foreach (VolumeItemRecipe item in listInput)
             {
-                await _db.Item.FirstOrDefaultAsync(x => x.GuildRef.ID == x.ID);
+                await _db.Item.FirstOrDefaultAsync(x => x.Guild.ID == x.ID);
             }
-
-
-
         }
-
-
-
-
     }
 }

@@ -13,7 +13,7 @@ namespace api.noxy.io.Models.RPG
         public required string Name { get; set; }
 
         [Required]
-        public required User UserRef { get; set; }  
+        public required User User { get; set; }  
 
         [Required]
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;

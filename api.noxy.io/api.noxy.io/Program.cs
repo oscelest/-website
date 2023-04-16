@@ -16,8 +16,8 @@ builder.Services.AddSignalR(options => options.EnableDetailedErrors = true);
 builder.Services.AddControllers();
 //builder.Services.AddDbContext<APIContext>(options => options.UseMySQL(config.Database.ConnectionString));
 builder.Services.AddDbContext<RPGContext>(options => options.UseMySQL(config.Database.ConnectionString));
-builder.Services.AddTransient<IJWT, JWT>();
 builder.Services.AddTransient<IApplicationConfiguration, ApplicationConfiguration>();
+builder.Services.AddTransient<IJWT, JWT>();
 builder.Services.AddTransient<IRPGRepository, RPGRepository>();
 
 string corsPolicyName = "CORS";

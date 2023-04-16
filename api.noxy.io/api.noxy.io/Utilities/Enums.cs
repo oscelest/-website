@@ -92,4 +92,10 @@
         UnitAttributeArmor,
         UnitAttributeWard
     }
+
+    public enum VolumeItemRecipeTagType
+    {
+        Input = 0,
+        Output = 1,
+    }
 }

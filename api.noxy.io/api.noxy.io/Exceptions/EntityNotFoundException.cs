@@ -5,18 +5,18 @@ namespace api.noxy.io.Exceptions
     public class EntityNotFoundException<T> : Exception where T : class
     {
         public DbSet<T> DBSet { get; set; }
-        public Guid ID { get; set; }
+        public object Identifier { get; set; }
 
-        public EntityNotFoundException(DbSet<T> set, Guid id) : base()
+        public EntityNotFoundException(DbSet<T> set, object identifier) : base()
         {
             DBSet = set;
-            ID = id;
+            Identifier = identifier;
         }
 
-        public EntityNotFoundException(string message, DbSet<T> set, Guid id) : base(message)
+        public EntityNotFoundException(string message, DbSet<T> set, object identifier) : base(message)
         {
             DBSet = set;
-            ID = id;
+            Identifier = identifier;
         }
     }
 }

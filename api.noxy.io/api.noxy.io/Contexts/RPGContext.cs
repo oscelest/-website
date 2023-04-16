@@ -45,6 +45,7 @@ namespace api.noxy.io.Context
         public DbSet<TemplateItemAugmentation> TemplateItemAugmentation => Set<TemplateItemAugmentation>();
         public DbSet<TemplateItemEquipment> TemplateItemEquipment => Set<TemplateItemEquipment>();
         public DbSet<TemplateItemMap> TemplateItemMap => Set<TemplateItemMap>();
+        public DbSet<TemplateItemMaterial> TemplateItemMaterial => Set<TemplateItemMaterial>();
         public DbSet<TemplateMission> TemplateMission => Set<TemplateMission>();
         public DbSet<TemplateRecipe> TemplateRecipe => Set<TemplateRecipe>();
         public DbSet<TemplateRequirement> TemplateRequirement => Set<TemplateRequirement>();

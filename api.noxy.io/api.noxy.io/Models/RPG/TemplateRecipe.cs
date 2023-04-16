@@ -7,7 +7,7 @@ namespace api.noxy.io.Models.RPG
     public class TemplateRecipe : Template
     {
         [Comment("A list of items required for performing the recipe.")]
-        public required List<VolumeItemRecipe> VolumeItemRecipeList { get; set; }
+        public List<VolumeItemRecipe> VolumeItemRecipeList { get; set; } = new();
 
         #region -- Mappings --
 

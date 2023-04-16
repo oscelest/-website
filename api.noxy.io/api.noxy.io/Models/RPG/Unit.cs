@@ -21,5 +21,11 @@ namespace api.noxy.io.Models.RPG
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
 
         public DateTime? TimeInitiated { get; set; }
+
+        #region -- Mappings --
+
+        public List<Role> RoleList { get; set; } = new();
+
+        #endregion -- Mappings --
     }
 }

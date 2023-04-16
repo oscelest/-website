@@ -2,9 +2,9 @@
 
 namespace api.noxy.io.Models.RPG
 {
-    public class VolumeItem : Volume
+    public abstract class VolumeItem : Volume
     {
         [Required]
-        public required Item Item { get; set; }
+        public required TemplateItem TemplateItem { get; set; }
     }
 }

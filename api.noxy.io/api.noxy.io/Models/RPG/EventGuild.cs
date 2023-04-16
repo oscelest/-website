@@ -12,6 +12,7 @@ namespace api.noxy.io.Models.RPG
         public required EventTagType Tag { get; set; }
 
         public required Guild Guild { get; set; }
-    }
 
+
+    }
 }

@@ -3,15 +3,15 @@ using api.noxy.io.Exceptions;
 using api.noxy.io.Utility;
 using api.noxy.io.Models.RPG;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using api.noxy.io.Utilities;
 
 namespace api.noxy.io.Interface
 {
     public interface IRPGRepository
     {
         public Task<Guild> CreateGuild(User user, string name);
-        public Task<Guild> LoadGuild(User user);
+        public Task<Guild?> LoadGuild(User user);
+        public Task<Guild?> LoadGuild(string name);
+        public Task CleanUnitAvailableList(Guild guild);
     }
 
     public class RPGRepository : IRPGRepository
@@ -27,106 +27,81 @@ namespace api.noxy.io.Interface
 
         public async Task<Guild> CreateGuild(User user, string name)
         {
-            Guild? guild = await _db.Guild.FirstOrDefaultAsync(x => x.UserRef.ID == user.ID || x.Name == name);
-            if (guild != null)
+            Guild entityGuild = (await _db.Guild.AddAsync(new Guild { Name = name, UserRef = user })).Entity;
+
+            List<TemplateFeat> listTemplateFeat = await _db.TemplateFeat.Where(x => x.TemplateRequirementList.Count == 0).ToListAsync();
+            foreach (TemplateFeat entityTemplateFeat in listTemplateFeat)
             {
-                throw new EntityAlreadyExistsException();
+                await _db.UnlockableFeat.AddAsync(new()
+                {
+                    Guild = entityGuild,
+                    TemplateFeat = entityTemplateFeat,
+                    TimeAcquired = DateTime.UtcNow,
+                });
             }
 
-            EntityEntry<Guild> guildEntry = _db.Guild.Add(new Guild { Name = name, UserRef = user });
             _db.SaveChanges();
 
-            return guildEntry.Entity;
+            return entityGuild;
         }
 
-        public async Task<Guild> LoadGuild(User user)
+        public async Task<Guild?> LoadGuild(string name)
         {
-            return await _db.Guild.FirstOrDefaultAsync(x => x.UserRef.ID == user.ID) ?? throw new EntityNotFoundException();
+            return await _db.Guild.FirstOrDefaultAsync(x => x.Name == name);
         }
 
-        public async Task<List<Unit>> LoadUnitInitiatedList(User user)
+        public async Task<Guild?> LoadGuild(User user)
         {
-            Guild guild = await _db.Guild.FirstOrDefaultAsync(x => x.UserRef.ID == user.ID) ?? throw new EntityNotFoundException();
+            return await _db.Guild.FirstOrDefaultAsync(x => x.UserRef.ID == user.ID);
+        }
 
-            EventGuild? entityEventGuild = await _db.EventGuild
-                .Where(x => x.Guild.ID == guild.ID && x.Tag == EventTagType.UnitRefresh)
-                .FirstOrDefaultAsync(x => x.TimeLastOccurrence == _db.EventGuild.Max(y => y.TimeLastOccurrence));
-            
-            List<ModifierGuildUnit> listModifierGuildUnit = await _db.ModifierGuildUnit
-                .Where(x => x.UnitTag == ModifierGuildUnitTagType.RefreshTime)
-                .ToListAsync();
+        public async Task CleanUnitAvailableList(Guild guild)
+        {
+            _db.Unit.RemoveRange(await _db.Unit.Where(x => x.Guild.ID == guild.ID && x.TimeInitiated == null).ToListAsync());
+            _db.SaveChanges();
+        }
 
+        public async Task<TemplateRecipe> GetRecipe(Guid recipeID)
+        {
+            return await _db.TemplateRecipe.FirstOrDefaultAsync(x => x.ID == recipeID)
+                ?? throw new EntityNotFoundException<TemplateRecipe>(_db.TemplateRecipe, recipeID);
+        }
 
-            int refreshTotal = (int)guild.GetModifierValue<GuildUnitModifierEntity>(_config.Game.UnitListRefresh, x => x.Tag == ModifierGuildUnitTagType.RefreshTime);
+        public async Task<bool> HasRecipe(Guid guild, Guid recipeID)
+        {
+            return (await _db.UnlockableRecipe.FirstOrDefaultAsync(x => x.Guild.ID == guild && x.TemplateRecipe.ID == recipeID)) != null;
+        }
 
-            if (guild.TimeUnitRefresh != null && guild.TimeUnitRefresh?.AddSeconds(refreshTotal) >= DateTime.UtcNow)
+        public async Task CraftItem(Guild guild, TemplateRecipe recipe, List<Guid> listItem)
+        {
+            List<Item> items = await _db.Item.Where(x => listItem.Contains(x.ID)).ToListAsync();
+            List<VolumeItemRecipe> listVolumeItemRecipe = await _db.VolumeItemRecipe.Where(x => x.TemplateRecipe.ID == recipe.ID).ToListAsync();
+            List<VolumeItemRecipe> listInput = listVolumeItemRecipe.Where(x => x.Input).ToList();
+
+            foreach (var entityVolumeItem in listInput)
             {
-                throw new EntityStateException();
+                var entityItem = items.FirstOrDefault(x => x.TemplateItem.ID == entityVolumeItem.TemplateItem.ID);
+                if (entityItem == null) throw new Exception();
+
+
+
             }
 
-            _db.Unit.RemoveRange(await _db.Unit.Where(x => x.Guild.ID == guild.ID && x.TimeInitiated == null).ToListAsync());
+            List<VolumeItemRecipe> listOutput = listVolumeItemRecipe.Where(x => !x.Input).ToList();
 
 
 
-            //int refreshTotal = (int)guild.GetModifierValue<GuildUnitModifierEntity>(_config.Game.UnitListRefresh, x => x.Tag == ModifierGuildUnitTagType.RefreshTime);
-            //if (guild.TimeUnitRefresh != null && guild.TimeUnitRefresh?.AddSeconds(refreshTotal) >= DateTime.UtcNow)
-            //{
-            //    return guild.UnitList;
-            //}
-
-            //guild.TimeUnitRefresh = DateTime.UtcNow;
-            //guild.UnitList = guild.UnitList.Where(x => x.Recruited).ToList();
-
-            //int countTotal = (int)guild.GetUnitModifierValue(ModifierGuildUnitTagType.Count, _config.Game.UnitListCount);
-            //int experienceTotal = (int)guild.GetUnitModifierValue(ModifierGuildUnitTagType.Experience);
-
-            //GuildRoleModifierEntity.Set current = guild.GetRoleModifierSet();
-            //List<UnitTypeEntity> listUnitType = await _db.UnitType.ToListAsync();
-            //Dictionary<Guid, GuildRoleModifierEntity.Set> dictRole = await _db.RoleType.ToDictionaryAsync(x => x.ID, x => guild.GetRoleModifierSet(x.ID));
-            //for (int i = 0; i < countTotal; i++)
-            //{
-            //    EntityEntry<UnitTypeEntity> unitEntry = await _db.Unit.AddAsync(new()
-            //    {
-            //        Name = $"Recruitable Unit #{i + 1}",
-            //        Experience = RNG.IntBetweenFactors(experienceTotal, 0.9f, 1.1f),
-            //        Recruited = false,
-            //        Guild = guild,
-            //        UnitType = RNG.GetRandomElement(listUnitType),
-            //    });
-
-            //    Stack<int> splitCount = RNG.SplitIntRandomly(current.Count, dictRole.Count);
-            //    foreach (KeyValuePair<Guid, GuildRoleModifierEntity.Set> pair in dictRole)
-            //    {
-            //        int nextCount = splitCount.Pop();
-            //        int totalCount = pair.Value.Count + nextCount;
-            //        int totalExperience = RNG.IntBetweenFactors(current.Experience * nextCount + pair.Value.Experience * pair.Value.Count, 0.9f, 1.1f);
-
-            //        Stack<int> splitExperience = RNG.SplitIntRandomly(totalExperience, totalCount);
-            //        IEnumerable<GuildRoleEntity> roleList = guild.GuildRoleList.Where(x => x.Role.RoleType.ID == pair.Key);
-            //        IEnumerable<GuildRoleEntity> randomList = RNG.GetRandomElementList(roleList, totalCount);
-            //        foreach (GuildRoleEntity item in randomList)
-            //        {
-            //            EntityEntry<UnitRoleEntity> roleLevelEntry = await _db.UnitRole.AddAsync(new()
-            //            {
-            //                Experience = splitExperience.Pop(),
-            //                Unit = unitEntry.Entity,
-            //                Role = item.Role,
-            //            });
-            //        }
-            //    }
-            //}
-
-            //await _db.SaveChangesAsync();
-
-            //return guild.UnitList;
-
-
-            //_config.Game.UnitListRefresh
+            foreach (VolumeItemRecipe item in listInput)
+            {
+                await _db.Item.FirstOrDefaultAsync(x => x.GuildRef.ID == x.ID);
+            }
 
 
 
-            return new List<Unit> { new Unit() { Experience = 0, Guild = guild, TemplateUnit = new TemplateUnit() { Name = "" } } };
         }
+
+
+
 
     }
 }

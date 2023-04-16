@@ -62,7 +62,7 @@ namespace api.noxy.io.Context
         public DbSet<User> User => Set<User>();
 
         //public DbSet<Volume> Volume => Set<Volume>();
-        public DbSet<VolumeItem> VolumeItem => Set<VolumeItem>();
+        public DbSet<VolumeItemRecipe> VolumeItemRecipe => Set<VolumeItemRecipe>();
 
         public RPGContext() { }
 

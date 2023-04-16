@@ -7,9 +7,12 @@ namespace api.noxy.io.Models.RPG
     public class TemplateRecipe : Template
     {
         [Comment("A list of items required for performing the recipe.")]
-        public required List<VolumeItem> InputVolumeItemList { get; set; }
+        public required List<VolumeItemRecipe> VolumeItemRecipeList { get; set; }
 
-        [Comment("A list of items rewarded for performing the recipe.")]
-        public required List<VolumeItem> OutputVolumeItemList { get; set; }
+        #region -- Mappings --
+
+        public List<UnlockableRecipe> UnlockableRecipeList { get; set; } = new();
+
+        #endregion -- Mappings --
     }
 }

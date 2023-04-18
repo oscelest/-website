@@ -6,11 +6,5 @@ namespace api.noxy.io.Models.RPG
     public class TemplateItemMap : TemplateItem
     {
         public required List<TemplateSlot> TemplateSlotList { get; set; }
-
-        #region -- Mappings --
-
-        public List<ItemMap> ItemMapList { get; set; } = new();
-
-        #endregion -- Mappings --
     }
 }

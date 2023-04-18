@@ -3,7 +3,7 @@
 namespace api.noxy.io.Models.RPG
 {
     [Table("ItemMap")]
-    public class ItemMap : Item
+    public class ItemMap : ItemModifiable
     {
 
     }

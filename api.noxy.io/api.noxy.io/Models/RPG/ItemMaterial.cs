@@ -4,9 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace api.noxy.io.Models.RPG
 {
     [Table("ItemMaterial")]
-    public class ItemMaterial : Item
+    public class ItemMaterial : ItemStackable
     {
-        [Required]
-        public int Count { get; set; }
+
     }
 }

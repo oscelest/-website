@@ -14,6 +14,6 @@ namespace api.noxy.io.Models.RPG
         public required TemplateItem TemplateItem { get; set; }
 
         [Required]
-        public DateTime TimeCreated { get; set; }
+        public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
     }
 }

@@ -9,12 +9,6 @@ namespace api.noxy.io.Models.RPG
         [Required]
         public required TemplateSlot TemplateSlot { get; set; }
 
-        public List<TemplateSlot> TemplateSlotList { get; set; }
-
-        #region -- Mappings --
-
-        public List<ItemEquipment> ItemEquipmentList { get; set; } = new();
-
-        #endregion -- Mappings --
+        public List<TemplateSlot> TemplateSlotList { get; set; } = new();
     }
 }

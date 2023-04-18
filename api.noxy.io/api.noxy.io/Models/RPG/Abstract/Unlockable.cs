@@ -11,6 +11,6 @@ namespace api.noxy.io.Models.RPG
         public required Guild Guild { get; set; }
 
         [Required]
-        public required DateTime TimeAcquired { get; set; }
+        public DateTime TimeAcquired { get; set; } = DateTime.UtcNow;
     }
 }

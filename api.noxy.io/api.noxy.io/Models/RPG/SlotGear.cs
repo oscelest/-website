@@ -1,14 +1,15 @@
 ﻿using Database.Models.RPG.Junction;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.RPG
 {
-    [Table("TemplateSlot")]
-    public class TemplateSlot : Template
+    [Table("SlotGear")]
+    public class SlotGear : Slot
     {
         #region -- Mappings --
 
-        public List<TemplateItemGearWithTemplateSlot> TemplateItemGearWithTemplateSlotList { get; set; } = new();
+        public List<TemplateUnit> TemplateUnitList { get; set; } = new();
 
         #endregion -- Mappings --
     }

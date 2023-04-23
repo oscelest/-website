@@ -5,6 +5,6 @@ namespace api.noxy.io.Models.RPG
     [Table("TemplateItemMap")]
     public class TemplateItemMap : TemplateItem
     {
-        public required List<TemplateSlot> TemplateSlotList { get; set; }
+        public required List<SlotSupport> SlotSupportList { get; set; }
     }
 }

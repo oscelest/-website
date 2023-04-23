@@ -2,16 +2,10 @@
 
 namespace api.noxy.io.Models.RPG
 {
-    public abstract class Slot
+    public abstract class Equipment
     {
         [Key]
         public Guid ID { get; set; } = Guid.NewGuid();
-
-        [Required]
-        public required string Name { get; set; }
-
-        [Required] 
-        public required TemplateSlot TemplateSlot { get; set; }
 
         [Required]
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;

@@ -2,13 +2,12 @@ using api.noxy.io.Context;
 using api.noxy.io.Exceptions;
 using api.noxy.io.Interface;
 using api.noxy.io.Models.RPG;
-using api.noxy.io.Utilities;
 using api.noxy.io.Utility;
+using Database.Models.RPG;
+using Database.Models.RPG.Junction;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Org.BouncyCastle.Crypto.Engines;
-using System.Reflection;
 
 namespace TestProject
 {
@@ -57,133 +56,421 @@ namespace TestProject
         {
             Guild? entityGuild = await RPGRepository.LoadGuild(User);
             Assert.IsNotNull(entityGuild);
-            Assert.AreEqual(entityGuild.Name, "Test");
-            Assert.AreEqual(entityGuild.User.Email, "test@example.com");
+            Assert.AreEqual("Test", entityGuild.Name);
+            Assert.AreEqual("test@example.com", entityGuild.User.Email);
         }
 
         [TestMethod]
-        public async Task CraftItemNoRecipeUnlocked()
+        public async Task CraftItemNoRecipeUnlockedFailure()
         {
             TemplateRecipe TemplateRecipe = Context.TemplateRecipe.Add(new() { Name = "Recipe: Equipment" }).Entity;
             Context.SaveChanges();
 
             try
             {
-                await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, new List<Guid>() { });
+                await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, 1, new List<Guid>() { });
                 Assert.Fail("Guild should not have access to this recipe");
             }
             catch (EntityNotFoundException<UnlockableRecipe> ex)
             {
                 Type type = ex.Identifier.GetType();
-                Guid? GuildID = (Guid?)type.GetProperty("Guild")?.GetValue(ex.Identifier, null);
-                Guid? RecipeID = (Guid?)type.GetProperty("Recipe")?.GetValue(ex.Identifier, null);
-
-                Assert.AreEqual(GuildID, Guild.ID);
-                Assert.AreEqual(RecipeID, TemplateRecipe.ID);
+                Assert.AreEqual(Guild.ID, (Guid?)type.GetProperty("Guild")?.GetValue(ex.Identifier, null));
+                Assert.AreEqual(TemplateRecipe.ID, (Guid?)type.GetProperty("Recipe")?.GetValue(ex.Identifier, null));
             }
         }
 
 
         [TestMethod]
-        public async Task CraftItemWrongMaterial()
+        public async Task CraftItemWrongMaterialFailure()
         {
-            TemplateItemMaterial TemplateItemMaterialSuccess = Context.TemplateItemMaterial.Add(new() { Name = "Success Material" }).Entity;
-            TemplateItemMaterial TemplateItemMaterialFailure = Context.TemplateItemMaterial.Add(new() { Name = "Failure Material" }).Entity;
+            TemplateItemMaterial TemplateItemMaterialSuccess = Context.TemplateItemMaterial.Add(new() { Name = "Success Material", Description = string.Empty }).Entity;
+            TemplateItemMaterial TemplateItemMaterialFailure = Context.TemplateItemMaterial.Add(new() { Name = "Failure Material", Description = string.Empty }).Entity;
 
             TemplateRecipe TemplateRecipe = Context.TemplateRecipe.Add(new() { Name = "Recipe: Equipment" }).Entity;
             Context.UnlockableRecipe.Add(new() { Guild = Guild, TemplateRecipe = TemplateRecipe });
             Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = true, TemplateItem = TemplateItemMaterialSuccess, Count = 5 });
 
-            ItemMaterial ItemMaterial = Context.ItemMaterial.Add(new ItemMaterial() { Guild = Guild, TemplateItem = TemplateItemMaterialFailure, Count = 5 }).Entity;
+            Item Item = Context.Item.Add(new Item() { Guild = Guild, TemplateItem = TemplateItemMaterialFailure, Count = 5 }).Entity;
 
             Context.SaveChanges();
 
             try
             {
-                await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, new List<Guid>() { ItemMaterial.ID });
+                await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, 1, new List<Guid>() { Item.ID });
+                Assert.Fail("Call to CraftItem should fail.");
             }
             catch (EntityNotFoundException<Item> ex)
             {
                 Type type = ex.Identifier.GetType();
-                Guid? GuildID = (Guid?)type.GetProperty("Guild")?.GetValue(ex.Identifier, null);
-                Guid? TemplateItemID = (Guid?)type.GetProperty("TemplateItem")?.GetValue(ex.Identifier, null);
-
-                Assert.AreEqual(GuildID, Guild.ID);
-                Assert.AreEqual(TemplateItemID, TemplateItemMaterialSuccess.ID);
+                Assert.AreEqual(Guild.ID, (Guid?)type.GetProperty("Guild")?.GetValue(ex.Identifier, null));
+                Assert.AreEqual(TemplateItemMaterialSuccess.ID, (Guid?)type.GetProperty("TemplateItem")?.GetValue(ex.Identifier, null));
             }
         }
 
         [TestMethod]
-        public async Task CraftItemInsufficientMaterial()
+        public async Task CraftItemInsufficientMaterialFailure()
         {
-            TemplateItemMaterial TemplateItemMaterial = Context.TemplateItemMaterial.Add(new() { Name = "Material" }).Entity;
+            TemplateItemMaterial TemplateItemMaterial = Context.TemplateItemMaterial.Add(new() { Name = "Material", Description = string.Empty }).Entity;
 
             TemplateRecipe TemplateRecipe = Context.TemplateRecipe.Add(new() { Name = "Recipe: Equipment" }).Entity;
             Context.UnlockableRecipe.Add(new() { Guild = Guild, TemplateRecipe = TemplateRecipe });
             Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = true, TemplateItem = TemplateItemMaterial, Count = 5 });
 
-            ItemMaterial ItemMaterial = Context.ItemMaterial.Add(new ItemMaterial() { Guild = Guild, TemplateItem = TemplateItemMaterial, Count = 2 }).Entity;
+            Item Item = Context.Item.Add(new Item() { Guild = Guild, TemplateItem = TemplateItemMaterial, Count = 2 }).Entity;
 
             Context.SaveChanges();
 
             try
             {
-                await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, new List<Guid>() { ItemMaterial.ID });
+                await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, 1, new List<Guid>() { Item.ID });
+                Assert.Fail("Call to CraftItem should fail.");
             }
             catch (EntityConditionException<Item> ex)
             {
-                Assert.AreEqual((Guid)ex.Identifier, ItemMaterial.ID);
+                Assert.AreEqual(Item.ID, (Guid)ex.Identifier);
+                return;
             }
         }
 
         [TestMethod]
-        public async Task CraftItemFromMaterial()
+        public async Task CraftItemSuccess()
         {
-            TemplateSlot TemplateSlotEquipment = Context.TemplateSlot.Add(new() { Name = "Equipment Slot" }).Entity;
-            TemplateItemMaterial TemplateItemMaterial = Context.TemplateItemMaterial.Add(new() { Name = "Material" }).Entity;
-            TemplateItemEquipment TemplateItemEquipment = Context.TemplateItemEquipment.Add(new() { Name = "Equipment", TemplateSlot = TemplateSlotEquipment }).Entity;
+            TemplateItemMaterial TemplateItemMaterial = Context.TemplateItemMaterial.Add(new() { Name = "Material", Description = string.Empty }).Entity;
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Gear" }).Entity;
 
             TemplateRecipe TemplateRecipe = Context.TemplateRecipe.Add(new() { Name = "Recipe: Equipment" }).Entity;
             Context.UnlockableRecipe.Add(new() { Guild = Guild, TemplateRecipe = TemplateRecipe });
             Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = true, TemplateItem = TemplateItemMaterial, Count = 5 });
-            Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = false, TemplateItem = TemplateItemEquipment, Count = 1 });
+            Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = false, TemplateItem = TemplateItemGear, Count = 1 });
 
-            ItemMaterial ItemMaterial = Context.ItemMaterial.Add(new ItemMaterial() { Guild = Guild, TemplateItem = TemplateItemMaterial, Count = 5 }).Entity;
+            Item Item = Context.Item.Add(new Item() { Guild = Guild, TemplateItem = TemplateItemMaterial, Count = 5 }).Entity;
 
             Context.SaveChanges();
 
-            await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, new List<Guid>() { ItemMaterial.ID });
+            await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, 1, new List<Guid>() { Item.ID });
 
-            ItemEquipment? EquipmentResult = await Context.ItemEquipment.FirstOrDefaultAsync(x => x.TemplateItem.ID == TemplateItemEquipment.ID && x.Guild.ID == Guild.ID);
-            Assert.IsNotNull(EquipmentResult);
+            Item? ItemInput = await Context.Item.FirstOrDefaultAsync(x => x.TemplateItem.ID == TemplateItemMaterial.ID && x.Guild.ID == Guild.ID);
+            Assert.IsNotNull(ItemInput);
+            Assert.AreEqual(0, ItemInput.Count);
 
-            ItemMaterial? MaterialResult = await Context.ItemMaterial.FirstOrDefaultAsync(x => x.TemplateItem.ID == TemplateItemMaterial.ID && x.Guild.ID == Guild.ID);
-            Assert.IsNotNull(MaterialResult);
-            Assert.AreEqual(MaterialResult.Count, 0);
+            Item? ItemOutput = await Context.Item.FirstOrDefaultAsync(x => x.TemplateItem.ID == TemplateItemGear.ID && x.Guild.ID == Guild.ID);
+            Assert.IsNotNull(ItemOutput);
+            Assert.AreEqual(1, ItemOutput.Count);
+        }
+
+        [TestMethod]
+        public async Task CraftItemFromMultipleMaterialSuccess()
+        {
+            TemplateItemMaterial TemplateItemMaterial1 = Context.TemplateItemMaterial.Add(new() { Name = "Material 1", Description = string.Empty }).Entity;
+            TemplateItemMaterial TemplateItemMaterial2 = Context.TemplateItemMaterial.Add(new() { Name = "Material 2", Description = string.Empty }).Entity;
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Gear" }).Entity;
+
+            TemplateRecipe TemplateRecipe = Context.TemplateRecipe.Add(new() { Name = "Recipe: Equipment" }).Entity;
+            Context.UnlockableRecipe.Add(new() { Guild = Guild, TemplateRecipe = TemplateRecipe });
+            Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = true, TemplateItem = TemplateItemMaterial1, Count = 5 });
+            Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = true, TemplateItem = TemplateItemMaterial2, Count = 3 });
+            Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = false, TemplateItem = TemplateItemGear, Count = 1 });
+
+            Item ItemMaterial1 = Context.Item.Add(new Item() { Guild = Guild, TemplateItem = TemplateItemMaterial1, Count = 5 }).Entity;
+            Item ItemMaterial2 = Context.Item.Add(new Item() { Guild = Guild, TemplateItem = TemplateItemMaterial2, Count = 3 }).Entity;
+
+            Context.SaveChanges();
+
+            await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, 1, new List<Guid>() { ItemMaterial1.ID, ItemMaterial2.ID });
+        }
+
+        [TestMethod]
+        public async Task EquipItem_ArgumentEmpty_Failure()
+        {
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Guid.Empty, Guid.Empty, new() { Guid.Empty });
+                Assert.Fail("Call to EquipGear should fail.");
+            }
+            catch (EntityNotFoundException<Item> ex)
+            {
+                Type type = ex.Identifier.GetType();
+                Assert.AreEqual(Guild.ID, (Guid?)type.GetProperty("Guild")?.GetValue(ex.Identifier, null));
+                Assert.AreEqual(Guid.Empty, (Guid?)type.GetProperty("Item")?.GetValue(ex.Identifier, null));
+            }
+        }
+
+        [TestMethod]
+        public async Task EquipItem_ItemCountZero_Failure()
+        {
+            TemplateItemMaterial TemplateItemGear = Context.TemplateItemMaterial.Add(new() { Name = "Template Item Gear", Description = string.Empty }).Entity;
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 0 }).Entity;
+
+            Context.SaveChanges();
+
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Guid.Empty, Item.ID, new() { Guid.Empty });
+                Assert.Fail("Call to EquipGear should fail.");
+            }
+            catch (EntityNotFoundException<Item> ex)
+            {
+                Type type = ex.Identifier.GetType();
+                Assert.AreEqual(Guild.ID, (Guid?)type.GetProperty("Guild")?.GetValue(ex.Identifier, null));
+                Assert.AreEqual(Item.ID, (Guid?)type.GetProperty("Item")?.GetValue(ex.Identifier, null));
+            }
+        }
+
+        [TestMethod]
+        public async Task EquipItem_ItemWrongTemplate_Failure()
+        {
+            TemplateItemMaterial TemplateItemGear = Context.TemplateItemMaterial.Add(new() { Name = "Template Item Gear", Description = string.Empty }).Entity;
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            Context.SaveChanges();
+
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Guid.Empty, Item.ID, new() { Guid.Empty });
+                Assert.Fail("Call to EquipGear should fail.");
+            }
+            catch (EntityConditionException<Item> ex)
+            {
+                Assert.AreEqual(Item.ID, (Guid)ex.Identifier);
+            }
+        }
+
+        [TestMethod]
+        public async Task EquipItem_SlotEmpty_Failure()
+        {
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot" }).Entity;
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot = Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+
+            Context.SaveChanges();
+
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Guid.Empty, Item.ID, new() { });
+                Assert.Fail("Call to EquipGear should fail.");
+            }
+            catch (EntityNotFoundException<TemplateItemGearWithTemplateSlot> ex)
+            {
+                Assert.AreEqual(TemplateItemGearWithTemplateSlot.ID, ex.Identifier);
+            }
+        }
+
+        [TestMethod]
+        public async Task EquipItem_SlotWrong_Failure()
+        {
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot" }).Entity;
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot = Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            Context.SaveChanges();
+
+            List<Guid> SlotGearIDList = new() { Guid.Empty };
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Guid.Empty, Item.ID, SlotGearIDList);
+                Assert.Fail("Call to EquipGear should fail.");
+            }
+            catch (EntityNotFoundException<TemplateItemGearWithTemplateSlot> ex)
+            {
+                Assert.AreEqual(TemplateItemGearWithTemplateSlot.ID, ex.Identifier);
+            }
+        }
+
+        [TestMethod]
+        public async Task EquipItem_UnitEmpty_Failure()
+        {
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot" }).Entity;
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot = Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+
+            SlotGear SlotGear = Context.SlotGear.Add(new() { Name = "Slot Gear", TemplateSlot = TemplateSlot }).Entity;
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            List<Guid> SlotGearIDList = new() { SlotGear.ID };
+
+            Context.SaveChanges();
+
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Guid.Empty, Item.ID, SlotGearIDList);
+                Assert.Fail("Call to EquipGear should fail.");
+            }
+            catch (EntityNotFoundException<Unit> ex)
+            {
+                Type type = ex.Identifier.GetType();
+                Assert.AreEqual(Guild.ID, (Guid?)type.GetProperty("Guild")?.GetValue(ex.Identifier, null));
+                Assert.AreEqual(Guid.Empty, (Guid?)type.GetProperty("Unit")?.GetValue(ex.Identifier, null));
+            }
+        }
+
+        [TestMethod]
+        public async Task EquipItem_UnitHasNoSlot_Failure()
+        {
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot Item" }).Entity;
+            SlotGear SlotGear = Context.SlotGear.Add(new() { Name = "Slot Item", TemplateSlot = TemplateSlot }).Entity;
+
+            TemplateUnit TemplateUnit = Context.TemplateUnit.Add(new() { Name = "Template Unit", SlotGearList = new() { } }).Entity;
+            Unit Unit = Context.Unit.Add(new Unit() { Guild = Guild, TemplateUnit = TemplateUnit, Experience = 0 }).Entity;
+
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+
+            List<Guid> SlotGearIDList = new() { SlotGear.ID };
+
+            Context.SaveChanges();
+
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Unit.ID, Item.ID, SlotGearIDList);
+            }
+            catch (EntityNotFoundException<SlotGear> ex)
+            {
+                Assert.IsFalse(SlotGearIDList.Except((IEnumerable<Guid>)ex.Identifier).Any());
+            }
         }
 
 
         [TestMethod]
-        public async Task CraftItemFromMaterialAndEquipment()
+        /// <summary>
+        /// A Player tries to equip a Unit with a Ring in the Left Ring Slot, but the equipping Unit only has a Right Ring Slot, therefore the test fails.
+        /// </summary>
+        public async Task EquipItem_NoTemplateItemGearWithTemplateSlot_Failure()
         {
-            TemplateSlot TemplateSlotEquipment = Context.TemplateSlot.Add(new() { Name = "Equipment Slot" }).Entity;
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot Item" }).Entity;
+            SlotGear SlotGearItem = Context.SlotGear.Add(new() { Name = "Slot Item", TemplateSlot = TemplateSlot }).Entity;
+            SlotGear SlotGearUnit = Context.SlotGear.Add(new() { Name = "Slot Unit", TemplateSlot = TemplateSlot }).Entity;
 
-            TemplateItemMaterial TemplateItemMaterial = Context.TemplateItemMaterial.Add(new() { Name = "Material" }).Entity;
-            TemplateItemEquipment TemplateItemEquipment = Context.TemplateItemEquipment.Add(new() { Name = "Equipment", TemplateSlot = TemplateSlotEquipment }).Entity;
-            TemplateItemEquipment TemplateItemResult = Context.TemplateItemEquipment.Add(new() { Name = "Result", TemplateSlot = TemplateSlotEquipment }).Entity;
+            TemplateUnit TemplateUnit = Context.TemplateUnit.Add(new() { Name = "Template Unit", SlotGearList = new() { SlotGearUnit } }).Entity;
+            Unit Unit = Context.Unit.Add(new Unit() { Guild = Guild, TemplateUnit = TemplateUnit, Experience = 0 }).Entity;
 
-            TemplateRecipe TemplateRecipe = Context.TemplateRecipe.Add(new() { Name = "Recipe: Equipment" }).Entity;
-            Context.UnlockableRecipe.Add(new() { Guild = Guild, TemplateRecipe = TemplateRecipe });
-            Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = true, TemplateItem = TemplateItemMaterial, Count = 5 });
-            Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = true, TemplateItem = TemplateItemEquipment, Count = 1 });
-            Context.VolumeItemRecipe.Add(new() { TemplateRecipe = TemplateRecipe, Component = false, TemplateItem = TemplateItemResult, Count = 1 });
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
-            ItemMaterial ItemMaterial = Context.ItemMaterial.Add(new ItemMaterial() { Guild = Guild, TemplateItem = TemplateItemMaterial, Count = 5 }).Entity;
-            ItemEquipment ItemEquipment = Context.ItemEquipment.Add(new ItemEquipment() { Guild = Guild, TemplateItem = TemplateItemEquipment }).Entity;
+            Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+
+            List<Guid> SlotGearIDList = new() { SlotGearItem.ID };
 
             Context.SaveChanges();
 
-            await RPGRepository.CraftItem(Guild, TemplateRecipe.ID, new List<Guid>() { ItemMaterial.ID, ItemEquipment.ID });
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Unit.ID, Item.ID, SlotGearIDList);
+            }
+            catch (EntityNotFoundException<SlotGear> ex)
+            {
+                Assert.IsFalse(SlotGearIDList.Except((IEnumerable<Guid>)ex.Identifier).Any());
+            }
         }
+
+        [TestMethod]
+        /// <summary>
+        /// A Player tries to equip a Unit with a Ring in the Left Ring Slot, but the equipping Unit only has a Right Ring Slot, therefore the test fails.
+        /// </summary>
+        public async Task EquipItem_SameTemplateDifferentSlot_Failure()
+        {
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot Item" }).Entity;
+            SlotGear SlotGearItem = Context.SlotGear.Add(new() { Name = "Slot Item", TemplateSlot = TemplateSlot }).Entity;
+            SlotGear SlotGearUnit = Context.SlotGear.Add(new() { Name = "Slot Unit", TemplateSlot = TemplateSlot }).Entity;
+
+            TemplateUnit TemplateUnit = Context.TemplateUnit.Add(new() { Name = "Template Unit", SlotGearList = new() { SlotGearUnit } }).Entity;
+            Unit Unit = Context.Unit.Add(new Unit() { Guild = Guild, TemplateUnit = TemplateUnit, Experience = 0 }).Entity;
+
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+
+            List<Guid> SlotGearIDList = new() { SlotGearItem.ID };
+
+            Context.SaveChanges();
+
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Unit.ID, Item.ID, SlotGearIDList);
+            }
+            catch (EntityNotFoundException<SlotGear> ex)
+            {
+                Assert.IsFalse(SlotGearIDList.Except((IEnumerable<Guid>)ex.Identifier).Any());
+            }
+        }
+
+
+        [TestMethod]
+        public async Task EquipItem_NotEnoughGearSlotGiven_Failure()
+        {
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot Item" }).Entity;
+            SlotGear SlotGearOne = Context.SlotGear.Add(new() { Name = "Slot #1", TemplateSlot = TemplateSlot }).Entity;
+            SlotGear SlotGearTwo = Context.SlotGear.Add(new() { Name = "Slot #2", TemplateSlot = TemplateSlot }).Entity;
+
+            TemplateUnit TemplateUnit = Context.TemplateUnit.Add(new() { Name = "Template Unit", SlotGearList = new() { SlotGearOne, SlotGearTwo } }).Entity;
+            Unit Unit = Context.Unit.Add(new Unit() { Guild = Guild, TemplateUnit = TemplateUnit, Experience = 0 }).Entity;
+
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlotOne = Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlotTwo = Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+
+            List<Guid> SlotGearIDList = new() { SlotGearOne.ID };
+
+            Context.SaveChanges();
+
+            try
+            {
+                await RPGRepository.EquipGear(Guild, Unit.ID, Item.ID, SlotGearIDList);
+            }
+            catch (EntityNotFoundException<TemplateItemGearWithTemplateSlot> ex)
+            {
+                Assert.AreNotEqual(TemplateItemGearWithTemplateSlotOne.ID, ex.Identifier);
+                Assert.AreEqual(TemplateItemGearWithTemplateSlotTwo.ID, ex.Identifier);
+            }
+        }
+
+        [TestMethod]
+        public async Task SomeTest()
+        {
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot Item" }).Entity;
+            SlotGear SlotGear1 = Context.SlotGear.Add(new() { Name = "Slot #1", TemplateSlot = TemplateSlot }).Entity;
+            SlotGear SlotGear2 = Context.SlotGear.Add(new() { Name = "Slot #2", TemplateSlot = TemplateSlot }).Entity;
+
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+
+            Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+            Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+
+            Context.SaveChanges();
+        }
+
+
+        [TestMethod]
+        public async Task EquipItem()
+        {
+            TemplateSlot TemplateSlot = Context.TemplateSlot.Add(new() { Name = "Template Slot" }).Entity;
+            SlotGear SlotGear = Context.SlotGear.Add(new() { Name = "Slot Gear", TemplateSlot = TemplateSlot }).Entity;
+
+            TemplateUnit TemplateUnit = Context.TemplateUnit.Add(new() { Name = "Template Unit", SlotGearList = new() { SlotGear } }).Entity;
+            Unit Unit = Context.Unit.Add(new Unit() { Guild = Guild, TemplateUnit = TemplateUnit, Experience = 0 }).Entity;
+
+            TemplateItemGear TemplateItemGear = Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            Item Item = Context.Item.Add(new() { Guild = Guild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+
+            Context.SaveChanges();
+
+            await RPGRepository.EquipGear(Guild, Unit.ID, Item.ID, new() { SlotGear.ID });
+
+
+        }
+
+
+
     }
 }

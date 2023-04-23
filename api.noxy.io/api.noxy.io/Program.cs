@@ -85,7 +85,6 @@ using (IServiceScope scope = app.Services.CreateScope())
     RPGContext dbContext = scope.ServiceProvider.GetRequiredService<RPGContext>();
     dbContext.Database.EnsureDeleted();
     dbContext.Database.EnsureCreated();
-    dbContext.Seed();
 }
 
 // Configure the HTTP request pipeline.

@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.noxy.io.Models.RPG
 {
-    [Table("TemplateItemEquipment")]
-    public class TemplateItemEquipment : TemplateItem
+    [Table("TemplateItemAugmentation")]
+    public class TemplateItemSupport : TemplateItem
     {
         [Required]
         public required TemplateSlot TemplateSlot { get; set; }
 
-        public List<TemplateSlot> TemplateSlotList { get; set; } = new();
+        public required List<ModifierItem> ModifierItemList { get; set; }
     }
 }

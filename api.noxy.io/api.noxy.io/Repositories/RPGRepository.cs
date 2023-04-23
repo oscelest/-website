@@ -3,6 +3,8 @@ using api.noxy.io.Exceptions;
 using api.noxy.io.Utility;
 using api.noxy.io.Models.RPG;
 using Microsoft.EntityFrameworkCore;
+using Database.Models.RPG;
+using Database.Models.RPG.Junction;
 
 namespace api.noxy.io.Interface
 {
@@ -12,7 +14,8 @@ namespace api.noxy.io.Interface
         public Task<Guild?> LoadGuild(User user);
         public Task<Guild?> LoadGuild(string name);
         public Task CleanUnitAvailableList(Guild guild);
-        public Task CraftItem(Guild guild, Guid recipeID, List<Guid> listItemID);
+        public Task CraftItem(Guild guild, Guid recipeID, int count, List<Guid> listItemID);
+        public Task EquipGear(Guild guild, Guid unitID, Guid itemID, List<Guid> listSlotID);
     }
 
     public class RPGRepository : IRPGRepository
@@ -73,7 +76,7 @@ namespace api.noxy.io.Interface
             return (await Context.UnlockableRecipe.FirstOrDefaultAsync(x => x.Guild.ID == guild && x.TemplateRecipe.ID == recipeID)) != null;
         }
 
-        public async Task CraftItem(Guild guild, Guid recipeID, List<Guid> listItemID)
+        public async Task CraftItem(Guild guild, Guid recipeID, int count, List<Guid> listItemID)
         {
             UnlockableRecipe entityUnlockableRecipe = await Context.UnlockableRecipe
                 .FirstOrDefaultAsync(x => x.TemplateRecipe.ID == recipeID && x.Guild.ID == guild.ID)
@@ -83,50 +86,79 @@ namespace api.noxy.io.Interface
             List<Item> listItem = await Context.Item.Where(x => x.Guild.ID == guild.ID && listItemID.Contains(x.ID)).ToListAsync();
             List<VolumeItemRecipe> listVolumeItem = await Context.VolumeItemRecipe.Where(x => x.TemplateRecipe.ID == entityRecipe.ID).ToListAsync();
 
-            foreach (var entityVolumeItem in listVolumeItem.Where(x => x.Component))
+            for (int i = 0; i < count; i++)
             {
-                int requiredCount = entityVolumeItem.Count;
-                TemplateItem requiredItem = entityVolumeItem.TemplateItem;
-
-                Item entityItem = listItem.FirstOrDefault(x => x.TemplateItem.ID == requiredItem.ID)
-                    ?? throw new EntityNotFoundException<Item>(Context.Item, new { TemplateItem = requiredItem.ID, Guild = guild.ID });
-
-                if (entityItem is ItemStackable entityItemStackable)
+                foreach (var entityVolumeItem in listVolumeItem.Where(x => x.Component))
                 {
-                    if (entityItemStackable.Count < requiredCount)
+                    int requiredCount = entityVolumeItem.Count;
+                    TemplateItem requiredItem = entityVolumeItem.TemplateItem;
+
+                    Item entityItem = listItem.FirstOrDefault(x => x.TemplateItem.ID == requiredItem.ID)
+                        ?? throw new EntityNotFoundException<Item>(Context.Item, new { TemplateItem = requiredItem.ID, Guild = guild.ID });
+
+                    if (entityItem.Count < requiredCount)
                     {
-                        throw new EntityConditionException<Item>(Context.Item, entityItemStackable.ID);
+                        throw new EntityConditionException<Item>(Context.Item, entityItem.ID);
                     }
-                    entityItemStackable.Count -= requiredCount;
+                    entityItem.Count -= requiredCount;
                 }
-                else if (entityItem is ItemModifiable entityItemModifiable)
-                {
-                    Context.Item.Remove(entityItemModifiable);
-                    listItem.Remove(entityItemModifiable);
-                }
-                else
-                {
-                    throw new Exception("Unknown item type.");
-                }
-            }
 
-            foreach (VolumeItemRecipe entityVolumeItem in listVolumeItem.Where(x => !x.Component))
-            {
-                if (entityVolumeItem.TemplateItem is TemplateItemAugmentation entityTemplateItemAugmentation)
+                foreach (VolumeItemRecipe entityVolumeItem in listVolumeItem.Where(x => !x.Component))
                 {
-                    Context.ItemAugmentation.Add(new() { Guild = guild, TemplateItem = entityTemplateItemAugmentation, Count = entityVolumeItem.Count });
-                }
-                else if (entityVolumeItem.TemplateItem is TemplateItemEquipment entityTemplateItemEquipment)
-                {
-                    Context.ItemEquipment.Add(new() { Guild = guild, TemplateItem = entityTemplateItemEquipment });
-                }
-                else
-                {
-                    throw new Exception();
+                    Item? entityItem = listItem.FirstOrDefault(x => x.TemplateItem.ID == entityVolumeItem.TemplateItem.ID);
+                    if (entityItem != null)
+                    {
+                        entityItem.Count += entityVolumeItem.Count;
+                    }
+                    else
+                    {
+                        Context.Item.Add(new() { Guild = guild, TemplateItem = entityVolumeItem.TemplateItem, Count = entityVolumeItem.Count });
+                    }
                 }
             }
 
             Context.SaveChanges();
+        }
+
+        public async Task EquipGear(Guild guild, Guid unitID, Guid itemID, List<Guid> listSlotID)
+        {
+            Item entityItem = await Context.Item
+                .FirstOrDefaultAsync(x => x.ID == itemID && x.Guild.ID == guild.ID && x.Count > 0)
+                ?? throw new EntityNotFoundException<Item>(Context.Item, new { Item = itemID, Guild = guild.ID });
+
+            TemplateItemGear entityTemplateItemGear = entityItem.TemplateItem as TemplateItemGear
+                ?? throw new EntityConditionException<Item>(Context.Item, itemID);
+
+            List<TemplateItemGearWithTemplateSlot> listTemplateItemGearWithTemplateSlot = await Context.TemplateItemGearWithTemplateSlot
+                .Where(x => x.TemplateItemGear.ID == entityTemplateItemGear.ID).ToListAsync();
+
+            List<SlotGear> listSlotGear = await Context.SlotGear
+                .Where(x => listSlotID.Contains(x.ID))
+                .ToListAsync();
+
+            List<SlotGear> listSlotGearToBeUsed = new();
+            foreach (TemplateItemGearWithTemplateSlot entityTemplateItemGearWithTemplateSlot in listTemplateItemGearWithTemplateSlot)
+            {
+                SlotGear entitySlotGearToBeUsed = listSlotGear.FirstOrDefault(x => !listSlotGearToBeUsed.Contains(x) && x.TemplateSlot.ID == entityTemplateItemGearWithTemplateSlot.TemplateSlot.ID)
+                    ?? throw new EntityNotFoundException<TemplateItemGearWithTemplateSlot>(Context.TemplateItemGearWithTemplateSlot, entityTemplateItemGearWithTemplateSlot.ID);
+                listSlotGearToBeUsed.Add(entitySlotGearToBeUsed);
+            }
+
+            Unit entityUnit = await Context.Unit
+                .FirstOrDefaultAsync(x => x.ID == unitID && x.Guild.ID == guild.ID)
+                ?? throw new EntityNotFoundException<Unit>(Context.Unit, new { Unit = unitID, Guild = guild.ID });
+
+            List<SlotGear> listSlotGearTemplateUnit = await Context.SlotGear.Where(x => x.TemplateUnitList.Any(x => x.ID == entityUnit.ID)).ToListAsync();
+            IEnumerable<SlotGear> listSlotGearMissing = listSlotGearToBeUsed.Except(listSlotGearTemplateUnit);
+            if (listSlotGearMissing.Any())
+            {
+                throw new EntityNotFoundException<SlotGear>(Context.SlotGear, listSlotGearMissing.Select(x => x.ID));
+            }
+        }
+
+        public async Task EquipSupport(Guild entityGuild, Guid idEquipmentGear, Guid idItem)
+        {
+
         }
     }
 }

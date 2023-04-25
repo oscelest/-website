@@ -148,12 +148,26 @@ namespace api.noxy.io.Interface
                 .FirstOrDefaultAsync(x => x.ID == unitID && x.Guild.ID == guild.ID)
                 ?? throw new EntityNotFoundException<Unit>(Context.Unit, new { Unit = unitID, Guild = guild.ID });
 
-            List<SlotGear> listSlotGearTemplateUnit = await Context.SlotGear.Where(x => x.TemplateUnitList.Any(x => x.ID == entityUnit.ID)).ToListAsync();
+            List<SlotGear> listSlotGearTemplateUnit = await Context.SlotGear.Where(x => x.TemplateUnitList.Any(x => x.ID == entityUnit.TemplateUnit.ID)).ToListAsync();
             IEnumerable<SlotGear> listSlotGearMissing = listSlotGearToBeUsed.Except(listSlotGearTemplateUnit);
             if (listSlotGearMissing.Any())
             {
                 throw new EntityNotFoundException<SlotGear>(Context.SlotGear, listSlotGearMissing.Select(x => x.ID));
             }
+
+            List<EquipmentGear> listEquipmentGear = await Context.EquipmentGear
+                .Where(x => x.Unit!.ID == entityUnit.ID && x.SlotGearList.Any(x => listSlotGearToBeUsed.Contains(x)))
+                .ToListAsync();
+
+            foreach (EquipmentGear entityEquipmentGear in listEquipmentGear)
+            {
+                entityEquipmentGear.Unit = null;
+            }
+
+            entityItem.Count--;
+
+            await Context.EquipmentGear.AddAsync(new EquipmentGear() { SlotGearList = listSlotGearToBeUsed, TemplateItemGear = entityTemplateItemGear, Unit = entityUnit });
+            await Context.SaveChangesAsync();
         }
 
         public async Task EquipSupport(Guild entityGuild, Guid idEquipmentGear, Guid idItem)

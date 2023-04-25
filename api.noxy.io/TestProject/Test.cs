@@ -23,7 +23,6 @@ namespace TestProject
 
         public Test()
         {
-
             IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
             ApplicationConfiguration appconfig = new ApplicationConfiguration(config);
 

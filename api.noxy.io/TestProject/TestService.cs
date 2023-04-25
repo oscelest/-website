@@ -18,7 +18,7 @@ namespace TestProject
         public static IAuthRepository AuthRepository { get; } = ServiceProvider.GetRequiredService<IAuthRepository>();
 
         [AssemblyInitialize]
-        public static void MyTestInitialize()
+        public static void MyTestInitialize(TestContext tc)
         {
             Context.Database.EnsureDeleted();
             Context.Database.EnsureCreated();

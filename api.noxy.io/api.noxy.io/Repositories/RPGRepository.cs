@@ -167,7 +167,35 @@ namespace api.noxy.io.Interface
 
             entityItem.Count--;
 
-            await Context.EquipmentGear.AddAsync(new EquipmentGear() { SlotGearList = listSlotGearToBeUsed, TemplateItemGear = entityTemplateItemGear, Unit = entityUnit });
+            await Context.EquipmentGear.AddAsync(new EquipmentGear() { SlotGearList = listSlotGearToBeUsed, TemplateItemGear = entityTemplateItemGear, Unit = entityUnit, Guild = guild });
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task UnequipGear(Guild guild, Guid equipmentID)
+        {
+            EquipmentGear entityEquipmentGear = await Context.EquipmentGear.FirstOrDefaultAsync(x => x.ID == equipmentID && x.Guild.ID == guild.ID)
+                ?? throw new EntityNotFoundException<EquipmentGear>(Context.EquipmentGear, equipmentID);
+
+
+        }
+
+        public async Task ClearEquipment(Guild guild)
+        {
+            List<EquipmentGear> listEquipmentGear = await Context.EquipmentGear.Where(x => x.Guild.ID == guild.ID && x.Unit == null).ToListAsync();
+            foreach (EquipmentGear equipment in listEquipmentGear)
+            {
+                Item? Item = await Context.Item.FirstOrDefaultAsync(x => x.TemplateItem.ID == equipment.TemplateItemGear.ID && x.Guild.ID == guild.ID);
+                if (Item == null)
+                {
+                    await Context.Item.AddAsync(new Item() { Count = 1, Guild = guild, TemplateItem = equipment.TemplateItemGear });
+                }
+                else
+                {
+                    Item.Count++;
+                }
+                Context.EquipmentGear.Remove(equipment);
+            }
+
             await Context.SaveChangesAsync();
         }
 

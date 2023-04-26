@@ -130,7 +130,8 @@ namespace api.noxy.io.Interface
                 ?? throw new EntityConditionException<Item>(Context.Item, itemID);
 
             List<TemplateItemGearWithTemplateSlot> listTemplateItemGearWithTemplateSlot = await Context.TemplateItemGearWithTemplateSlot
-                .Where(x => x.TemplateItemGear.ID == entityTemplateItemGear.ID).ToListAsync();
+                .Where(x => x.TemplateItemGear.ID == entityTemplateItemGear.ID)
+                .ToListAsync();
 
             List<SlotGear> listSlotGear = await Context.SlotGear
                 .Where(x => listSlotID.Contains(x.ID))

@@ -7,7 +7,8 @@ namespace api.noxy.io.Context
 {
     public class RPGContext : DbContext
     {
-        public DbSet<TemplateItemGearWithTemplateSlot> TemplateItemGearWithTemplateSlot => Set<TemplateItemGearWithTemplateSlot>();
+        public DbSet<TemplateItemGearNeedTemplateSlot> TemplateItemGearNeedTemplateSlot => Set<TemplateItemGearNeedTemplateSlot>();
+        public DbSet<TemplateItemSupportWithTemplateSlot> TemplateItemSupportWithTemplateSlot => Set<TemplateItemSupportWithTemplateSlot>();
 
         //public DbSet<Event> Event => Set<Event>();
         public DbSet<EventGuild> EventGuild => Set<EventGuild>();
@@ -31,7 +32,7 @@ namespace api.noxy.io.Context
         public DbSet<Role> Role => Set<Role>();
 
         //public DbSet<Slot> Slot => Set<Slot>();
-        public DbSet<SlotSupport> SlotAugmentation => Set<SlotSupport>();
+        public DbSet<SlotSupport> SlotSupport => Set<SlotSupport>();
         public DbSet<SlotGear> SlotGear => Set<SlotGear>();
 
         //public DbSet<Template> Template => Set<Template>();

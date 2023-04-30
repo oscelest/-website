@@ -5,7 +5,7 @@ using api.noxy.io.Models.RPG;
 namespace Database.Models.RPG.Junction
 {
     [Table("$TemplateItemGear-TemplateSlot")]
-    public class TemplateItemGearWithTemplateSlot
+    public class TemplateItemGearNeedTemplateSlot
     {
         [Key]
         public Guid ID { get; set; } = Guid.NewGuid();

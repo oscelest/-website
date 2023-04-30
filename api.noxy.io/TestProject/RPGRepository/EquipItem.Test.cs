@@ -13,7 +13,7 @@ namespace Test.RPGRepository
     {
 
         [TestMethod]
-        public async Task EquipItem_ArgumentEmpty_Failure()
+        public async Task EquipItem_AllArgumentsAreEmpty_Failure()
         {
             Guild entityGuild = TestService.GetNewGuild();
             try
@@ -77,7 +77,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             TemplateSlot TemplateSlot = TestService.Context.TemplateSlot.Add(new() { Name = "Template Slot" }).Entity;
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
-            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot = TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlot = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
 
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
@@ -89,7 +89,7 @@ namespace Test.RPGRepository
                 await TestService.RPGRepository.EquipGear(entityGuild, Guid.Empty, Item.ID, new() { });
                 Assert.Fail("Call to EquipGear should fail.");
             }
-            catch (EntityNotFoundException<TemplateItemGearWithTemplateSlot> ex)
+            catch (EntityNotFoundException<TemplateItemGearNeedTemplateSlot> ex)
             {
                 Assert.AreEqual(TemplateItemGearWithTemplateSlot.ID, ex.Identifier);
             }
@@ -101,7 +101,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             TemplateSlot TemplateSlot = TestService.Context.TemplateSlot.Add(new() { Name = "Template Slot" }).Entity;
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
-            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot = TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlot = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
 
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
@@ -113,7 +113,7 @@ namespace Test.RPGRepository
                 await TestService.RPGRepository.EquipGear(entityGuild, Guid.Empty, Item.ID, SlotGearIDList);
                 Assert.Fail("Call to EquipGear should fail.");
             }
-            catch (EntityNotFoundException<TemplateItemGearWithTemplateSlot> ex)
+            catch (EntityNotFoundException<TemplateItemGearNeedTemplateSlot> ex)
             {
                 Assert.AreEqual(TemplateItemGearWithTemplateSlot.ID, ex.Identifier);
             }
@@ -125,7 +125,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             TemplateSlot TemplateSlot = TestService.Context.TemplateSlot.Add(new() { Name = "Template Slot" }).Entity;
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
-            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot = TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlot = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
 
             SlotGear SlotGear = TestService.Context.SlotGear.Add(new() { Name = "Slot Gear", TemplateSlot = TemplateSlot }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
@@ -160,7 +160,7 @@ namespace Test.RPGRepository
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
 
             List<Guid> SlotGearIDList = new() { SlotGear.ID };
 
@@ -190,7 +190,7 @@ namespace Test.RPGRepository
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
 
             List<Guid> SlotGearIDList = new() { SlotGearItem.ID };
 
@@ -220,7 +220,7 @@ namespace Test.RPGRepository
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
 
             List<Guid> SlotGearIDList = new() { SlotGearItem.ID };
 
@@ -249,7 +249,7 @@ namespace Test.RPGRepository
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
-            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlotOne = TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlotOne = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
 
             List<Guid> SlotGearIDList = new() { };
 
@@ -259,7 +259,7 @@ namespace Test.RPGRepository
             {
                 await TestService.RPGRepository.EquipGear(entityGuild, Unit.ID, Item.ID, SlotGearIDList);
             }
-            catch (EntityNotFoundException<TemplateItemGearWithTemplateSlot> ex)
+            catch (EntityNotFoundException<TemplateItemGearNeedTemplateSlot> ex)
             {
                 Assert.AreEqual(TemplateItemGearWithTemplateSlotOne.ID, ex.Identifier);
             }
@@ -280,9 +280,9 @@ namespace Test.RPGRepository
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
-            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot1 = TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
-            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot2 = TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
-            TemplateItemGearWithTemplateSlot TemplateItemGearWithTemplateSlot3 = TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlot1 = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlot2 = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlot3 = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
 
             List<Guid> SlotGearIDList = new() { SlotGear1.ID, SlotGear2.ID, SlotGear3.ID };
 
@@ -300,6 +300,37 @@ namespace Test.RPGRepository
         }
 
         [TestMethod]
+        public async Task EquipItem_UseGearSlotTwice_Failure()
+        {
+            Guild entityGuild = TestService.GetNewGuild();
+            TemplateSlot TemplateSlot = TestService.Context.TemplateSlot.Add(new() { Name = "Template Slot Item" }).Entity;
+            SlotGear SlotGear1 = TestService.Context.SlotGear.Add(new() { Name = "Slot", TemplateSlot = TemplateSlot }).Entity;
+            SlotGear SlotGear2 = TestService.Context.SlotGear.Add(new() { Name = "Slot", TemplateSlot = TemplateSlot }).Entity;
+
+            TemplateUnit TemplateUnit = TestService.Context.TemplateUnit.Add(new() { Name = "Template Unit", SlotGearList = new() { SlotGear1, SlotGear2 } }).Entity;
+            Unit Unit = TestService.Context.Unit.Add(new Unit() { Guild = entityGuild, TemplateUnit = TemplateUnit, Experience = 0 }).Entity;
+
+            TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlot1 = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+            TemplateItemGearNeedTemplateSlot TemplateItemGearWithTemplateSlot2 = TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear }).Entity;
+
+            List<Guid> SlotGearIDList = new() { SlotGear1.ID, SlotGear1.ID };
+
+            TestService.Context.SaveChanges();
+
+            try
+            {
+                await TestService.RPGRepository.EquipGear(entityGuild, Unit.ID, Item.ID, SlotGearIDList);
+            }
+            catch (EntityNotFoundException<SlotGear> ex)
+            {
+            }
+        }
+
+
+        [TestMethod]
         public async Task EquipItem_Basic_Success()
         {
             Guild entityGuild = TestService.GetNewGuild();
@@ -312,7 +343,7 @@ namespace Test.RPGRepository
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
 
             TestService.Context.SaveChanges();
 
@@ -325,7 +356,7 @@ namespace Test.RPGRepository
             EquipmentGear? ResultEquipmentGear = TestService.Context.EquipmentGear.FirstOrDefault(x => x.TemplateItemGear.ID == TemplateItemGear.ID && x.Unit!.ID == Unit.ID);
             Assert.IsNotNull(ResultEquipmentGear);
 
-            int ResultTemplateItemGearTemplateSlot = TestService.Context.TemplateItemGearWithTemplateSlot.Count(x => x.TemplateItemGear.ID == TemplateItemGear.ID && x.TemplateSlot.ID == TemplateSlot.ID);
+            int ResultTemplateItemGearTemplateSlot = TestService.Context.TemplateItemGearNeedTemplateSlot.Count(x => x.TemplateItemGear.ID == TemplateItemGear.ID && x.TemplateSlot.ID == TemplateSlot.ID);
             Assert.AreEqual(1, ResultTemplateItemGearTemplateSlot);
         }
 
@@ -343,8 +374,8 @@ namespace Test.RPGRepository
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
 
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
 
             TestService.Context.SaveChanges();
 
@@ -371,7 +402,7 @@ namespace Test.RPGRepository
             TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
             Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 2 }).Entity;
 
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot, TemplateItemGear = TemplateItemGear });
 
             TestService.Context.SaveChanges();
 
@@ -409,10 +440,10 @@ namespace Test.RPGRepository
             Item Item1 = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear1, Count = 1 }).Entity;
             Item Item2 = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear2, Count = 1 }).Entity;
 
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot1, TemplateItemGear = TemplateItemGear1 });
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot2, TemplateItemGear = TemplateItemGear1 });
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot2, TemplateItemGear = TemplateItemGear2 });
-            TestService.Context.TemplateItemGearWithTemplateSlot.Add(new() { TemplateSlot = TemplateSlot3, TemplateItemGear = TemplateItemGear2 });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot1, TemplateItemGear = TemplateItemGear1 });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot2, TemplateItemGear = TemplateItemGear1 });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot2, TemplateItemGear = TemplateItemGear2 });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot3, TemplateItemGear = TemplateItemGear2 });
 
             TestService.Context.SaveChanges();
 
@@ -427,6 +458,37 @@ namespace Test.RPGRepository
 
             EquipmentGear? ResultEquipmentGear2 = await TestService.Context.EquipmentGear.FirstOrDefaultAsync(x => x.TemplateItemGear.ID == TemplateItemGear2.ID && x.Unit!.ID == Unit.ID);
             Assert.IsNotNull(ResultEquipmentGear2);
+        }
+
+
+        [TestMethod]
+        public async Task EquipItem_MoreSlotsThanRequired_Success()
+        {
+            Guild entityGuild = TestService.GetNewGuild();
+            TemplateSlot TemplateSlot1 = TestService.Context.TemplateSlot.Add(new() { Name = "Template Slot1" }).Entity;
+            TemplateSlot TemplateSlot2 = TestService.Context.TemplateSlot.Add(new() { Name = "Template Slot2" }).Entity;
+            SlotGear SlotGear1 = TestService.Context.SlotGear.Add(new() { Name = "Slot Gear 1", TemplateSlot = TemplateSlot1 }).Entity;
+            SlotGear SlotGear2 = TestService.Context.SlotGear.Add(new() { Name = "Slot Gear 2", TemplateSlot = TemplateSlot1 }).Entity;
+            SlotGear SlotGear3 = TestService.Context.SlotGear.Add(new() { Name = "Slot Gear 3", TemplateSlot = TemplateSlot2 }).Entity;
+
+            TemplateUnit TemplateUnit = TestService.Context.TemplateUnit.Add(new() { Name = "Template Unit", SlotGearList = new() { SlotGear1, SlotGear2, SlotGear3 } }).Entity;
+            Unit Unit = TestService.Context.Unit.Add(new Unit() { Guild = entityGuild, TemplateUnit = TemplateUnit, Experience = 0 }).Entity;
+
+            TemplateItemGear TemplateItemGear = TestService.Context.TemplateItemGear.Add(new() { Name = "Template Item Gear" }).Entity;
+            Item Item = TestService.Context.Item.Add(new() { Guild = entityGuild, TemplateItem = TemplateItemGear, Count = 1 }).Entity;
+
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot1, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot2, TemplateItemGear = TemplateItemGear });
+            TestService.Context.TemplateItemGearNeedTemplateSlot.Add(new() { TemplateSlot = TemplateSlot2, TemplateItemGear = TemplateItemGear });
+
+            TestService.Context.SaveChanges();
+
+            await TestService.RPGRepository.EquipGear(entityGuild, Unit.ID, Item.ID, new() { SlotGear2.ID, SlotGear3.ID, SlotGear3.ID });
+
+            Assert.AreEqual(0, TestService.Context.Item.FirstOrDefault(x => x.ID == Item.ID)?.Count);
+
+            EquipmentGear? ResultEquipmentGear = await TestService.Context.EquipmentGear.FirstOrDefaultAsync(x => x.TemplateItemGear.ID == TemplateItemGear.ID && x.Unit!.ID == Unit.ID);
+            Assert.IsNotNull(ResultEquipmentGear);
         }
     }
 }

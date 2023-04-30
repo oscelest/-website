@@ -8,7 +8,7 @@ namespace api.noxy.io.Models.RPG
     {
         #region -- Mappings --
 
-        public List<TemplateItemGearWithTemplateSlot> TemplateItemGearWithTemplateSlotList { get; set; } = new();
+        public List<TemplateItemGearNeedTemplateSlot> TemplateItemGearWithTemplateSlotList { get; set; } = new();
 
         #endregion -- Mappings --
     }

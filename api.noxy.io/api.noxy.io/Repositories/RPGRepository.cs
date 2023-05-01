@@ -7,6 +7,7 @@ using Database.Models.RPG;
 using Database.Models.RPG.Junction;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace api.noxy.io.Interface
 {
@@ -132,6 +133,23 @@ namespace api.noxy.io.Interface
             TemplateItemGear entityTemplateItem = GetItemTemplate<TemplateItemGear>(entityItem);
             List<TemplateItemGearNeedTemplateSlot> listTemplateGearSlot = await LoadTemplateItemSlotList(entityTemplateItem);
             List<SlotGear> listSlotGear = await Context.SlotGear.Where(x => listSlotID.Contains(x.ID) && listTemplateGearSlot.Select(x => x.TemplateSlot.ID).Contains(x.TemplateSlot.ID)).ToListAsync();
+
+            IEnumerable<IGrouping<Guid, TemplateItemGearNeedTemplateSlot>> a = listTemplateGearSlot.GroupBy(x => x.TemplateSlot.ID);
+            IEnumerable<IGrouping<Guid, SlotGear>> b = listSlotGear.GroupBy(x => x.TemplateSlot.ID);
+
+            List<(Guid, int)> list = new();
+            foreach (IGrouping<Guid, TemplateItemGearNeedTemplateSlot> aItem in a)
+            {
+                IGrouping<Guid, SlotGear>? bItem = b.FirstOrDefault(x => x.Key == aItem.Key);
+                if (bItem == null || aItem.Count() > bItem.Count())
+                {
+                    list.Add((aItem.Key, aItem.Count()));
+                }
+            }
+            if (list.Any())
+            {
+                throw new EntityNotFoundException<TemplateSlot>(Context.TemplateSlot, list);
+            }
 
             List<SlotGear> listSlotGearToBeUsed = new();
             foreach (TemplateItemGearNeedTemplateSlot entityTemplateItemGearWithTemplateSlot in listTemplateGearSlot)

@@ -4,13 +4,13 @@ using api.noxy.io.Models.RPG;
 
 namespace Database.Models.RPG.Junction
 {
-    [Table("$TemplateItemGear-TemplateSlot")]
-    public class TemplateItemGearNeedTemplateSlot
+    [Table("$TemplateItemSupport-TemplateSlot")]
+    public class TemplateItemSupportUseTemplateSlot
     {
         [Key]
         public Guid ID { get; set; } = Guid.NewGuid();
 
-        public required TemplateItemGear TemplateItemGear { get; set; }
+        public required TemplateItemSupport TemplateItemSupport { get; set; }
 
         public required TemplateSlot TemplateSlot { get; set; }
 

@@ -8,6 +8,6 @@ namespace api.noxy.io.Models.RPG
     {
         public List<SlotSupport> SlotSupportList { get; set; } = new();
 
-        public List<TemplateItemGearNeedTemplateSlot> TemplateItemGearWithSlotGearList { get; set; } = new();
+        public List<TemplateItemGearUseTemplateSlot> TemplateItemGearWithSlotGearList { get; set; } = new();
     }
 }

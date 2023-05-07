@@ -7,8 +7,8 @@ namespace api.noxy.io.Context
 {
     public class RPGContext : DbContext
     {
-        public DbSet<TemplateItemGearNeedTemplateSlot> TemplateItemGearNeedTemplateSlot => Set<TemplateItemGearNeedTemplateSlot>();
-        public DbSet<TemplateItemSupportWithTemplateSlot> TemplateItemSupportWithTemplateSlot => Set<TemplateItemSupportWithTemplateSlot>();
+        public DbSet<TemplateItemGearUseTemplateSlot> TemplateItemGearUseTemplateSlot => Set<TemplateItemGearUseTemplateSlot>();
+        public DbSet<TemplateItemSupportUseTemplateSlot> TemplateItemSupportUseTemplateSlot => Set<TemplateItemSupportUseTemplateSlot>();
 
         //public DbSet<Event> Event => Set<Event>();
         public DbSet<EventGuild> EventGuild => Set<EventGuild>();

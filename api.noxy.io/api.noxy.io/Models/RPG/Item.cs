@@ -19,5 +19,7 @@ namespace Database.Models.RPG
 
         [Required]
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
+
+        public TemplateItemGear TemplateItemGear { get => (TemplateItemGear)TemplateItem; }
     }
 }

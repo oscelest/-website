@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace api.noxy.io.Models.RPG
 {
@@ -15,7 +16,8 @@ namespace api.noxy.io.Models.RPG
         public required Guild Guild { get; set; }
 
         [Required]
-        public required int Experience { get; set; }
+        [DefaultValue(0)]
+        public int Experience { get; set; } = 0;
 
         [Required]
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;

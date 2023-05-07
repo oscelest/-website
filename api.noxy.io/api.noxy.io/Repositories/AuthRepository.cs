@@ -24,13 +24,13 @@ namespace api.noxy.io.Interface
         public async Task<User> FindOne(Guid id)
         {
             return await _db.User!.FindAsync(id) 
-                ?? throw new EntityNotFoundException<User>(_db.User, id);
+                ?? throw new EntityNotFoundException<User>(id);
         }
 
         public async Task<User> FindOne(string email)
         {
             return await _db.User!.FirstOrDefaultAsync(e => e.Email == email) 
-                ?? throw new EntityNotFoundException<User>(_db.User, email);
+                ?? throw new EntityNotFoundException<User>(email);
         }
 
         public async Task<User> Create(string email, string password)

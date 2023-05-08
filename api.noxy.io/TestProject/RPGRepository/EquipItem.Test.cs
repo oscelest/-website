@@ -22,7 +22,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -49,7 +49,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -76,7 +76,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -104,7 +104,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild, 0);
+            generator.Item.GenerateGear(entityGuild, new() { }, 0);
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -131,7 +131,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, new() { });
@@ -159,7 +159,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -183,7 +183,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current, 2);
             generator.Unit.Generate(entityGuild, new() { generator.SlotGear[0] });
@@ -211,7 +211,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -239,7 +239,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current, 2);
             generator.Unit.Generate(entityGuild, new List<SlotGear>() { generator.SlotGear.Current });
@@ -267,7 +267,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -296,7 +296,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -323,7 +323,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current, 2);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -347,7 +347,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild, 2);
+            generator.Item.GenerateGear(entityGuild, new() { }, 2);
             generator.TemplateSlot.Generate();
             generator.SlotGear.Generate(generator.TemplateSlot.Current);
             generator.Unit.Generate(entityGuild, generator.SlotGear.Generated);
@@ -375,7 +375,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild, 1, 2);
+            generator.Item.GenerateGear(entityGuild, new() { }, 1, 2);
             generator.TemplateSlot.Generate(3);
             generator.SlotGear.Generate(generator.TemplateSlot[0]);
             generator.SlotGear.Generate(generator.TemplateSlot[1]);
@@ -408,7 +408,7 @@ namespace Test.RPGRepository
             Guild entityGuild = TestService.GetNewGuild();
             Generator generator = new();
 
-            generator.Item.GenerateGear(entityGuild);
+            generator.Item.GenerateGear(entityGuild, new() { });
             generator.TemplateSlot.Generate(2);
             generator.SlotGear.Generate(generator.TemplateSlot[0], 2);
             generator.SlotGear.Generate(generator.TemplateSlot[1]);

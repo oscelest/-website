@@ -11,7 +11,7 @@ namespace Test.Model
       
         public SlotGear Generate(TemplateSlot slot)
         {
-            SlotGear item = TestService.Context.SlotGear.Add(new() { Name = $"Slot Gear {++Counter}", TemplateSlot = slot }).Entity;
+            SlotGear item = TestService.Context.SlotGear.Add(new() { Name = $"Slot Gear #{++Counter}", TemplateSlot = slot }).Entity;
             Generated.Add(item);
             return item;
         }

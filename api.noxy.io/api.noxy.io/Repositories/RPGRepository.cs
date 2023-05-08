@@ -15,10 +15,10 @@ namespace api.noxy.io.Interface
         public Task<Guild?> LoadGuild(string name);
         public Task CleanUnitAvailableList(Guild guild);
         public Task CraftItem(Guild guild, Guid recipeID, int count, List<Guid> listItemID);
-        public Task EquipGear(Guild guild, Guid unitID, Guid itemID, List<Guid> listSlotID);
+        public Task<EquipmentGear> EquipGear(Guild guild, Guid unitID, Guid itemID, List<Guid> listSlotID);
+        public Task EquipSupport(Guild guild, Guid equipmentID, Guid itemID, List<Guid> listSlotID);
         public Task UnequipGear(Guild guild, Guid equipmentID);
         public Task ClearEquipment(Guild guild);
-        public Task EquipSupport(Guild guild, Guid equipmentID, Guid itemID, List<Guid> listSlotID);
     }
 
     public class RPGRepository : IRPGRepository
@@ -123,7 +123,7 @@ namespace api.noxy.io.Interface
             Context.SaveChanges();
         }
 
-        public async Task EquipGear(Guild guild, Guid unitID, Guid itemID, List<Guid> listSlotGearID)
+        public async Task<EquipmentGear> EquipGear(Guild guild, Guid unitID, Guid itemID, List<Guid> listSlotGearID)
         {
             Unit entityUnit = await LoadUnit(guild.ID, unitID);
             Item entityItem = await LoadItem(guild.ID, itemID);
@@ -141,15 +141,17 @@ namespace api.noxy.io.Interface
             }
 
             List<EquipmentGear> listEquipmentGear = await Context.EquipmentGear.Where(x => x.Unit!.ID == entityUnit.ID && x.SlotGearList.Any(x => listSlotGear.Contains(x))).ToListAsync();
-            foreach (EquipmentGear entityEquipmentGear in listEquipmentGear)
+            foreach (EquipmentGear itemEquipmentGear in listEquipmentGear)
             {
-                entityEquipmentGear.Unit = null;
+                itemEquipmentGear.Unit = null;
             }
 
             entityItem.Count--;
 
-            await Context.EquipmentGear.AddAsync(new EquipmentGear() { SlotGearList = listSlotGear, TemplateItemGear = entityTemplateItemGear, Unit = entityUnit, Guild = guild });
+            EquipmentGear entityEquipmentGear = new() { SlotGearList = listSlotGear, TemplateItemGear = entityTemplateItemGear, Unit = entityUnit, Guild = guild };
+            await Context.EquipmentGear.AddAsync(entityEquipmentGear);
             await Context.SaveChangesAsync();
+            return entityEquipmentGear;
         }
 
         public async Task EquipSupport(Guild guild, Guid equipmentID, Guid itemID, List<Guid> listSlotSupportID)

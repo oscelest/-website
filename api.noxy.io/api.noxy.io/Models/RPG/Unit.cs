@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
 
     public class Unit

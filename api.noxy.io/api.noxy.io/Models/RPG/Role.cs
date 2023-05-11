@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("Role")]
     public class Role

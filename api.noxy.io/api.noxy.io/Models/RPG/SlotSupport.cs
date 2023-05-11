@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Database.Models.RPG.Abstract;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("SlotSupport")]
     public class SlotSupport : Slot

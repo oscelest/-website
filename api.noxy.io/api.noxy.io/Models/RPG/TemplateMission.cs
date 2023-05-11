@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Database.Models.RPG.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("TemplateMission")]
     public class TemplateMission : Template

@@ -1,9 +1,7 @@
-using api.noxy.io.Context;
-using api.noxy.io.Hubs;
-using api.noxy.io.Interface;
-using api.noxy.io.Models.RPG;
-using api.noxy.io.Utility;
-using Database.Models.RPG.Junction;
+using Database.Contexts;
+using Database.Hubs;
+using Database.Repositories;
+using Database.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

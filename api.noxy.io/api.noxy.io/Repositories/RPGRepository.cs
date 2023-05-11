@@ -1,12 +1,12 @@
-﻿using api.noxy.io.Context;
-using api.noxy.io.Exceptions;
-using api.noxy.io.Utility;
-using api.noxy.io.Models.RPG;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Database.Models.RPG;
 using Database.Models.RPG.Junction;
+using Database.Contexts;
+using Database.Utilities;
+using Database.Models.RPG.Abstract;
+using Database.Exceptions;
 
-namespace api.noxy.io.Interface
+namespace Database.Repositories
 {
     public interface IRPGRepository
     {
@@ -76,7 +76,7 @@ namespace api.noxy.io.Interface
 
         public async Task<bool> HasRecipe(Guid guild, Guid recipeID)
         {
-            return (await Context.UnlockableRecipe.FirstOrDefaultAsync(x => x.Guild.ID == guild && x.TemplateRecipe.ID == recipeID)) != null;
+            return await Context.UnlockableRecipe.FirstOrDefaultAsync(x => x.Guild.ID == guild && x.TemplateRecipe.ID == recipeID) != null;
         }
 
         public async Task CraftItem(Guild guild, Guid recipeID, int count, List<Guid> listItemID)

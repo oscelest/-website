@@ -1,8 +1,7 @@
-﻿using Database.Models.RPG.Junction;
-using System.ComponentModel.DataAnnotations;
+﻿using Database.Models.RPG.Abstract;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("SlotGear")]
     public class SlotGear : Slot

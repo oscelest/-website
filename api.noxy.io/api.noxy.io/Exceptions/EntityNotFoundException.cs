@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace api.noxy.io.Exceptions
+﻿namespace Database.Exceptions
 {
     public class EntityNotFoundException<T> : Exception where T : class
     {

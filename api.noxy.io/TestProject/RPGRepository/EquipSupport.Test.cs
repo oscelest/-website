@@ -1,6 +1,6 @@
-﻿using api.noxy.io.Models.RPG;
-using TestProject;
+﻿using TestProject;
 using Test.Model;
+using Database.Models.RPG;
 
 namespace Test.RPGRepository
 {

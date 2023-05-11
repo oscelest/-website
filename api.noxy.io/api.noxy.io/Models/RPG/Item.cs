@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using api.noxy.io.Models.RPG;
+using Database.Models.RPG.Abstract;
 
 namespace Database.Models.RPG
 {

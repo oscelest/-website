@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Database.Models.RPG.Abstract;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("TemplateRecipe")]
     public class TemplateRecipe : Template

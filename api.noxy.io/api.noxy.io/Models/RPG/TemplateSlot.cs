@@ -1,7 +1,8 @@
-﻿using Database.Models.RPG.Junction;
+﻿using Database.Models.RPG.Abstract;
+using Database.Models.RPG.Junction;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("TemplateSlot")]
     public class TemplateSlot : Template

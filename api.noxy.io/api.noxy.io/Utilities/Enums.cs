@@ -1,4 +1,4 @@
-﻿namespace api.noxy.io.Utilities
+﻿namespace Database.Utilities
 {
     public enum GuildStateType
     {

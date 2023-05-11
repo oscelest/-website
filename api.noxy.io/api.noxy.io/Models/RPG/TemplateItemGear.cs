@@ -1,7 +1,8 @@
-﻿using Database.Models.RPG.Junction;
+﻿using Database.Models.RPG.Abstract;
+using Database.Models.RPG.Junction;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("TemplateItemGear")]
     public class TemplateItemGear : TemplateItem
@@ -9,5 +10,7 @@ namespace api.noxy.io.Models.RPG
         public List<SlotSupport> SlotSupportList { get; set; } = new();
 
         public List<TemplateItemGearUseTemplateSlot> TemplateItemGearWithSlotGearList { get; set; } = new();
+
+        public List<Modifier> ModifierList { get; set; } = new();
     }
 }

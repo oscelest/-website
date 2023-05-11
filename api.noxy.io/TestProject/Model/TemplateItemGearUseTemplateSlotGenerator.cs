@@ -1,5 +1,4 @@
-﻿using api.noxy.io.Models.RPG;
-using Database.Models.RPG;
+﻿using Database.Models.RPG;
 using Database.Models.RPG.Junction;
 using Test.Model.Abstract;
 using TestProject;

@@ -1,11 +1,12 @@
-﻿using api.noxy.io.Utilities;
+﻿using Database.Models.RPG.Abstract;
+using Database.Utilities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
-    [Table("ModifierGuildRole")]
-    public class ModifierGuildRole : ModifierGuild
+    [Table("ModifierRole")]
+    public class ModifierRole : Modifier
     {
         [Required]
         [Column(nameof(RoleTag), TypeName = "varchar(32)")]

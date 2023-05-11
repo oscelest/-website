@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using api.noxy.io.Exceptions;
-using api.noxy.io.Models.RPG;
 
 namespace Database.Models.RPG.Junction
 {

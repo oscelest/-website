@@ -1,7 +1,7 @@
-using api.noxy.io.Context;
-using api.noxy.io.Interface;
-using api.noxy.io.Models.RPG;
-using api.noxy.io.Utility;
+using Database.Contexts;
+using Database.Models.RPG;
+using Database.Repositories;
+using Database.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

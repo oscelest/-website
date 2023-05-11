@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using api.noxy.io.Models.RPG;
 using Database.Models.RPG;
 using Database.Models.RPG.Junction;
+using Database.Models.RPG.Abstract;
 
-namespace api.noxy.io.Context
+namespace Database.Contexts
 {
     public class RPGContext : DbContext
     {
@@ -24,12 +24,18 @@ namespace api.noxy.io.Context
 
         //public DbSet<Modifier> Modifier => Set<Modifier>();
         public DbSet<ModifierItem> ModifierItem => Set<ModifierItem>();
-        public DbSet<ModifierGuild> ModifierGuild => Set<ModifierGuild>();
+        public DbSet<ModifierFeat> ModifierTag => Set<ModifierFeat>();
         public DbSet<ModifierGuildMission> ModifierGuildMission => Set<ModifierGuildMission>();
-        public DbSet<ModifierGuildRole> ModifierGuildRole => Set<ModifierGuildRole>();
+        public DbSet<ModifierRole> ModifierGuildRole => Set<ModifierRole>();
         public DbSet<ModifierGuildUnit> ModifierGuildUnit => Set<ModifierGuildUnit>();
 
+        public DbSet<Paradigm> Paradigm => Set<Paradigm>();
+        public DbSet<ParadigmUnit> ParadigmUnit => Set<ParadigmUnit>();
+        public DbSet<ParadigmSkill> ParadigmSkill => Set<ParadigmSkill>();
+
         public DbSet<Role> Role => Set<Role>();
+
+        public DbSet<Skill> Skill => Set<Skill>();
 
         //public DbSet<Slot> Slot => Set<Slot>();
         public DbSet<SlotSupport> SlotSupport => Set<SlotSupport>();

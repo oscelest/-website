@@ -1,4 +1,4 @@
-﻿namespace api.noxy.io.Exceptions
+﻿namespace Database.Exceptions
 {
     public class EntityAlreadyExistsException : Exception
     {

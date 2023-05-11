@@ -1,8 +1,9 @@
-﻿using api.noxy.io.Utilities;
+﻿using Database.Models.RPG.Abstract;
+using Database.Utilities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("ModifierItem")]
     public class ModifierItem : Modifier

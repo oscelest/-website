@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG.Abstract
 {
     public abstract class Slot
     {
@@ -10,7 +10,7 @@ namespace api.noxy.io.Models.RPG
         [Required]
         public required string Name { get; set; }
 
-        [Required] 
+        [Required]
         public required TemplateSlot TemplateSlot { get; set; }
 
         [Required]

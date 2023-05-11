@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Database.Models.RPG.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.noxy.io.Models.RPG
+namespace Database.Models.RPG
 {
     [Table("TemplateItemMaterial")]
     public class TemplateItemMaterial : TemplateItem
     {
-        public required string Description { get; set; } 
+        public required string Description { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace api.noxy.io.Utility
+﻿namespace Database.Utilities
 {
     public interface IApplicationConfiguration
     {

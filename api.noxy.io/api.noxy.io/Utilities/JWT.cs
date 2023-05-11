@@ -1,10 +1,10 @@
-﻿using api.noxy.io.Models.RPG;
+﻿using Database.Models.RPG;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace api.noxy.io.Utility
+namespace Database.Utilities
 {
     public interface IJWT
     {

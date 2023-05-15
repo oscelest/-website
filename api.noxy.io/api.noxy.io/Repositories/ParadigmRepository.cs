@@ -10,6 +10,8 @@ namespace Database.Repositories
     public interface IParadigmRepository
     {
         public Task<Paradigm> CreateParadigm(Guild guild, string name);
+        public Task AssignUnit(Guild guild, Guid idParadigm, Guid idUnit);
+        public Task AssignSkill(Guild guild, Guid idParadigmUnit, Guid idSkill);
     }
 
     public class ParadigmRepository : IParadigmRepository
@@ -45,6 +47,15 @@ namespace Database.Repositories
             Unit entityUnit = await Context.Unit.FirstOrDefaultAsync(x => x.ID == idUnit && x.Guild == guild)
                 ?? throw new EntityNotFoundException<Unit>(new { Unit = idUnit, Guild = guild.ID });
 
+            List<ParadigmUnit> listParadigmUnit = await Context.ParadigmUnit.Where(x => x.Paradigm == entityParadigm).ToListAsync();
+            List<ModifierFeat> listModifierTag = await Context.ModifierTag.Where(x => x.ModifierTag == ModifierTagType.Paradigm_UnitCount && x.TemplateFeat.UnlockableFeatList.Any(y => y.Guild == guild)).ToListAsync();
+
+            Modifier.AritmaticalSet setParadigmUnit = Modifier.GetArithmaticalSet(listModifierTag);
+            if (listParadigmUnit.Count >= setParadigmUnit.GetTotalInt())
+            {
+                throw new EntityOperationException<Paradigm>();
+            }
+
             Context.ParadigmUnit.Add(new ParadigmUnit() { Paradigm = entityParadigm, Unit = entityUnit });
             await Context.SaveChangesAsync();
         }
@@ -57,11 +68,17 @@ namespace Database.Repositories
             Skill entitySkill = await Context.Skill.FirstOrDefaultAsync(x => x.ID == idSkill)
                 ?? throw new EntityNotFoundException<Unit>(new { Skill = idSkill });
 
+            List<ParadigmSkill> listParadigmSkill = await Context.ParadigmSkill.Where(x => x.ParadigmUnit == entityParadigmUnit).ToListAsync();
+            List<ModifierFeat> listModifierTag = await Context.ModifierTag.Where(x => x.ModifierTag == ModifierTagType.Paradigm_UnitCount && x.TemplateFeat.UnlockableFeatList.Any(y => y.Guild == guild)).ToListAsync();
+
+            Modifier.AritmaticalSet setParadigmSkill = Modifier.GetArithmaticalSet(listModifierTag);
+            if (listParadigmSkill.Count >= setParadigmSkill.GetTotalInt())
+            {
+                throw new EntityOperationException<Paradigm>();
+            }
+
             Context.ParadigmSkill.Add(new ParadigmSkill() { ParadigmUnit = entityParadigmUnit, Skill = entitySkill });
             await Context.SaveChangesAsync();
         }
-
-
-
     }
 }
